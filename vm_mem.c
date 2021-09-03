@@ -731,9 +731,6 @@ TEST(scm_add) {
         ASSERT_NUMBER_EQUAL(SCM_ADD(a,b), FIX(-29));
 
         ASSERT_NUMBER_EQUAL(FIXADDINT_TO_SCM(4000), FIX(4000));
-        // XX intercept output pls.
-        printf("fixaddint_to_scm(4000):"); SCM_WRITE(FIXADDINT_TO_SCM(4000)); newline();
-        printf("fixaddint_to_scm(8000):"); SCM_WRITE(FIXADDINT_TO_SCM(8000)); newline();
 
         a = FIX(10);
         b = FIXMULINT_TO_SCM(10000);
@@ -750,56 +747,42 @@ TEST(scm_add) {
         ASSERT_NUMBER_EQUAL(c, FIXMULINT_TO_SCM(40000));
         c = SCM_ADD(c, c);
         ASSERT_NUMBER_EQUAL(c, FIXMULINT_TO_SCM(80000));
-        printf("80000: "); SCM_WRITE(c); newline();
         c = FIXMULINT_TO_SCM(-1000);
-        printf("-1000: "); SCM_WRITE(c); newline();
         c = SCM_ADD(c, c);
-        printf("-2000: "); SCM_WRITE(c); newline();
         c = SCM_ADD(c, c);
-        printf("-4000: "); SCM_WRITE(c); newline();
         c = SCM_ADD(c, c);
-        printf("-8000: "); SCM_WRITE(c); newline();
 
         // positive overflow check:
         a = FIXMULINT_TO_SCM(4000);
-        printf("4000 input: "); SCM_WRITE(a); newline();
         b = SCM_ADD(a, a);
-        printf("8000: "); SCM_WRITE(b); newline();
         ASSERT_NUMBER_EQUAL(b, FIXMULINT_TO_SCM(8000));
 
         // continue with the negative numbers:
         
         trace = 1;
         c = SCM_ADD(c, c);
-        printf("-16000: "); SCM_WRITE(c); newline();
         c = SCM_ADD(c, c);
-        printf("-32000: "); SCM_WRITE(c); newline();
         c = SCM_ADD(c, c);
-        printf("-64000: "); SCM_WRITE(c); newline();
         c = SCM_ADD(c, c);
         ASSERT_NUMBER_EQUAL(c, FIXMULINT_TO_SCM(-128000));
-        printf("-128000: "); SCM_WRITE(c); newline();
-        printf("-128000: "); SCM_WRITE(FIXMULINT_TO_SCM(-128000)); newline();
         {
             uint8_t i;
             for (i=0; i<16; i++) {
                 c = SCM_ADD(c, c);
             }
         }
+        // todo: intercept or replace with binary comparison or so
         printf("-128000 << 16: "); SCM_WRITE(c); newline();
 
         c = SCM_ADD(FIXMULINT_TO_SCM(-128000), FIXMULINT_TO_SCM(128000));
-        printf("0: "); SCM_WRITE(c); newline();
         ASSERT_NUMBER_EQUAL(c, FIXMULINT_TO_SCM(0));
         ASSERT_EQ(is_fixnum(c), true);
 
         c = SCM_ADD(FIXMULINT_TO_SCM(-128001), FIXMULINT_TO_SCM(128000));
-        printf("-1: "); SCM_WRITE(c); newline();
         ASSERT_NUMBER_EQUAL(c, FIXMULINT_TO_SCM(-1));
         ASSERT_EQ(is_fixnum(c), true);
 
         c = SCM_ADD(FIXMULINT_TO_SCM(-128001), FIXMULINT_TO_SCM(128002));
-        printf("1: "); SCM_WRITE(c); newline();
         ASSERT_NUMBER_EQUAL(c, FIXMULINT_TO_SCM(1));
         ASSERT_EQ(is_fixnum(c), true);
     }
