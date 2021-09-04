@@ -1,9 +1,19 @@
 ifdef CPLUSPLUS
-COMPILER=g++
+ ifdef CLANG
+  COMPILER=clang++
+ else
+  COMPILER=g++
+ endif
 else
-COMPILER=gcc
-# gcc -pedantic-errors conflicts with computed goto
+ ifdef CLANG
+  COMPILER=clang
+ else
+  COMPILER=gcc
+  # gcc -pedantic-errors conflicts with computed goto
+ endif
 endif
+
+ASSEMBLER=gcc
 
 LTO=-flto
 
@@ -50,8 +60,8 @@ CFLAGS=-fdiagnostics-color -Wall -Wextra -gdwarf-4 -g3 -fverbose-asm -I.. $(OPTI
 AFLAGS=$(PROFILE) $(GPROF) $(LTO)
 LDFLAGS=$(PROFILE) $(GPROF) $(LTO)
 
-CC=$(COMPILER) $(SAN) -S
-AS=$(COMPILER) -c
+CC=$(COMPILER) $(SAN)
+AS=$(ASSEMBLER) -c
 LD=$(COMPILER) $(SAN)
 
 OBJS=target-local/tod.o target-local/benchmark.o target-local/test.o target-local/vm_process.o target-local/vm_mem.o target-local/vm.o target-local/bytecode.o
@@ -83,23 +93,40 @@ target-local/vmtest: .deps target-local $(OBJS) target-local/run_tests.o target-
 target-local/lilyvm: .deps target-local $(OBJS) target-local/lilyvm.o
 	$(LD) $(LDFLAGS) -o target-local/lilyvm $(OBJS) target-local/lilyvm.o
 
-target-local/%.o: target-local/%.s
-	$(AS) $(AFLAGS) -o $@ $<
-
 target-local/%.o: %.s
 	$(AS) $(AFLAGS) -o $@ $<
 
+ifdef CLANG
+# Does clang have issues with macros as symbols when going via .s? So,
+# go direct.
+target-local/%.o: %.c
+	$(CC) -c $(CFLAGS) -DFIL=`../chj-ctest/bin/path-to-FIL $<` -o $@ $<
+else
 target-local/%.s: %.c
-	$(CC) $(CFLAGS) -DFIL=`../chj-ctest/bin/path-to-FIL $<` -o $@ $<
+	$(CC) -S $(CFLAGS) -DFIL=`../chj-ctest/bin/path-to-FIL $<` -o $@ $<
+target-local/%.o: target-local/%.s
+	$(AS) $(AFLAGS) -o $@ $<
+endif
 
-# HACK
+# HACK (compile libs to target-local/, too)
+ifdef CLANG
+# ditto re macros
+target-local/%.o: ../chj-ctest/%.c
+	$(CC) -c $(CFLAGS) -DFIL=`../chj-ctest/bin/path-to-FIL $<`  -o $@ $<
+else
 target-local/%.s: ../chj-ctest/%.c
-	$(CC) $(CFLAGS) -DFIL=`../chj-ctest/bin/path-to-FIL $<`  -o $@ $<
-# HACK
+	$(CC) -S $(CFLAGS) -DFIL=`../chj-ctest/bin/path-to-FIL $<`  -o $@ $<
+endif
+# HACK (compile libs to target-local/, too)
 target-local/%.o: ../chj-64lib/%.s
 	$(AS) $(AFLAGS) -o $@ $<
+ifdef CLANG
+target-local/%.o: ../chj-64lib/%.c
+	$(CC) -c $(CFLAGS) -DFIL=`../chj-ctest/bin/path-to-FIL $<`  -o $@ $<
+else
 target-local/%.s: ../chj-64lib/%.c
-	$(CC) $(CFLAGS) -DFIL=`../chj-ctest/bin/path-to-FIL $<`  -o $@ $<
+	$(CC) -S $(CFLAGS) -DFIL=`../chj-ctest/bin/path-to-FIL $<`  -o $@ $<
+endif
 
 _opcode_dispatch.h: opcodes.scm
 	gsi opcodes.scm
