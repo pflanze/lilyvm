@@ -1,5 +1,9 @@
+ifdef CPLUSPLUS
+COMPILER=g++
+else
 COMPILER=gcc
 # gcc -pedantic-errors conflicts with computed goto
+endif
 
 LTO=-flto
 
