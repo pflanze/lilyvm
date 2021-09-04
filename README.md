@@ -41,8 +41,8 @@ reason. But the [cc65](https://cc65.github.io/doc/) compiler is
 generating bloated and slow code, and even the current version of the
 VM may not fit into the main RAM in the C-64 any more (I haven't
 gotten around to test). So it may have to be rewritten in assembly,
-and I may not follow through on that. 65816 CPUs may be a more
-realistic target.
+and I may not follow through on that. (Would 65816 CPUs make for a
+realistic target?)
 
 ## Status
 
