@@ -600,7 +600,7 @@ static val bignum_add(struct vm_process *process,
     word *z;
     word *r; // the longer of the two
     word sign_extension; // 0 for positive, 0xFFFF for negative
-    dword A = 0;
+    dword_t A = 0;
 
     TRACEPTR(a);
     TRACEu8(lena);

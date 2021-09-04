@@ -283,7 +283,7 @@ word* vm_process_alloc(struct vm_process* process, numwords_t n) {
 /* An integer large enough to represent the result of fixnum + fixnum */
 typedef int16_t fixaddint_t;
 /* An integer large enough to represent the result of fixnum * fixnum;
-   also see dword for unsigned variant. */
+   also see dword_t for unsigned variant. */
 typedef int32_t fixmulint_t;
 /*
   Is is never useful? e.g. (FIXMULINT_HI(x) == WORD_MAX) is wrong,
