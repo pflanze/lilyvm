@@ -147,4 +147,4 @@ makefile runs Gambit when needed.
 Copyright (C) 2021 Christian Jaeger, <ch@christianjaeger.ch>
 
 This is currently being published under the LGPL 2.1, but I can be
-persuaded to add or change to others.
+persuaded to add or change to other licenses.
