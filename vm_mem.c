@@ -122,15 +122,15 @@ int vm_errno; // want elsewhere or not at all? currently used by mem_s.s
 
 /* INLINE */ static
 void _gc_handle_slot_move(struct vm_process* process,
-                          word *slot,
-                          word **_newptr) {
+                          word_t *slot,
+                          word_t **_newptr) {
     val v = *slot;
-    word *p = ALLOCATED_PTR_FROMSPACE(v);
+    word_t *p = ALLOCATED_PTR_FROMSPACE(v);
     numwords_t len = PTR_NUMWORDS(p);
     if (len) {
         ASSERT(len < 30); //XX
         *_newptr -= (len + 1);
-        memcpy(*_newptr, p, (len + 1) * sizeof(word));
+        memcpy(*_newptr, p, (len + 1) * sizeof(word_t));
         {
             val vnew = ALLOCATED_FROM_POINTER_TOSPACE(*_newptr);
             PTR_NUMWORDS(p) = 0; // "forwarded"
@@ -153,8 +153,8 @@ void _gc_handle_slot_move(struct vm_process* process,
 void vm_mem_gc(struct vm_process* process) {
     // WARN("*** running gc");
     uintptr_t sz = process->alloc_size;
-    word* new = process->alloc_area_fresh;
-    word* newptr = add_word_and_bytes(new, sz);
+    word_t* new = process->alloc_area_fresh;
+    word_t* newptr = add_word_and_bytes(new, sz);
     // GC root sets: walk them, copy non-moved allocated objects to
     // the new space. Update pointers at the same time.
     {
@@ -164,11 +164,11 @@ void vm_mem_gc(struct vm_process* process) {
             GC_HANDLE_SLOT(*process->val_roots[i], newptr);
         }
         for (i = 0; i < process->num_ptr_roots; i++) {
-            word **pp = process->ptr_roots[i];
+            word_t **pp = process->ptr_roots[i];
             val v = ALLOCATED_FROM_POINTER((*pp) - 1);
             GC_HANDLE_SLOT(v, newptr);
             {
-                word *p = ALLOCATED_PTR_TOSPACE(v);
+                word_t *p = ALLOCATED_PTR_TOSPACE(v);
                 *(process->ptr_roots[i]) = p + 1;
             }
         }
@@ -188,9 +188,9 @@ void vm_mem_gc(struct vm_process* process) {
         // pointer upwards until the end, then walk from the new
         // allocation pointer upwards to the old start again until
         // there's nothing left.
-        word *old_start;
-        word *ptr;
-        word *end = add_word_and_bytes(new, sz);
+        word_t *old_start;
+        word_t *ptr;
+        word_t *end = add_word_and_bytes(new, sz);
         while (1) {
             old_start = newptr;
             ptr = newptr;
@@ -217,7 +217,7 @@ void vm_mem_gc(struct vm_process* process) {
         // Flip region pointers; we don't do this *before* running the
         // GC, ALLOCATED_FROM_POINTER_TOSPACE and
         // ALLOCATED_PTR_FROMSPACE expect the old values.
-        word* old = process->alloc_area;
+        word_t* old = process->alloc_area;
         process->alloc_area = new;
         process->alloc_area_fresh = old;
     }
@@ -228,16 +228,16 @@ void vm_mem_gc(struct vm_process* process) {
 
 // The fast path is in `vm_process_alloc`; the slow path (mostly a
 // copy-paste of the fast path!):
-word* _vm_process_alloc_slow(struct vm_process* process, numwords_t n) {
+word_t* _vm_process_alloc_slow(struct vm_process* process, numwords_t n) {
     vm_mem_gc(process);
-    word *ptr = process->alloc_ptr;
+    word_t *ptr = process->alloc_ptr;
     ptr -= n;
     if (((uintptr_t)ptr) <= ((uintptr_t)process->alloc_area)) {
         DIE("out of memory");
     } else {
         process->alloc_ptr = ptr;
 #if DEBUG_MEM_SET
-        memset(ptr, 0x99, n * sizeof(word));
+        memset(ptr, 0x99, n * sizeof(word_t));
 #endif
         return ptr;
     }
@@ -252,7 +252,7 @@ val fastcons(val a, val b);
 val scm_cons(struct vm_process *process, val a, val b) {
     if (1 //XX fastcons needs updates
         || !IS_C64) {
-        word* p= vm_process_alloc(process, 3); // header, 2 fields
+        word_t* p= vm_process_alloc(process, 3); // header, 2 fields
         p[0] = HEAD_PAIR;
         p[1] = a;
         p[2] = b;
@@ -314,7 +314,7 @@ val fixmulint_to_scm(struct vm_process* process, fixmulint_t x) {
             IFVERBOSE(printf("bignum 1 "));
             return IFVERBOSE(PP_THROUGH)(FIXADDINT_TO_BIGNUM(DWORD_LO(x)));
         } else {
-            word *p = vm_process_alloc(process, 3); // header, 2 fields
+            word_t *p = vm_process_alloc(process, 3); // header, 2 fields
             p[0] = HEAD_OF_LEN_TYPE(2, TYPE_BIGNUM);
             p[1] = DWORD_LO(x);
             p[2] = DWORD_HI(x);
@@ -360,14 +360,14 @@ INLINE static val _bignum_dispatch (
     val x, val y,
     val (*fixnum_op)(struct vm_process*, val, val),
     val (*bignum_op)(struct vm_process*,
-                     word *a, uint8_t lena, bool amoves,
-                     word *b, uint8_t lenb, bool bmoves)
+                     word_t *a, uint8_t lena, bool amoves,
+                     word_t *b, uint8_t lenb, bool bmoves)
     ) {
     if (is_fixnum(x)) {
         if (is_fixnum(y)) {
             return fixnum_op(process, x, y);
         } else if (IS_BIGNUM(y)) {
-            word xw = INT(x);
+            word_t xw = INT(x);
             return bignum_op(process,
                              &xw, 1, false,
                              ALLOCATED_BODY(y), ALLOCATED_NUMWORDS(y), true);
@@ -376,7 +376,7 @@ INLINE static val _bignum_dispatch (
         }
     } else if (IS_BIGNUM(x)) {
         if (is_fixnum(y)) {
-            word yw = INT(y);
+            word_t yw = INT(y);
             return bignum_op(process,
                              ALLOCATED_BODY(x), ALLOCATED_NUMWORDS(x), true,
                              &yw, 1, false);
@@ -402,7 +402,7 @@ INLINE static val _bignum_dispatch (
         if (is_fixnum(y)) {                                             \
             return fixnum_op(process, x, y);                            \
         } else if (IS_BIGNUM(y)) {                                      \
-            word xw = INT(x);                                           \
+            word_t xw = INT(x);                                           \
             return bignum_op(process,                                   \
                              &xw, 1, false,                             \
                              ALLOCATED_BODY(y), ALLOCATED_NUMWORDS(y), true); \
@@ -411,7 +411,7 @@ INLINE static val _bignum_dispatch (
         }                                                               \
     } else if (IS_BIGNUM(x)) {                                          \
         if (is_fixnum(y)) {                                             \
-            word yw = INT(y);                                           \
+            word_t yw = INT(y);                                           \
             return bignum_op(process,                                   \
                              ALLOCATED_BODY(x), ALLOCATED_NUMWORDS(x), true, \
                              &yw, 1, false);                            \
@@ -436,8 +436,8 @@ static val fixnum_equal(UNUSED struct vm_process* process,
     return BOOL(a == b);
 }
 static val bignum_equal(UNUSED struct vm_process* process,
-                        word *a, uint8_t lena, UNUSED bool amoves,
-                        word *b, uint8_t lenb, UNUSED bool bmoves) {
+                        word_t *a, uint8_t lena, UNUSED bool amoves,
+                        word_t *b, uint8_t lenb, UNUSED bool bmoves) {
     uint8_t i;
     if (lena != lenb) return FAL;
     for (i=0; i < lena; i++) {
@@ -459,8 +459,8 @@ static val fixnum_cmp(UNUSED struct vm_process* process,
     return x == y ? EQ : x < y ? LT : GT;
 }
 static val bignum_cmp(UNUSED struct vm_process* process,
-                      word *a, uint8_t lena, UNUSED bool amoves,
-                      word *b, uint8_t lenb, UNUSED bool bmoves) {
+                      word_t *a, uint8_t lena, UNUSED bool amoves,
+                      word_t *b, uint8_t lenb, UNUSED bool bmoves) {
     if (lena == lenb) {
 
 #define CHECK(t, a, b)                          \
@@ -590,16 +590,16 @@ bool trace = 0;
 #endif //DEBUG
 
 static val bignum_add(struct vm_process *process,
-                      word *a, uint8_t lena, bool amoves,
-                      word *b, uint8_t lenb, bool bmoves) {
+                      word_t *a, uint8_t lena, bool amoves,
+                      word_t *b, uint8_t lenb, bool bmoves) {
     uint8_t i;
     uint8_t len1; // len of the shorter
     uint8_t len2; // len of the longer
     bool last_signs;
     bool need_overflow;
-    word *z;
-    word *r; // the longer of the two
-    word sign_extension; // 0 for positive, 0xFFFF for negative
+    word_t *z;
+    word_t *r; // the longer of the two
+    word_t sign_extension; // 0 for positive, 0xFFFF for negative
     dword_t A = 0;
 
     TRACEPTR(a);
@@ -794,8 +794,8 @@ static val fixnum_mul(struct vm_process *process,
     return FIXMULINT_TO_SCM(INT(a) * INT(b));
 }
 static val bignum_mul(UNUSED struct vm_process *process,
-                      UNUSED word *a, UNUSED uint8_t lena, UNUSED bool amoves,
-                      UNUSED word *b, UNUSED uint8_t lenb, UNUSED bool bmoves) {
+                      UNUSED word_t *a, UNUSED uint8_t lena, UNUSED bool amoves,
+                      UNUSED word_t *b, UNUSED uint8_t lenb, UNUSED bool bmoves) {
     UNFINISHED;
 }
 
@@ -831,11 +831,11 @@ val scm_bitwise_and(UNUSED struct vm_process *process,
 #define SCM_WRITE_BIGNUM_HEX(v) scm_write_bignum_hex(process, v)
 static val scm_write_bignum_hex(struct vm_process *process, val v) {
     uint8_t i = ALLOCATED_NUMWORDS(v);
-    word *p = ALLOCATED_BODY(v);
+    word_t *p = ALLOCATED_BODY(v);
     printf("bignum{");
     while (i) {
         i--;
-        word d = p[i];
+        word_t d = p[i];
         printf("%04" PRIx16, d);
         if (i) {
             printf("-");

@@ -62,20 +62,24 @@ struct vm_stack {
 #define VM_NUM_PTR_ROOTS 4
 
 struct vm_process {
-    // GC'd memory:
-    /* const */ word* alloc_area_base; // start of concatenated allocation areas
+    // GC heap:
+    // start of concatenated allocation areas:
+    /* const */ word_t* alloc_area_base;
     /* const */ uintptr_t alloc_size; // size of one area in bytes
-    word* alloc_area; // area currently being allocated from
-    word* alloc_area_fresh; // area to copy to during gc
-    word* alloc_ptr; // moving downwards, pointing to the *last* allocation
-    // GC statistics:
+    word_t* alloc_area; // area currently being allocated from
+    word_t* alloc_area_fresh; // area to copy to during gc
+    word_t* alloc_ptr; // moving downwards, pointing to the *last* allocation
+    // statistics:
     uint32_t gc_count; // number of gc runs that occurred (wrapping)
     uint64_t gc_moves; // number of object moves in total (wrapping)
     // stacks of roots
     uint8_t num_val_roots;
     uint8_t num_ptr_roots;
-    val* val_roots[VM_NUM_VAL_ROOTS]; // pointers to val variables
-    word** ptr_roots[VM_NUM_PTR_ROOTS]; // pointers to *body* pointer variables
+    // pointers to val variables:
+    val* val_roots[VM_NUM_VAL_ROOTS];
+    // pointers to *body* pointer variables:
+    word_t** ptr_roots[VM_NUM_PTR_ROOTS];
+
     // Execution stack:
     struct vm_stack stack;
 };
@@ -85,8 +89,8 @@ struct vm_process *malloc_process(uint16_t stacklen,
 void vm_process_free(struct vm_process *p);
 
 INLINE static
-word *add_word_and_bytes(word *a, uintptr_t b) {
-    return (word*)((uintptr_t)a + b);
+word_t *add_word_and_bytes(word_t *a, uintptr_t b) {
+    return (word_t*)((uintptr_t)a + b);
 }
 
 #define LET_NEW_VM_PROCESS(var, stacklen, heaplen)                      \
@@ -117,7 +121,7 @@ void vm_process_register_val_root(
 
 UNUSED static
 void vm_process_register_ptr_root(
-    struct vm_process *process, word** _var) {
+    struct vm_process *process, word_t** _var) {
     uint8_t n = process->num_ptr_roots;
     if (n < VM_NUM_PTR_ROOTS-1) {
         process->ptr_roots[n] = _var;

@@ -13,12 +13,12 @@
   pointers are an index into the memory area; on C64, it's an actual
   address.
 */
-typedef uint16_t word;
+typedef uint16_t word_t;
 typedef int16_t signed_word_t; // *should* always be same as fixaddint_t ? XX
 typedef uint32_t dword_t; // double word; also see fixmulint_t for signed
 
 /* a tagged value (immediate or allocated) */
-typedef word val;
+typedef word_t val;
 
 /*
   integer type for the number of words contained in the body of an

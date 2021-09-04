@@ -9,7 +9,7 @@
   Memory management:
 
   `val` is either a pointer or an immediate according to the following
-  bit pattern (which assumes `word` from vm_mem_config.h to be 16
+  bit pattern (which assumes `word_t` from vm_mem_config.h to be 16
   bits):
 
      hi        lo
@@ -41,12 +41,12 @@
 #include "vm_mem_config.h"
 
 
-#define WORD_BITS (sizeof(word) * 8)
+#define WORD_BITS (sizeof(word_t) * 8)
 #define WORD_SIGNBIT_MASK (1 << (WORD_BITS-1))
 /* ^ what for? NOT the fixnum sign bit! */
 
 struct dword_words {
-    word word[2];
+    word_t word[2];
 };
 
 #ifdef __C64__
@@ -56,12 +56,12 @@ struct dword_words {
 # define DWORD_LO(x) ((struct dword_words*)&(x))->word[0]
 # define DWORD_HI(x) ((struct dword_words*)&(x))->word[1]
 #else
-# define DWORD_LO(x) ((word)(x))
-# define DWORD_HI(x) ((word)((x) >> WORD_BITS))
+# define DWORD_LO(x) ((word_t)(x))
+# define DWORD_HI(x) ((word_t)((x) >> WORD_BITS))
 #endif
 
-#define WORD_BYTE0(w) ((word)(w) & 255)
-#define WORD_BYTE1(w) ((word)(w) >> 8)
+#define WORD_BYTE0(w) ((word_t)(w) & 255)
+#define WORD_BYTE1(w) ((word_t)(w) >> 8)
 
 #define WORD_MAX 0xFFFF
 #define WORD_SIGN_MASK 0x8000
@@ -81,7 +81,7 @@ struct dword_words {
 # ifdef __C64__
 
 #  define ALLOCATED_FROM_POINTER(ptr) ((val)(p))
-#  define ALLOCATED_PTR(allocated) ((word*)(allocated))
+#  define ALLOCATED_PTR(allocated) ((word_t*)(allocated))
 
 # else
 
@@ -96,7 +96,7 @@ struct dword_words {
 
 INLINE static
 val allocated_from_pointer(struct vm_process *process,
-                           word *ptr) {
+                           word_t *ptr) {
     uintptr_t d = ((uintptr_t)ptr) - ((uintptr_t)process->alloc_area);
     ASSERT(d < process->alloc_size);
     ASSERT(d); // since the null pointer is reserved as error signal
@@ -107,9 +107,9 @@ val allocated_from_pointer(struct vm_process *process,
 }
 
 INLINE static
-word *allocated_ptr(struct vm_process *process,
+word_t *allocated_ptr(struct vm_process *process,
                     val allocated) {
-    word *res= (word*)(((uintptr_t)allocated) + (uintptr_t)process->alloc_area);
+    word_t *res= (word_t*)(((uintptr_t)allocated) + (uintptr_t)process->alloc_area);
     ASSERT(allocated);
     ASSERT(IS_EVEN(allocated));
     ASSERT(((uintptr_t)allocated) < process->alloc_size);
@@ -134,9 +134,9 @@ word *allocated_ptr(struct vm_process *process,
 
 //  the same, except for *not* checking that it hasn't moved:
 INLINE static
-word *allocated_ptr_fromspace(struct vm_process *process,
+word_t *allocated_ptr_fromspace(struct vm_process *process,
                               val allocated) {
-    word *res= (word*)(((uintptr_t)allocated) + (uintptr_t)process->alloc_area);
+    word_t *res= (word_t*)(((uintptr_t)allocated) + (uintptr_t)process->alloc_area);
     ASSERT(allocated);
     ASSERT(IS_EVEN(allocated));
     ASSERT(((uintptr_t)allocated) < process->alloc_size);
@@ -151,7 +151,7 @@ word *allocated_ptr_fromspace(struct vm_process *process,
 //  we need to refer to the other base:
 INLINE static
 val allocated_from_pointer_tospace(struct vm_process *process,
-                                   word *ptr) {
+                                   word_t *ptr) {
     uintptr_t d = ((uintptr_t)ptr) - ((uintptr_t)process->alloc_area_fresh);
     ASSERT(d < process->alloc_size);
     ASSERT(d); // since the null pointer is reserved as error signal
@@ -164,9 +164,9 @@ val allocated_from_pointer_tospace(struct vm_process *process,
 
 
 INLINE static
-word *allocated_ptr_tospace(struct vm_process *process,
+word_t *allocated_ptr_tospace(struct vm_process *process,
                             val allocated) {
-    word *res= (word*)(((uintptr_t)allocated)
+    word_t *res= (word_t*)(((uintptr_t)allocated)
                        + (uintptr_t)process->alloc_area_fresh);
     ASSERT(allocated);
     ASSERT(IS_EVEN(allocated));
@@ -186,11 +186,11 @@ word *allocated_ptr_tospace(struct vm_process *process,
 
 #define ALLOCATED_SLOT(allocated, i) ALLOCATED_PTR(allocated)[i]
 
-word* _vm_process_alloc_slow(struct vm_process* process, numwords_t n);
+word_t* _vm_process_alloc_slow(struct vm_process* process, numwords_t n);
 
 INLINE static
-word* vm_process_alloc(struct vm_process* process, numwords_t n) {
-    word *ptr = process->alloc_ptr;
+word_t* vm_process_alloc(struct vm_process* process, numwords_t n) {
+    word_t *ptr = process->alloc_ptr;
     ASSERT(ptr);
     ptr -= n;
     // Need to avoid allocating the last word, since that would give
@@ -202,7 +202,7 @@ word* vm_process_alloc(struct vm_process* process, numwords_t n) {
     } else {
         process->alloc_ptr = ptr;
 #if DEBUG_MEM_SET
-        memset(ptr, 0x99, n * sizeof(word));
+        memset(ptr, 0x99, n * sizeof(word_t));
 #endif
         return ptr;
     }
@@ -246,9 +246,9 @@ word* vm_process_alloc(struct vm_process* process, numwords_t n) {
 // [00011111 11111111] = FIXNUM_FROM_INT_MASK 
 
 #define FIX(n)                                                          \
-    ((((word)(n) & FIXNUM_FROM_INT_MASK) << 1) | 1)
+    ((((word_t)(n) & FIXNUM_FROM_INT_MASK) << 1) | 1)
 #define PCNUM(n)                                                        \
-    ((((word)(n) & FIXNUM_FROM_INT_MASK) << 1) | 1 | IMMEDIATE_KIND_PCNUM)
+    ((((word_t)(n) & FIXNUM_FROM_INT_MASK) << 1) | 1 | IMMEDIATE_KIND_PCNUM)
 
 // the bits to OR with if negative
 #define FIXNUM_TO_INT_NEGATIVE_BITS (((val)~0)<<(WORD_BITS-3))
@@ -259,7 +259,7 @@ word* vm_process_alloc(struct vm_process* process, numwords_t n) {
               | (fixnum_is_negative(v) ? FIXNUM_TO_INT_NEGATIVE_BITS : 0))
 
 #define PCNUM_TO_WORD(v)                                                \
-    (word)(((val)(v) >> 1) & FIXNUM_FROM_INT_MASK)
+    (word_t)(((val)(v) >> 1) & FIXNUM_FROM_INT_MASK)
 
 
 #define CHAR(x) (((val)(x) << 1) | 1 | IMMEDIATE_KIND_CHAR)
@@ -358,7 +358,7 @@ bool is_bignum(struct vm_process *process, val v) {
 
 INLINE static
 val fixaddint_to_bignum(struct vm_process* process, fixaddint_t x) {
-    word *p = vm_process_alloc(process, 2); // header, 1 field
+    word_t *p = vm_process_alloc(process, 2); // header, 1 field
     p[0] = HEAD_OF_LEN_TYPE(1, TYPE_BIGNUM);
     p[1] = x;
     return ALLOCATED_FROM_POINTER(p);
@@ -410,7 +410,7 @@ val pp_through(struct vm_process* process, val v);
 #define POSITIVEFIXNUM_UNSAFE_DEC(n) ((n) - 2)
 
 
-// XX only correct in 16-bit word:s case!
+// XX only correct in 16-bit word_t case!
 #define __test_assert_eq_fmt_failure_val __test_assert_eq_fmt_failure_uint16_t
 #define __test_fmt_val __test_fmt_uint16_t
 #define __test_t_for_val __test_t_for_uint16_t

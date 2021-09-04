@@ -19,7 +19,7 @@ struct vm_process *malloc_process(uint16_t stacklen,
         WARN_("malloc: could not allocate %i * %i words",
               VM_PROCESS_NUM_ALLOC_AREAS, numheapwords);
     }
-    // align on word boundary, XX assumes 16-bit word
+    // align on word boundary, XX assumes 16-bit word_t
     if (IS_ODD(ph)) {
         ph++;
     }
@@ -38,11 +38,11 @@ struct vm_process *malloc_process(uint16_t stacklen,
         p->stack.sp = 0;
         p->stack.len = stacklen;
 
-        p->alloc_area_base = (word*)ph;
+        p->alloc_area_base = (word_t*)ph;
         p->alloc_size = sz0;
-        p->alloc_area = (word*)ph;
-        p->alloc_ptr = add_word_and_bytes((word*)ph, sz0);
-        p->alloc_area_fresh = add_word_and_bytes((word*)ph, sz0);
+        p->alloc_area = (word_t*)ph;
+        p->alloc_ptr = add_word_and_bytes((word_t*)ph, sz0);
+        p->alloc_area_fresh = add_word_and_bytes((word_t*)ph, sz0);
         p->gc_count = 0;
         p->gc_moves = 0;
         p->num_val_roots = 0;
