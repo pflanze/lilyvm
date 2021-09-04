@@ -358,7 +358,7 @@
                         LET_POP(origpc);
                         PUSH(FIX(1));
                         if (is_fixnum(origpc)) {
-                            goto *(&&fib_entry + INT(origpc));
+                            goto *((uintptr_t)&&fib_entry + INT(origpc));
                         } else {
                             SET_PC(PCNUM_TO_WORD(origpc));
                             DISPATCH;
@@ -384,7 +384,9 @@
                    in case the compiler re-orders labels; also, now
                    rts can distinguish between the two cases).
                 */
-                PUSH(FIX(&&fib_ret_1 - &&fib_entry));
+                PUSH(FIX((uintptr_t)&&fib_ret_1 - (uintptr_t)&&fib_entry));
+                // ^ relies on undefined behaviour re signed numbers,
+                //   but then we rely on that anyway already.
                 goto fib_entry;
             }
             fib_ret_1:
@@ -396,7 +398,7 @@
             }
             // (JSR_REL8, -9)
             {
-                PUSH(FIX(&&fib_ret_2 - &&fib_entry));
+                PUSH(FIX((uintptr_t)&&fib_ret_2 - (uintptr_t)&&fib_entry));
                 goto fib_entry;
             }
             fib_ret_2:
@@ -413,7 +415,7 @@
                 STACK_UNSAFE_SET(1, STACK_UNSAFE_REF(0));
                 STACK_UNSAFE_REMOVE(1);
                 if (is_fixnum(origpc)) {
-                    goto *(&&fib_entry + INT(origpc));
+                    goto *((uintptr_t)&&fib_entry + INT(origpc));
                 } else {
                     SET_PC(PCNUM_TO_WORD(origpc));
                     DISPATCH;
@@ -439,8 +441,8 @@
             VAL_REGISTER(reg1);
             VAL_REGISTER(reg2); // XX optim: not actually storing allocated objs here
             // jsr fib_with_registers_entry
-            PUSH(FIX(&&fib_with_registers_end_calling_conventions
-                     - &&fib_with_registers_entry));
+            PUSH(FIX((uintptr_t)&&fib_with_registers_end_calling_conventions
+                     - (uintptr_t)&&fib_with_registers_entry));
             goto fib_with_registers_entry;
             fib_with_registers_end_calling_conventions:
             PUSH(reg1);
@@ -463,7 +465,7 @@
                     reg1 = FIX(1);
                     // optim: it now never returns to a PC!--ehr, makes it SLOWER
                     if (1 || is_fixnum(origpc)) {
-                        goto *(&&fib_with_registers_entry + INT(origpc));
+                        goto *((uintptr_t)&&fib_with_registers_entry + INT(origpc));
                     } else {
                         SET_PC(PCNUM_TO_WORD(origpc));
                         DISPATCH;
@@ -482,7 +484,8 @@
             }
             // (JSR_REL8, -6)
             {
-                PUSH(FIX(&&fib_with_registers_ret_1 - &&fib_with_registers_entry));
+                PUSH(FIX((uintptr_t)&&fib_with_registers_ret_1
+                          - (uintptr_t)&&fib_with_registers_entry));
                 goto fib_with_registers_entry;
             }
             fib_with_registers_ret_1:
@@ -505,7 +508,8 @@
             }
             // (JSR_REL8, -9)
             {
-                PUSH(FIX(&&fib_with_registers_ret_2 - &&fib_with_registers_entry));
+                PUSH(FIX((uintptr_t)&&fib_with_registers_ret_2
+                         - (uintptr_t)&&fib_with_registers_entry));
                 goto fib_with_registers_entry;
             }
             fib_with_registers_ret_2:
@@ -521,7 +525,7 @@
                 val origpc = STACK_UNSAFE_REF(0);
                 STACK_UNSAFE_REMOVE(1);
                 if (is_fixnum(origpc)) {
-                    goto *(&&fib_with_registers_entry + INT(origpc));
+                    goto *((uintptr_t)&&fib_with_registers_entry + INT(origpc));
                 } else {
                     SET_PC(PCNUM_TO_WORD(origpc));
                     DISPATCH;
