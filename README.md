@@ -64,7 +64,8 @@ load-time verifier will exist at some point.
 
 The `fib_register` opcode (which heavily uses computed goto, although
 so does `fib_combinedop`) segfaults when compiling with g++, and
-sometimes when compiling with gcc -O3. I don't know why.
+sometimes when compiling with gcc -O3. I don't know why. It works fine
+with clang and clang++.
 
 The 6502 adaptions are outdated and it won't currently compile for
 that architecture.
@@ -130,7 +131,9 @@ in hex (like `bignum{00e3-d1b0}` here, which represents the expected
 decimal result 14930352).
 
 For small optimized binaries, set `SMALL=1` in the environment. To
-compile with `g++`, set `CPLUSPLUS=1`.
+compile in C++ mode, set `CPLUSPLUS=1`. To use clang/clang++, set
+`CLANG=1`. (All env variables are checked for their existence, not
+their value.)
 
 (Note: currently the build system is buggy, `clean` is needed both for
 the env var changes and in general for safety.)
