@@ -11,16 +11,12 @@
   This module only contains bare object operations.  Actual "meaty"
   operations on them are defined in vm_mem.c or vm.c.
 
+  Or: this is for the course grained memory handling.  For
+  fine-grained, see vm_mem.*
 */
-
 
 #include "vm_mem_config.h"
 
-
-/*
-  This is for the course grained memory handling.
-  For fine-grained, see vm_mem.*
-*/
 
 // NOTE: these need a definition of ON_FAIL in their context!
 
