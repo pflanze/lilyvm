@@ -11,6 +11,14 @@
 
 
 TEST(basics) {
+    /*
+      Create some simple bytecode sequences and run them, as well as
+      save some of them to *.bytecode files.
+
+      Uses the OP* macros from bytecode.h, which, via the OP_*
+      constants defined in opcode_constants.h, push to the array at
+      `pc`.
+     */
     uint8_t program[50];
     uint8_t *program_end;
     uint8_t *pc = program;
