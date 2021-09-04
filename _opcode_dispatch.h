@@ -444,14 +444,13 @@
                 reg1 = n;
             }
             VAL_REGISTER(reg1);
-            VAL_REGISTER(reg2); // XX optim: not actually storing allocated objs here
             // jsr fib_with_registers_entry
             PUSH(FIX((uintptr_t)&&fib_with_registers_end_calling_conventions
                      - (uintptr_t)&&fib_with_registers_entry));
             goto fib_with_registers_entry;
             fib_with_registers_end_calling_conventions:
             PUSH(reg1);
-            VAL_UNREGISTER(2);
+            VAL_UNREGISTER(1);
             STACK_SWAP;
             goto op_ret;
             
