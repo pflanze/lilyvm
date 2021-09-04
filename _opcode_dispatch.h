@@ -3,7 +3,8 @@
 
 {
     static void* op2label[256] = { &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_push_im, &&op_drop1, &&op_pick_b, &&op_swap, &&op_dup, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_inc, &&op_inc_, &&invalid_op, &&invalid_op, &&invalid_op, &&op_dec, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_add, &&op_add_im, &&op_add__, &&op_mul__, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_bitwise_and, &&op_unsafe_bitwise_and, &&op_unsafe_bitwise_or, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_jmp_rel8, &&op_jmp_rel16, &&invalid_op, &&invalid_op, &&invalid_op, &&op_jsr_rel8, &&op_ret, &&op_ret_im, &&op_ret_pop, &&invalid_op, &&invalid_op, &&op_beq_im_rel16, &&op_bpos_keep_rel16, &&op_bneg0_keep_rel16, &&op_bneg_keep_rel16, &&op_bz_keep_rel16, &&op_bz_rel16, &&invalid_op, &&invalid_op, &&invalid_op, &&op_cmpbr_keep_lt_im_rel8, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_dec__dup, &&op_swap__dec, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_fib, &&op_fib_with_registers, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_nop, &&op_halt };
-    val reg1, reg2; // register variables
+    val reg1, reg2; // register variables, to be registered with VAL_REGISTER
+    val tmp1; // not to be registered with VAL_REGISTER (to avoid local vars)
 
 #define DISPATCH                             \
     {                                        \
@@ -411,7 +412,8 @@
             // RET_POP
             STACK_ENSURE(2);
             {
-                val origpc = STACK_UNSAFE_REF(1);
+            #define origpc tmp1
+                origpc = STACK_UNSAFE_REF(1);
                 STACK_UNSAFE_SET(1, STACK_UNSAFE_REF(0));
                 STACK_UNSAFE_REMOVE(1);
                 if (is_fixnum(origpc)) {
@@ -420,6 +422,7 @@
                     SET_PC(PCNUM_TO_WORD(origpc));
                     DISPATCH;
                 }
+            #undef origpc
             }
             // fib_end:  see 'inlined' above
         }
@@ -427,9 +430,11 @@
     op_fib_with_registers: /* fib_with_registers, 0 */
         TRACE_OP("fib_with_registers");
         {
-            // NOTE:  this causes breakage when compiled with gcc -O2 or -O3.
-            // Probably really have to avoid using local scopes (new variables)
-            // at all?
+            // NOTE:  this causes breakage sometimes when compiled with gcc -O2 or -O3,
+            // and especially when compiled with g++ -O3. Why? I already avoid
+            // any fresh variables in nested scopes (unless short-lived, i.e.
+            // used in a scope where no goto happens), apparently that's not the problem?
+            
             
             // Change calling conventions (reg1 is used for the first argument
             // and the return value):
@@ -455,12 +460,12 @@
             fib_with_registers_entry:
             // (CMPBR_KEEP_LT_IM_REL8, FIX(2), 12)
             {
-                const val x = reg1;
+            #define x reg1
                 if (SCM_NUMBER_CMP(x, FIX(2)) == LT) {
                     // LET_POP(origpc);
                     // STACK_ENSURE(1);
-                    reg2 = STACK_UNSAFE_REF(0); // origpc
-            #define origpc reg2
+            #define origpc tmp1
+                    origpc = STACK_UNSAFE_REF(0);
                     STACK_UNSAFE_REMOVE(1);
                     reg1 = FIX(1);
                     // optim: it now never returns to a PC!--ehr, makes it SLOWER
@@ -471,6 +476,7 @@
                         DISPATCH;
                     }
             #undef origpc
+            #undef x
                 }
             }
             // DEC__DUP
@@ -496,7 +502,7 @@
                Now: do the same with register and local var.
             */
             {
-            #define oldx reg2
+            #define oldx tmp1
                 oldx = STACK_UNSAFE_REF(0);
                 STACK_UNSAFE_SET_LAST(reg1);
             #ifdef FIXNUM_UNSAFE
@@ -522,7 +528,8 @@
             // RET_POP
             //STACK_ENSURE(1); // optim: leave off
             {
-                val origpc = STACK_UNSAFE_REF(0);
+            #define origpc tmp1
+                origpc = STACK_UNSAFE_REF(0);
                 STACK_UNSAFE_REMOVE(1);
                 if (is_fixnum(origpc)) {
                     goto *((uintptr_t)&&fib_with_registers_entry + INT(origpc));
@@ -530,6 +537,7 @@
                     SET_PC(PCNUM_TO_WORD(origpc));
                     DISPATCH;
                 }
+            #undef origpc
             }
         }
         DISPATCH;

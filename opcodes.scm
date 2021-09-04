@@ -211,6 +211,7 @@ if (1) { // actually faster??
 }
 ")
     ;; / combined opcodes
+
     ;; Test full program compilation:
     (220 fib 0 #f "
 fib_entry:
@@ -280,7 +281,8 @@ fib_ret_2:
 // RET_POP
 STACK_ENSURE(2);
 {
-    val origpc = STACK_UNSAFE_REF(1);
+#define origpc tmp1
+    origpc = STACK_UNSAFE_REF(1);
     STACK_UNSAFE_SET(1, STACK_UNSAFE_REF(0));
     STACK_UNSAFE_REMOVE(1);
     if (is_fixnum(origpc)) {
@@ -289,15 +291,18 @@ STACK_ENSURE(2);
         SET_PC(PCNUM_TO_WORD(origpc));
         DISPATCH;
     }
+#undef origpc
 }
 // fib_end:  see 'inlined' above")
 
     ;; Copy of `fib` but avoiding some stack ops by using some
     ;; register variables:
     (221 fib_with_registers 0 #f "
-// NOTE:  this causes breakage when compiled with gcc -O2 or -O3.
-// Probably really have to avoid using local scopes (new variables)
-// at all?
+// NOTE:  this causes breakage sometimes when compiled with gcc -O2 or -O3,
+// and especially when compiled with g++ -O3. Why? I already avoid
+// any fresh variables in nested scopes (unless short-lived, i.e.
+// used in a scope where no goto happens), apparently that's not the problem?
+
 
 // Change calling conventions (reg1 is used for the first argument
 // and the return value):
@@ -323,12 +328,12 @@ goto op_ret;
 fib_with_registers_entry:
 // (CMPBR_KEEP_LT_IM_REL8, FIX(2), 12)
 {
-    const val x = reg1;
+#define x reg1
     if (SCM_NUMBER_CMP(x, FIX(2)) == LT) {
         // LET_POP(origpc);
         // STACK_ENSURE(1);
-        reg2 = STACK_UNSAFE_REF(0); // origpc
-#define origpc reg2
+#define origpc tmp1
+        origpc = STACK_UNSAFE_REF(0);
         STACK_UNSAFE_REMOVE(1);
         reg1 = FIX(1);
         // optim: it now never returns to a PC!--ehr, makes it SLOWER
@@ -339,6 +344,7 @@ fib_with_registers_entry:
             DISPATCH;
         }
 #undef origpc
+#undef x
     }
 }
 // DEC__DUP
@@ -364,7 +370,7 @@ fib_with_registers_ret_1:
    Now: do the same with register and local var.
 */
 {
-#define oldx reg2
+#define oldx tmp1
     oldx = STACK_UNSAFE_REF(0);
     STACK_UNSAFE_SET_LAST(reg1);
 #ifdef FIXNUM_UNSAFE
@@ -390,7 +396,8 @@ fib_with_registers_ret_2:
 // RET_POP
 //STACK_ENSURE(1); // optim: leave off
 {
-    val origpc = STACK_UNSAFE_REF(0);
+#define origpc tmp1
+    origpc = STACK_UNSAFE_REF(0);
     STACK_UNSAFE_REMOVE(1);
     if (is_fixnum(origpc)) {
         goto *((uintptr_t)&&fib_with_registers_entry + INT(origpc));
@@ -398,6 +405,7 @@ fib_with_registers_ret_2:
         SET_PC(PCNUM_TO_WORD(origpc));
         DISPATCH;
     }
+#undef origpc
 }")
 
     
@@ -530,7 +538,8 @@ goto halt;"
                               (display ", "))
                           (lp (+ i 1))))))
                 (display " };
-    val reg1, reg2; // register variables
+    val reg1, reg2; // register variables, to be registered with VAL_REGISTER
+    val tmp1; // not to be registered with VAL_REGISTER (to avoid local vars)
 
 #define DISPATCH                             \\
     {                                        \\
@@ -551,7 +560,9 @@ goto halt;"
               ;; Switch based dispatch
               (begin
                 (display "
-val reg1, reg2; // register variables
+val reg1, reg2; // register variables, to be registered with VAL_REGISTER
+val tmp1; // not to be registered with VAL_REGISTER (to avoid local vars)
+
 while (1) {
     MEM_VERIFY;
     switch (OPCODE) {
