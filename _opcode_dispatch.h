@@ -359,7 +359,7 @@
                         LET_POP(origpc);
                         PUSH(FIX(1));
                         if (is_fixnum(origpc)) {
-                            goto *((uintptr_t)&&fib_entry + INT(origpc));
+                            goto *(const void *)((uintptr_t)&&fib_entry + INT(origpc));
                         } else {
                             SET_PC(PCNUM_TO_WORD(origpc));
                             DISPATCH;
@@ -417,7 +417,7 @@
                 STACK_UNSAFE_SET(1, STACK_UNSAFE_REF(0));
                 STACK_UNSAFE_REMOVE(1);
                 if (is_fixnum(origpc)) {
-                    goto *((uintptr_t)&&fib_entry + INT(origpc));
+                    goto *(const void *)((uintptr_t)&&fib_entry + INT(origpc));
                 } else {
                     SET_PC(PCNUM_TO_WORD(origpc));
                     DISPATCH;
@@ -470,7 +470,8 @@
                     reg1 = FIX(1);
                     // optim: it now never returns to a PC!--ehr, makes it SLOWER
                     if (1 || is_fixnum(origpc)) {
-                        goto *((uintptr_t)&&fib_with_registers_entry + INT(origpc));
+                        goto *(const void *)((uintptr_t)&&fib_with_registers_entry
+                                             + INT(origpc));
                     } else {
                         SET_PC(PCNUM_TO_WORD(origpc));
                         DISPATCH;
@@ -532,7 +533,8 @@
                 origpc = STACK_UNSAFE_REF(0);
                 STACK_UNSAFE_REMOVE(1);
                 if (is_fixnum(origpc)) {
-                    goto *((uintptr_t)&&fib_with_registers_entry + INT(origpc));
+                    goto *(const void *)((uintptr_t)&&fib_with_registers_entry
+                                         + INT(origpc));
                 } else {
                     SET_PC(PCNUM_TO_WORD(origpc));
                     DISPATCH;
