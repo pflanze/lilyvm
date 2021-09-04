@@ -72,7 +72,7 @@ bool perhaps_parseopt_uint16(int argc,
 
 int main(int argc, const char **argv)
 {
-    const char **paths = alloca(argc * sizeof(char*));
+    const char **paths = (const char**)alloca(argc * sizeof(char*));
     if (argc < 2) help(NULL, NULL);
     uint16_t stacklen = default_stacklen;
     uint16_t heaplen = default_heaplen;

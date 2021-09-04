@@ -54,7 +54,8 @@ bool bytecode_load_and_run(const char* path,
         close(fd);
         return false;
     }
-    void *mapping = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+    uint8_t *mapping = (uint8_t *)mmap(
+        NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
     if (! mapping) {
         fprintf(stderr, "mmap('%s'): %s\n", path, strerror(errno));
         close(fd);
