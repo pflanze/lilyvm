@@ -1,0 +1,10 @@
+*.prg
+/target/
+/target-local/
+/.deps
+/run_tests.c
+*.o?
+__pycache__
+/.profile/
+*.html
+*.bytecode
