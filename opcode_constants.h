@@ -34,9 +34,9 @@
 #define OP_CMPBR_KEEP_LT_IM_REL8     100 /* 3 */
 #define OP_DEC__DUP                  200 /* 0 */
 #define OP_SWAP__DEC                 201 /* 0 */
-#define OP_FIB                       220 /* 0 */
-#define OP_FIB_WITH_REGISTERS        221 /* 0 */
 #define OP_NOP                       254 /* 0 */
 #define OP_HALT                      255 /* 0 */
+#define OP_FIB                       220 /* 0 */
+#define OP_FIB_WITH_REGISTERS        221 /* 0 */
 
 #endif /* _OPCODE_CONSTANTS_H_ */

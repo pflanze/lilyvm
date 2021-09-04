@@ -342,6 +342,20 @@
         }
         pc += 1;
         DISPATCH;
+    op_nop: /* nop, 0 */
+        TRACE_OP("nop");
+        {
+            
+        }
+        pc += 1;
+        DISPATCH;
+    op_halt: /* halt, 0 */
+        TRACE_OP("halt");
+        {
+            goto halt;
+        }
+        pc += 1;
+        DISPATCH;
     op_fib: /* fib, 0 */
         TRACE_OP("fib");
         {
@@ -541,20 +555,6 @@
             #undef origpc
             }
         }
-        DISPATCH;
-    op_nop: /* nop, 0 */
-        TRACE_OP("nop");
-        {
-            
-        }
-        pc += 1;
-        DISPATCH;
-    op_halt: /* halt, 0 */
-        TRACE_OP("halt");
-        {
-            goto halt;
-        }
-        pc += 1;
         DISPATCH;
     
     invalid_op:
