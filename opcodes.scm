@@ -213,6 +213,7 @@ if (1) { // actually faster??
     ;; / combined opcodes
 
     ;; Test full program compilation:
+    ;; XX **NOTE**: only works with `computed-goto? #t` !
     (220 fib 0 #f "
 fib_entry:
 STACK_SWAP;
@@ -297,6 +298,7 @@ STACK_ENSURE(2);
 
     ;; Copy of `fib` but avoiding some stack ops by using some
     ;; register variables:
+    ;; XX **NOTE**: again only works with `computed-goto? #t` !
     (221 fib_with_registers 0 #f "
 // NOTE:  this causes breakage sometimes when compiled with gcc -O2 or -O3,
 // and especially when compiled with g++ -O3. Why? I already avoid
