@@ -153,8 +153,8 @@ void _gc_handle_slot_move(struct vm_process* process,
 void vm_mem_gc(struct vm_process* process) {
     // WARN("*** running gc");
     uintptr_t sz = process->alloc_size;
-    word_t* new = process->alloc_area_fresh;
-    word_t* newptr = add_word_and_bytes(new, sz);
+    word_t* newarea = process->alloc_area_fresh;
+    word_t* newptr = add_word_and_bytes(newarea, sz);
     // GC root sets: walk them, copy non-moved allocated objects to
     // the new space. Update pointers at the same time.
     {
@@ -190,7 +190,7 @@ void vm_mem_gc(struct vm_process* process) {
         // there's nothing left.
         word_t *old_start;
         word_t *ptr;
-        word_t *end = add_word_and_bytes(new, sz);
+        word_t *end = add_word_and_bytes(newarea, sz);
         while (1) {
             old_start = newptr;
             ptr = newptr;
@@ -218,7 +218,7 @@ void vm_mem_gc(struct vm_process* process) {
         // GC, ALLOCATED_FROM_POINTER_TOSPACE and
         // ALLOCATED_PTR_FROMSPACE expect the old values.
         word_t* old = process->alloc_area;
-        process->alloc_area = new;
+        process->alloc_area = newarea;
         process->alloc_area_fresh = old;
     }
     process->alloc_ptr = newptr;
@@ -595,7 +595,7 @@ static val bignum_add(struct vm_process *process,
     uint8_t i;
     uint8_t len1; // len of the shorter
     uint8_t len2; // len of the longer
-    bool last_signs;
+    uint8_t last_signs;
     bool need_overflow;
     word_t *z;
     word_t *r; // the longer of the two
