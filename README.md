@@ -51,7 +51,9 @@ realistic target?)
 
 This is work in progress.
 
-GC works, but is a simple two-space (Cheney) algorithm. Pairs,
+GC works, but is a simple two-space (Cheney) algorithm (and doesn't
+currently adapt heap size depending on requirements). Similarly, the
+execution stack is currently just a fixed-size C array. Pairs,
 characters, booleans and some other immediates, integers. Bignums are
 supported, but only addition and comparison are implemented right now.
 
