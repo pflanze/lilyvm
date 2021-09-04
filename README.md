@@ -129,9 +129,8 @@ Scheme writer cannot print the numbers in decimal and thus shows them
 in hex (like `bignum{00e3-d1b0}` here, which represents the expected
 decimal result 14930352).
 
-For small optimized binaries:
-
-    SMALL=1 RELEASE=1 make -f Makefile-local.mk clean target-local/{vmtest,lilyvm}
+For small optimized binaries, set `SMALL=1` in the environment. To
+compile with `g++`, set `CPLUSPLUS=1`.
 
 (Note: currently the build system is buggy, `clean` is needed both for
 the env var changes and in general for safety.)
