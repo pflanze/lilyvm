@@ -221,7 +221,8 @@ TEST(basics) {
 
     pc = program;
     /*1*/  OP_IM(PUSH_IM, FIX(35));
-    bytecode_write_file(program, program_end-program, "fib_combinedop_35.bytecode");
+    bytecode_write_file(program, program_end-program,
+                        "fib_combinedop_35.bytecode");
     if (0) {
         vm_process_stack_clear(process);
         vm_process_run(process, program);
@@ -241,7 +242,8 @@ TEST(basics) {
     /*5*/  OP(HALT); //1
     /*6*/  OP(FIB); //1
     program_end = pc;
-    bytecode_write_file(program, program_end-program, "fib_compiled_35.bytecode");
+    bytecode_write_file(program, program_end-program,
+                        "fib_compiled_35.bytecode");
     
     if (0) {
         vm_process_stack_clear(process);
@@ -262,7 +264,8 @@ TEST(basics) {
     /*5*/  OP(HALT); //1
     /*6*/  OP(FIB_WITH_REGISTERS); //1
     program_end = pc;
-    bytecode_write_file(program, program_end-program, "fib_register_35.bytecode");
+    bytecode_write_file(program, program_end-program,
+                        "fib_register_35.bytecode");
     
     if (0) {
         vm_process_stack_clear(process);
