@@ -1,16 +1,16 @@
 ifdef CPLUSPLUS
- ifdef CLANG
-  COMPILER=clang++
- else
-  COMPILER=g++
- endif
+  ifdef CLANG
+    COMPILER=clang++
+  else
+    COMPILER=g++
+  endif
 else
- ifdef CLANG
-  COMPILER=clang
- else
-  COMPILER=gcc
-  # gcc -pedantic-errors conflicts with computed goto
- endif
+  ifdef CLANG
+    COMPILER=clang
+  else
+    COMPILER=gcc
+    # gcc -pedantic-errors conflicts with computed goto
+  endif
 endif
 
 ASSEMBLER=gcc
@@ -22,35 +22,35 @@ LTO=-flto
 PROFILE=
 
 ifdef PROF
-GPROF=-p
+  GPROF=-p
 else
-GPROF=
+  GPROF=
 endif
 
 DEFS=
 
 ifdef RELEASE
-SAN=
-DEFS+=-DRELEASE
-ifdef SMALL
-OPTIM=-Os
-DEFS+=-DSMALL
+  SAN=
+  DEFS+=-DRELEASE
+  ifdef SMALL
+    OPTIM=-Os
+    DEFS+=-DSMALL
+  else
+    OPTIM=-O3
+    # Note: gcc 10.2.1-6 from Debian currently has an issue with my
+    # fib_with_registers code in -O2 or -O3 (probably because of goto out
+    # of nested scopes). Also, -O1 is sometimes faster than -O2 in the
+    # interpreter (while -O3 is yet a tiny bit faster); seems to depend a
+    # lot on random inlining/optimization trigger patterns.
+  endif
 else
-OPTIM=-O3
-# Note: gcc 10.2.1-6 from Debian currently has an issue with my
-# fib_with_registers code in -O2 or -O3 (probably because of goto out
-# of nested scopes). Also, -O1 is sometimes faster than -O2 in the
-# interpreter (while -O3 is yet a tiny bit faster); seems to depend a
-# lot on random inlining/optimization trigger patterns.
-endif
-else
-SAN=-fsanitize=undefined -fsanitize=address -fPIE -fno-omit-frame-pointer
-#OPTIM=-Og
-OPTIM=-O0
+  SAN=-fsanitize=undefined -fsanitize=address -fPIE -fno-omit-frame-pointer
+  #OPTIM=-Og
+  OPTIM=-O0
 endif
 
 ifdef FIXNUM_UNSAFE
-DEFS+=-DFIXNUM_UNSAFE
+  DEFS+=-DFIXNUM_UNSAFE
 endif
 
 CFLAGS=-fdiagnostics-color -Wall -Wextra -gdwarf-4 -g3 -fverbose-asm -I.. $(OPTIM) $(PROFILE) $(GPROF) $(LTO) $(DEFS)
