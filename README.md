@@ -35,6 +35,9 @@ Security: could I prove it? (When parsing or generating C, or parsing
 the assembly?) If it can't be proven, then this project probably will
 have to die (once it has shown me why I can't).
 
+Parametrizable GC word width (at least 32 and 64, and currently 16
+bits).
+
 The project started with the aim to target the C-64 (with memory
 extensions). LilyVM is currently using 16-bit words for that
 reason. But the [cc65](https://cc65.github.io/doc/) compiler is
