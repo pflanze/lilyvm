@@ -27,7 +27,7 @@ OPTIM=-Os
 DEFS+=-DSMALL
 else
 OPTIM=-O3
-# Note: gcc 10.2.0-5 from Debian currently has an issue with my
+# Note: gcc 10.2.1-6 from Debian currently has an issue with my
 # fib_with_registers code in -O2 or -O3 (probably because of goto out
 # of nested scopes). Also, -O1 is sometimes faster than -O2 in the
 # interpreter (while -O3 is yet a tiny bit faster); seems to depend a
