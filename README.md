@@ -62,6 +62,10 @@ There is no bytecode verifier currently; and there are no safety
 checks on jump target addresses since the assumption is that a
 load-time verifier will exist at some point.
 
+The `fib_register` opcode (which heavily uses computed goto, although
+so does `fib_combinedop`) segfaults when compiling with g++, and
+sometimes when compiling with gcc -O3. I don't know why.
+
 The 6502 adaptions are outdated and it won't currently compile for
 that architecture.
 
