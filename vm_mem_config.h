@@ -14,7 +14,7 @@
   address.
 */
 typedef uint16_t word;
-typedef int16_t signed_word; // *should* always be same as fixaddint_t ? XX
+typedef int16_t signed_word_t; // *should* always be same as fixaddint_t ? XX
 typedef uint32_t dword; // double word; also see fixmulint_t for signed
 
 /* a tagged value (immediate or allocated) */

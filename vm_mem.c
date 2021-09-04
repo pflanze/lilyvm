@@ -686,7 +686,7 @@ static val bignum_add(struct vm_process *process,
             i--;
         }
         if (i==0) {
-            if (IS_IN_FIX_RANGE((signed_word)z[0])) {
+            if (IS_IN_FIX_RANGE((signed_word_t)z[0])) {
                 // XX future: free up z again instead of relying on
                 // the GC
                 return FIX(z[0]);
