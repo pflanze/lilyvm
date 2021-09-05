@@ -40,7 +40,5 @@ typedef unsigned char numwords_t;
 #define DEBUG_MEM_DEBUG 0
 #define DEBUG_MEM_VERIFY 1
 
-//#define VM_TRACE
-
 
 #endif /* VM_MEM_CONFIG_H_ */

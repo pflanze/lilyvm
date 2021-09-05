@@ -53,6 +53,10 @@ ifdef FIXNUM_UNSAFE
   DEFS+=-DFIXNUM_UNSAFE
 endif
 
+ifdef VM_TRACE
+  DEFS+=-DVM_TRACE
+endif
+
 CFLAGS=-fdiagnostics-color -Wall -Wextra -gdwarf-4 -g3 -fverbose-asm -I.. $(OPTIM) $(PROFILE) $(GPROF) $(LTO) $(DEFS)
 # How does one get macros in symbols from clang? -ggdb3 -fdebug-macro
 # does not help either.

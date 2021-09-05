@@ -135,10 +135,11 @@ Scheme writer cannot print the numbers in decimal and thus shows them
 in hex (like `#bignum{00e3-d1b0}` here, which represents the expected
 decimal result 14930352).
 
-For small optimized binaries, set `SMALL=1` in the environment. To
-compile in C++ mode, set `CPLUSPLUS=1`. To use clang/clang++, set
-`CLANG=1`. (All env variables are checked for their existence, not
-their value.)
+For small optimized binaries, set `SMALL` in the environment. To
+compile in C++ mode, set `CPLUSPLUS`. To use clang/clang++, set
+`CLANG`. To enable execution tracing, set `VM_TRACE` (currently can't
+be enabled/disabled at runtime). All env variables are checked for
+their existence, not their value.
 
 (Note: currently the build system is buggy, `clean` is needed both for
 the env var changes and in general for safety.)
