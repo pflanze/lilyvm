@@ -3,40 +3,40 @@
 #ifndef _OPCODE_CONSTANTS_H_
 #define _OPCODE_CONSTANTS_H_
 
-//                        opcode  numargbytes
-#define OP_PUSH_IM                   10 /* 2 */
-#define OP_DROP1                     11 /* 0 */
-#define OP_PICK_B                    12 /* 1 */
-#define OP_SWAP                      13 /* 0 */
-#define OP_DUP                       14 /* 0 */
-#define OP_INC                       20 /* 0 */
-#define OP_INC_                      21 /* 1 */
-#define OP_DEC                       25 /* 0 */
-#define OP_ADD                       30 /* 0 */
-#define OP_ADD_IM                    31 /* 2 */
-#define OP_ADD__                     32 /* 2 */
-#define OP_MUL__                     33 /* 2 */
-#define OP_BITWISE_AND               40 /* 0 */
-#define OP_UNSAFE_BITWISE_AND        41 /* 0 */
-#define OP_UNSAFE_BITWISE_OR         42 /* 0 */
-#define OP_JMP_REL8                  80 /* 1 */
-#define OP_JMP_REL16                 81 /* 2 */
-#define OP_JSR_REL8                  85 /* 1 */
-#define OP_RET                       86 /* 0 */
-#define OP_RET_IM                    87 /* 2 */
-#define OP_RET_POP                   88 /* 0 */
-#define OP_BEQ_IM_REL16              91 /* 4 */
-#define OP_BPOS_KEEP_REL16           92 /* 2 */
-#define OP_BNEG0_KEEP_REL16          93 /* 2 */
-#define OP_BNEG_KEEP_REL16           94 /* 2 */
-#define OP_BZ_KEEP_REL16             95 /* 2 */
-#define OP_BZ_REL16                  96 /* 2 */
-#define OP_CMPBR_KEEP_LT_IM_REL8     100 /* 3 */
-#define OP_DEC__DUP                  200 /* 0 */
-#define OP_SWAP__DEC                 201 /* 0 */
-#define OP_NOP                       254 /* 0 */
-#define OP_HALT                      255 /* 0 */
-#define OP_FIB                       220 /* 0 */
-#define OP_FIB_WITH_REGISTERS        221 /* 0 */
+//                          opcode  /* hex; numargbytes */
+#define OP_PUSH_IM                   10 /* 0x0a; 2 */
+#define OP_DROP1                     11 /* 0x0b; 0 */
+#define OP_PICK_B                    12 /* 0x0c; 1 */
+#define OP_SWAP                      13 /* 0x0d; 0 */
+#define OP_DUP                       14 /* 0x0e; 0 */
+#define OP_INC                       20 /* 0x14; 0 */
+#define OP_INC_                      21 /* 0x15; 1 */
+#define OP_DEC                       25 /* 0x19; 0 */
+#define OP_ADD                       30 /* 0x1e; 0 */
+#define OP_ADD_IM                    31 /* 0x1f; 2 */
+#define OP_ADD__                     32 /* 0x20; 2 */
+#define OP_MUL__                     33 /* 0x21; 2 */
+#define OP_BITWISE_AND               40 /* 0x28; 0 */
+#define OP_UNSAFE_BITWISE_AND        41 /* 0x29; 0 */
+#define OP_UNSAFE_BITWISE_OR         42 /* 0x2a; 0 */
+#define OP_JMP_REL8                  80 /* 0x50; 1 */
+#define OP_JMP_REL16                 81 /* 0x51; 2 */
+#define OP_JSR_REL8                  85 /* 0x55; 1 */
+#define OP_RET                       86 /* 0x56; 0 */
+#define OP_RET_IM                    87 /* 0x57; 2 */
+#define OP_RET_POP                   88 /* 0x58; 0 */
+#define OP_BEQ_IM_REL16              91 /* 0x5b; 4 */
+#define OP_BPOS_KEEP_REL16           92 /* 0x5c; 2 */
+#define OP_BNEG0_KEEP_REL16          93 /* 0x5d; 2 */
+#define OP_BNEG_KEEP_REL16           94 /* 0x5e; 2 */
+#define OP_BZ_KEEP_REL16             95 /* 0x5f; 2 */
+#define OP_BZ_REL16                  96 /* 0x60; 2 */
+#define OP_CMPBR_KEEP_LT_IM_REL8     100 /* 0x64; 3 */
+#define OP_DEC__DUP                  200 /* 0xc8; 0 */
+#define OP_SWAP__DEC                 201 /* 0xc9; 0 */
+#define OP_NOP                       254 /* 0xfe; 0 */
+#define OP_HALT                      255 /* 0xff; 0 */
+#define OP_FIB                       220 /* 0xdc; 0 */
+#define OP_FIB_WITH_REGISTERS        221 /* 0xdd; 0 */
 
 #endif /* _OPCODE_CONSTANTS_H_ */

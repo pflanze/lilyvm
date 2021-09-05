@@ -592,11 +592,24 @@ while (1) {
 }
 ")))))))
 
+(define (roundup-log2 x)
+  (integer-length (- x 1)))
+
+(define (binary-rounded-length n)
+  (arithmetic-shift 1 (roundup-log2 n)))
+
+(define (number->hex-string n)
+  (let* ((str (number->string n 16))
+         (len (string-length str))
+         (desired-len (max 2 (binary-rounded-length len))))
+    (string-append (make-string (- desired-len len) #\0)
+                   str)))
+
 (define (print-opcodes_constants_h)
   (print-file-generated-by)
   (display "#ifndef _OPCODE_CONSTANTS_H_\n")
   (display "#define _OPCODE_CONSTANTS_H_\n\n")
-  (display "//                        opcode  numargbytes\n")
+  (display "//                          opcode  /* hex; numargbytes */\n")
   (let lp ((opcodes opcodes)
            (i 0))
     (if (null? opcodes)
@@ -609,11 +622,16 @@ while (1) {
                (C (cadr (cdddr opcode)))
                (ucname (string-upcase (symbol->string name))))
           (display
-           (string-append
-            "#define OP_" ucname (make-string (- 25 (string-length ucname))
-                                              #\space)
-            " "(number->string (if renumber? i opnum))
-            " /* " (number->string numargbytes) " */\n"))
+           (let ((opnum* (if renumber? i opnum)))
+             (string-append
+              "#define OP_" ucname (make-string (- 25 (string-length ucname))
+                                                #\space)
+              " " (number->string opnum*)
+              " /* "
+              "0x" (number->hex-string opnum*)
+              "; "
+              (number->string numargbytes)
+              " */\n")))
           (lp (cdr opcodes) (+ i 1))))))
 
 (with-output-to-file "_opcode_dispatch.h" print-opcodes_dispatch_h)
