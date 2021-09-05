@@ -326,8 +326,8 @@ bool is_bignum(struct vm_process *process, val v) {
 
 
 
-#define CAR(p) ALLOCATED_SLOT(p, 1)
-#define CDR(p) ALLOCATED_SLOT(p, 2)
+#define UNSAFE_CAR(p) ALLOCATED_SLOT(p, 1)
+#define UNSAFE_CDR(p) ALLOCATED_SLOT(p, 2)
 
 
 // Need it for both fixaddint_t and fixmulint_t, thus use a macro:

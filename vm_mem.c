@@ -809,7 +809,7 @@ val scm_length(struct vm_process *process, val l) {
     while (! is_null(l)) {
         if (IS_PAIR(l)) {
             res = SCM_INC(res);
-            l = CDR(l);
+            l = UNSAFE_CDR(l);
         } else {
             ERROR("not a pair or null: %" PRIx16, l);
         }
@@ -849,13 +849,13 @@ static val scm_write_bignum_hex(struct vm_process *process, val v) {
 static val SCM_WRITE_nonnull_list(struct vm_process *process, val v) {
     // handle I/O and other errors!
     if (IS_PAIR(v)) {
-        SCM_WRITE(CAR(v));
-        if (is_null(CDR(v))) {
+        SCM_WRITE(UNSAFE_CAR(v));
+        if (is_null(UNSAFE_CDR(v))) {
             PRINT(")");
             return VOID;
         } else {
             PRINT(" ");
-            return SCM_WRITE_NONNULL_LIST(CDR(v)); // TCO?
+            return SCM_WRITE_NONNULL_LIST(UNSAFE_CDR(v)); // TCO?
         }
     } else {
         // null case already handled in previous iteration
@@ -915,10 +915,10 @@ TEST(t1) {
                            NIL)));
 
         v2 = CONS(v, FIX(1234));
-        ASSERT_EQ_(val, CAR(v2), v);
-        ASSERT_EQ(INT(CDR(v2)), 1234);
+        ASSERT_EQ_(val, UNSAFE_CAR(v2), v);
+        ASSERT_EQ(INT(UNSAFE_CDR(v2)), 1234);
         WRITELN(v2);
-        WRITELN(CAR(v2));
+        WRITELN(UNSAFE_CAR(v2));
         ASSERT_EQ(SCM_LENGTH(v), FIX(3));
 
         ASSERT_EQ_(val, SCM_INC(FIX(12)), FIX(13));
