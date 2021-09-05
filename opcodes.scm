@@ -11,6 +11,9 @@
 ;; more compact? Benchmarking didn't show any difference, though.
 (define renumber? #f)
 
+;; Including undefined ones
+(define num-opcodes 256)
+
 ;; /Config.
 
 
@@ -443,6 +446,9 @@ fib_with_registers_ret_2:
       normal-opcodes))
 
 
+(define (display* . strs)
+  (for-each display strs))
+
 (define (string-upcase str)
   (list->string (map char-upcase (string->list str))))
 
@@ -539,18 +545,18 @@ fib_with_registers_ret_2:
 
               ;; Label based dispatch
               (begin
-                (display "
+                (display* "
 {
-    static void* op2label[256] = { ")
-                (let ((a (make-vector 256 "&&invalid_op")))
+    static void* op2label[" (number->string num-opcodes) "] = { ")
+                (let ((a (make-vector num-opcodes "&&invalid_op")))
                   (for-each (lambda (i+str)
                               (vector-set! a (car i+str) (cdr i+str)))
                             init-code-strings)
                   (let lp ((i 0))
-                    (if (< i 256)
+                    (if (< i num-opcodes)
                         (begin
                           (display (vector-ref a i))
-                          (if (not (= i 255))
+                          (if (not (= i (- num-opcodes 1)))
                               (display ", "))
                           (lp (+ i 1))))))
                 (display " };
@@ -621,17 +627,16 @@ while (1) {
                (dopcinc (cadddr opcode))
                (C (cadr (cdddr opcode)))
                (ucname (string-upcase (symbol->string name))))
-          (display
-           (let ((opnum* (if renumber? i opnum)))
-             (string-append
-              "#define OP_" ucname (make-string (- 25 (string-length ucname))
-                                                #\space)
-              " " (number->string opnum*)
-              " /* "
-              "0x" (number->hex-string opnum*)
-              "; "
-              (number->string numargbytes)
-              " */\n")))
+          (let ((opnum* (if renumber? i opnum)))
+            (display*
+             "#define OP_" ucname (make-string (- 25 (string-length ucname))
+                                               #\space)
+             " " (number->string opnum*)
+             " /* "
+             "0x" (number->hex-string opnum*)
+             "; "
+             (number->string numargbytes)
+             " */\n"))
           (lp (cdr opcodes) (+ i 1))))))
 
 (with-output-to-file "_opcode_dispatch.h" print-opcodes_dispatch_h)
