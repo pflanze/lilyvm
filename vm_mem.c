@@ -884,7 +884,7 @@ val scm_write(struct vm_process *process, val v) {
     } else if (is_fixnum(v)) {
         printf("%i", INT(v));
     } else if (is_pcnum(v)) {
-        printf("{PC:%" PRIu16 "}", PCNUM_TO_WORD(v));
+        printf("#PC{%" PRIu16 "}", PCNUM_TO_WORD(v));
     } else if (is_char(v)) {
         // XX unicode ?
         printf("#\\%c", ORD(v));
