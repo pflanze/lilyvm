@@ -17,9 +17,15 @@
 ;; /Config.
 
 
+(define (opcode.opnum o) (list-ref o 0))
+(define (opcode.name o) (list-ref o 1))
+(define (opcode.numargbytes o) (list-ref o 2))
+(define (opcode.needspcinc o) (list-ref o 3))
+(define (opcode.C-code o) (list-ref o 4))
+
 (define normal-opcodes
   '(
-    ;; op, name, numargbytes, needspcinc, C-code
+    ;; opnum, name, numargbytes, needspcinc, C-code
     (10 push_im 2 #t "
 PUSH(ARGIM1);")
     (11 drop1 0 #t "
@@ -445,6 +451,16 @@ fib_with_registers_ret_2:
       (append normal-opcodes optim-opcodes)
       normal-opcodes))
 
+(if (not renumber?)
+    ;; check against duplicates
+    (let ((v (make-vector num-opcodes #f)))
+      (for-each (lambda (o)
+                  (let ((n (opcode.opnum o)))
+                    (if (vector-ref v n)
+                        (error "opcode number used multiple times:" n))
+                    (vector-set! v n #t)))
+                opcodes)))
+
 
 (define (display* . strs)
   (for-each display strs))
@@ -497,11 +513,13 @@ fib_with_registers_ret_2:
            (i 0))
     (if (not (null? opcodes))
         (let* ((opcode (car opcodes))
-               (opnum (car opcode))
-               (name (cadr opcode))
-               (numargbytes (caddr opcode))
-               (dopcinc (cadddr opcode))
-               (C (cadr (cdddr opcode)))
+
+               (opnum (opcode.opnum opcode))
+               (name (opcode.name opcode))
+               (numargbytes (opcode.numargbytes opcode))
+               (dopcinc (opcode.needspcinc opcode))
+               (C (opcode.C-code opcode))
+
                (goto-label (and computed-goto?
                                 (name.computed-goto-label name))))
           (lp
@@ -621,11 +639,13 @@ while (1) {
     (if (null? opcodes)
         (display "\n#endif /* _OPCODE_CONSTANTS_H_ */\n")
         (let* ((opcode (car opcodes))
-               (opnum (car opcode))
-               (name (cadr opcode))
-               (numargbytes (caddr opcode))
-               (dopcinc (cadddr opcode))
-               (C (cadr (cdddr opcode)))
+
+               (opnum (opcode.opnum opcode))
+               (name (opcode.name opcode))
+               (numargbytes (opcode.numargbytes opcode))
+               (dopcinc (opcode.needspcinc opcode))
+               (C (opcode.C-code opcode))
+
                (ucname (string-upcase (symbol->string name))))
           (let ((opnum* (if renumber? i opnum)))
             (display*
