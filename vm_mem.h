@@ -302,7 +302,7 @@ typedef unsigned char type_t;
 
 #define HEAD_PAIR HEAD_OF_LEN_TYPE(2, TYPE_PAIR)
 
-#define HEAD(p) ALLOCATED_SLOT(p, 0)
+#define ALLOCATED_HEAD(p) ALLOCATED_SLOT(p, 0)
 
 #define ALLOCATED_TYPE(p) ((unsigned char*)ALLOCATED_PTR(p))[0]
 
