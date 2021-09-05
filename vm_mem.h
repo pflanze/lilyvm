@@ -280,12 +280,6 @@ word_t* vm_process_alloc(struct vm_process* process, numwords_t n) {
 #define is_immediate(x) ((x) & 1)
 #define is_allocated(x) (!is_immediate(x))
 
-/* An integer large enough to represent the result of fixnum + fixnum */
-typedef int16_t fixaddint_t;
-/* An integer large enough to represent the result of fixnum * fixnum;
-   also see dword_t for unsigned variant. */
-typedef int32_t fixmulint_t;
-
 /*
   Is is never useful? e.g. (FIXMULINT_HI(x) == WORD_MAX) is wrong,
   would have to compare against -1. But maybe that may be useful?  But

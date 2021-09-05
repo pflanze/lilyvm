@@ -20,6 +20,12 @@ typedef uint32_t dword_t; // double word; also see fixmulint_t for signed
 /* a tagged value (immediate or allocated) */
 typedef word_t val;
 
+/* An integer large enough to represent the result of fixnum + fixnum */
+typedef int16_t fixaddint_t;
+/* An integer large enough to represent the result of fixnum * fixnum;
+   also see dword_t for unsigned variant. */
+typedef int32_t fixmulint_t;
+
 /*
   integer type for the number of words contained in the body of an
   allocated object
