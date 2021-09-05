@@ -281,12 +281,6 @@ word_t* vm_process_alloc(struct vm_process* process, numwords_t n) {
 #define is_allocated(x) (!is_immediate(x))
 
 /*
-  Is is never useful? e.g. (FIXMULINT_HI(x) == WORD_MAX) is wrong,
-  would have to compare against -1. But maybe that may be useful?  But
-  it may often be context dependent (as e.g. in bignum calculations)
-  whether a word is to be treated signed or not. Better cast it there?
-*/
-/*
 struct fixmulint_words {
     int16_t word[2];
 };
