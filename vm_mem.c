@@ -20,6 +20,7 @@
 
 
 // ------------------------------------------------------------------
+// Tests for vm_mem.h
 
 static val scm_print_in_binary(val v) {
     unsigned char i = 0;
@@ -40,14 +41,6 @@ static val scm_print_in_binary(val v) {
         }
     }
 }
-
-
-/*
-static void println_binary(val v) {
-    scm_print_in_binary(v);
-    newline();
-}
-*/
 
 #define PRINTLN_BINARY(e) do { scm_print_in_binary(e);  \
         printf(" = %s \r\n", #e); } while(0)
@@ -112,6 +105,31 @@ TEST(immediates) {
     /* WRITELN(a); */
 
     FREE_VM_PROCESS(process);
+}
+
+TEST(IS_IN_FIX_RANGE) {
+    // these will fail if WORD is not 16 bits wide:
+    //                             kksxxxxxxxxxxxxi
+    //                             0b0111111111111
+    ASSERT_EQ_(int16_t, FIXNUM_MAXINT, 4095);
+    ASSERT_EQ_(int16_t, FIXNUM_MININT, -4096);
+    // /16 bit
+    ASSERT_EQ_(val, IS_IN_FIX_RANGE(10), true);
+    ASSERT_EQ(IS_IN_FIX_RANGE(-10), true);
+    ASSERT_EQ(IS_IN_FIX_RANGE(1000), true);
+    ASSERT_EQ(IS_IN_FIX_RANGE(-1000), true);
+    ASSERT_EQ(IS_IN_FIX_RANGE(2000), true);
+    ASSERT_EQ(IS_IN_FIX_RANGE(-2000), true);
+    ASSERT_EQ(IS_IN_FIX_RANGE(4000), true);
+    ASSERT_EQ(IS_IN_FIX_RANGE(-4000), true);
+    ASSERT_EQ(IS_IN_FIX_RANGE(8000), false);
+    ASSERT_EQ(IS_IN_FIX_RANGE(-8000), false);
+    ASSERT_EQ(IS_IN_FIX_RANGE(16000), false);
+    ASSERT_EQ(IS_IN_FIX_RANGE(-16000), false);
+    ASSERT_EQ(IS_IN_FIX_RANGE(30000), false);
+    ASSERT_EQ(IS_IN_FIX_RANGE(-30000), false);
+    ASSERT_EQ(IS_IN_FIX_RANGE(128000), false);
+    ASSERT_EQ(IS_IN_FIX_RANGE(-128000), false);
 }
 
 // ------------------------------------------------------------------
@@ -215,8 +233,8 @@ void vm_mem_gc(struct vm_process* process) {
     }
     {
         // Flip region pointers; we don't do this *before* running the
-        // GC, ALLOCATED_FROM_POINTER_TOSPACE and
-        // ALLOCATED_PTR_FROMSPACE expect the old values.
+        // GC, since ALLOCATED_FROM_POINTER_TOSPACE and
+        // ALLOCATED_PTR_FROMSPACE are expecting the old values.
         word_t* old = process->alloc_area;
         process->alloc_area = newarea;
         process->alloc_area_fresh = old;
@@ -262,33 +280,6 @@ val scm_cons(struct vm_process *process, val a, val b) {
         return fastcons(a, b);
 #endif
     }
-}
-
-
-
-TEST(IS_IN_FIX_RANGE) {
-    // these will fail if WORD is not 16 bits wide:
-    //                             kksxxxxxxxxxxxxi
-    //                             0b0111111111111
-    ASSERT_EQ_(int16_t, FIXNUM_MAXINT, 4095);
-    ASSERT_EQ_(int16_t, FIXNUM_MININT, -4096);
-    // /16 bit
-    ASSERT_EQ_(val, IS_IN_FIX_RANGE(10), true);
-    ASSERT_EQ(IS_IN_FIX_RANGE(-10), true);
-    ASSERT_EQ(IS_IN_FIX_RANGE(1000), true);
-    ASSERT_EQ(IS_IN_FIX_RANGE(-1000), true);
-    ASSERT_EQ(IS_IN_FIX_RANGE(2000), true);
-    ASSERT_EQ(IS_IN_FIX_RANGE(-2000), true);
-    ASSERT_EQ(IS_IN_FIX_RANGE(4000), true);
-    ASSERT_EQ(IS_IN_FIX_RANGE(-4000), true);
-    ASSERT_EQ(IS_IN_FIX_RANGE(8000), false);
-    ASSERT_EQ(IS_IN_FIX_RANGE(-8000), false);
-    ASSERT_EQ(IS_IN_FIX_RANGE(16000), false);
-    ASSERT_EQ(IS_IN_FIX_RANGE(-16000), false);
-    ASSERT_EQ(IS_IN_FIX_RANGE(30000), false);
-    ASSERT_EQ(IS_IN_FIX_RANGE(-30000), false);
-    ASSERT_EQ(IS_IN_FIX_RANGE(128000), false);
-    ASSERT_EQ(IS_IN_FIX_RANGE(-128000), false);
 }
 
 val pp_through(struct vm_process* process, val v) {
@@ -352,8 +343,8 @@ val scm_dec(struct vm_process* process, val x) {
 }
 
 #ifdef SMALL
-// the macro version below oddly leads to smaller code, so why not
-// always use it.
+// XX the macro version below oddly sometimes leads to smaller code,
+// so why not always use it?
 
 INLINE static val _bignum_dispatch (
     struct vm_process* process,
