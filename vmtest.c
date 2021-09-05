@@ -123,25 +123,24 @@ TEST(basics) {
        (fib 30) => 1346269
     */
     pc = program;
-    //(starting at 1 because I previously had a DROP1 instruction here)
-    /*1*/  OP_IM(PUSH_IM, FIX(2));
-    /*4*/  OP_B(JSR_REL8, 3); //2
-    /*6*/  OP(HALT); //1
+    /*0*/  OP_IM(PUSH_IM, FIX(2));
+    /*3*/  OP_B(JSR_REL8, 3); //2
+    /*5*/  OP(HALT); //1
 
     // fib: n is last on stack before ret addr
-    /*7*/  OP(SWAP); //1
-    /*8*/  OP_IM_B(CMPBR_KEEP_LT_IM_REL8, FIX(2), 14); //4   end:
-    /*12*/ OP(DEC); //1
-    /*13*/ OP(DUP); //1
-    /*14*/ OP_B(JSR_REL8, -7); //2 fib
-    /*16*/ OP(SWAP); //1
-    /*17*/ OP(DEC); //1
-    /*18*/ OP_B(JSR_REL8, -11); //2 fib
-    /*20*/ OP(ADD); //1
-    /*21*/ OP(RET_POP);//1
+    /*6*/  OP(SWAP); //1
+    /*7*/  OP_IM_B(CMPBR_KEEP_LT_IM_REL8, FIX(2), 14); //4   end:
+    /*11*/ OP(DEC); //1
+    /*12*/ OP(DUP); //1
+    /*13*/ OP_B(JSR_REL8, -7); //2 fib
+    /*15*/ OP(SWAP); //1
+    /*16*/ OP(DEC); //1
+    /*17*/ OP_B(JSR_REL8, -11); //2 fib
+    /*19*/ OP(ADD); //1
+    /*20*/ OP(RET_POP);//1
     // end:
-    /*22*/ OP(DROP1);
-    /*23*/ OP_IM(RET_IM, FIX(1));
+    /*21*/ OP(DROP1);
+    /*22*/ OP_IM(RET_IM, FIX(1));
     // ---
     program_end = pc;
     vm_process_stack_clear(process);
@@ -150,7 +149,7 @@ TEST(basics) {
     ASSERT_EQ_(val, process->stack.vals[0], FIX(2));
 
     pc = program;
-    /*1*/  OP_IM(PUSH_IM, FIX(16));
+    /*0*/  OP_IM(PUSH_IM, FIX(16));
     vm_process_stack_clear(process);
     vm_process_run(process, program);
     ASSERT_EQ_(uint16_t, process->stack.sp, 1);
@@ -158,7 +157,7 @@ TEST(basics) {
 
     if (0) {
         pc = program;
-        /*1*/  OP_IM(PUSH_IM, FIX(25));
+        /*0*/  OP_IM(PUSH_IM, FIX(25));
         vm_process_stack_clear(process);
         vm_process_run(process, program);
         ASSERT_EQ_(uint16_t, process->stack.sp, 1);
@@ -170,7 +169,7 @@ TEST(basics) {
 
     if (0) {
         pc = program;
-        /*1*/  OP_IM(PUSH_IM, FIX(30));
+        /*0*/  OP_IM(PUSH_IM, FIX(30));
         vm_process_stack_clear(process);
         vm_process_run(process, program);
         ASSERT_EQ_(uint16_t, process->stack.sp, 1);
@@ -181,7 +180,7 @@ TEST(basics) {
     }
 
     pc = program;
-    /*1*/  OP_IM(PUSH_IM, FIX(35));
+    /*0*/  OP_IM(PUSH_IM, FIX(35));
     bytecode_write_file(program, program_end-program, "fib_35.bytecode");
     if (1) {
         vm_process_stack_clear(process);
@@ -195,23 +194,22 @@ TEST(basics) {
 
     // Naive fibonacci again, but with combined opcodes:
     pc = program;
-    //(starting at 1 because I previously had a DROP1 instruction here)
-    /*1*/  OP_IM(PUSH_IM, FIX(2));
-    /*4*/  OP_B(JSR_REL8, 3); //2
-    /*6*/  OP(HALT); //1
+    /*0*/  OP_IM(PUSH_IM, FIX(2));
+    /*3*/  OP_B(JSR_REL8, 3); //2
+    /*5*/  OP(HALT); //1
 
     // fib: n is last on stack before ret addr
-    /*7*/  OP(SWAP); //1
-    /*8*/  OP_IM_B(CMPBR_KEEP_LT_IM_REL8, FIX(2), 12); //4   end:
-    /*12*/ OP(DEC__DUP); //1
-    /*13*/ OP_B(JSR_REL8, -6); //2 fib
-    /*15*/ OP(SWAP__DEC); //1
-    /*16*/ OP_B(JSR_REL8, -9); //2 fib
-    /*18*/ OP(ADD); //1
-    /*19*/ OP(RET_POP);//1
+    /*6*/  OP(SWAP); //1
+    /*7*/  OP_IM_B(CMPBR_KEEP_LT_IM_REL8, FIX(2), 12); //4   end:
+    /*11*/ OP(DEC__DUP); //1
+    /*12*/ OP_B(JSR_REL8, -6); //2 fib
+    /*14*/ OP(SWAP__DEC); //1
+    /*15*/ OP_B(JSR_REL8, -9); //2 fib
+    /*17*/ OP(ADD); //1
+    /*18*/ OP(RET_POP);//1
     // end:
-    /*20*/ OP(DROP1);
-    /*21*/ OP_IM(RET_IM, FIX(1));
+    /*19*/ OP(DROP1);
+    /*20*/ OP_IM(RET_IM, FIX(1));
     // ---
     program_end = pc;
     vm_process_stack_clear(process);
@@ -220,7 +218,7 @@ TEST(basics) {
     ASSERT_EQ_(val, process->stack.vals[0], FIX(2));
 
     pc = program;
-    /*1*/  OP_IM(PUSH_IM, FIX(35));
+    /*0*/  OP_IM(PUSH_IM, FIX(35));
     bytecode_write_file(program, program_end-program,
                         "fib_combinedop_35.bytecode");
     if (0) {
