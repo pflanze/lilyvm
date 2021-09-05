@@ -280,15 +280,6 @@ word_t* vm_process_alloc(struct vm_process* process, numwords_t n) {
 #define is_immediate(x) ((x) & 1)
 #define is_allocated(x) (!is_immediate(x))
 
-/*
-struct fixmulint_words {
-    int16_t word[2];
-};
-#define FIXMULINT_LO(x) ((struct fixmulint_words*)&(x))->word[0]
-#define FIXMULINT_HI(x) ((struct fixmulint_words*)&(x))->word[1]
-
-Use DWORD_HI, DWORD_LO instead, or update the above in the same way now!
-*/
 
 #define WORD_FIXADDINT_MASK ((1 << (WORD_BITS-3))-1)
 #define WORD_FIXNUM_MASK (WORD_FIXADDINT_MASK << 1)
