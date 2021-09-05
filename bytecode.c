@@ -30,6 +30,7 @@ bool bytecode_write_file(const uint8_t *program,
     }
     if (write(fd, (void*)program, programlen) < 0) {
         fprintf(stderr, "write('%s'): %s\n", path, strerror(errno));
+        close(fd);
         return false;
     }
     if (close(fd) < 0) {
