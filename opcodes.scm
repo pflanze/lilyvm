@@ -1,7 +1,7 @@
 ;;   Copyright (C) 2021 Christian Jaeger, <ch@christianjaeger.ch>
 ;;   See the LICENSE file that comes bundled with this file.
 
-;; This generates the _opcode_*.h files
+;; This generates the *opcode_*.h files
 
 ;; Config:
 
