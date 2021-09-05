@@ -108,7 +108,7 @@ val allocated_from_pointer(struct vm_process *process,
 
 INLINE static
 word_t *allocated_ptr(struct vm_process *process,
-                    val allocated) {
+		      val allocated) {
     word_t *res= (word_t*)(((uintptr_t)allocated) + (uintptr_t)process->alloc_area);
     ASSERT(allocated);
     ASSERT(IS_EVEN(allocated));
@@ -135,7 +135,7 @@ word_t *allocated_ptr(struct vm_process *process,
 //  the same, except for *not* checking that it hasn't moved:
 INLINE static
 word_t *allocated_ptr_fromspace(struct vm_process *process,
-                              val allocated) {
+				val allocated) {
     word_t *res= (word_t*)(((uintptr_t)allocated) + (uintptr_t)process->alloc_area);
     ASSERT(allocated);
     ASSERT(IS_EVEN(allocated));
@@ -165,7 +165,7 @@ val allocated_from_pointer_tospace(struct vm_process *process,
 
 INLINE static
 word_t *allocated_ptr_tospace(struct vm_process *process,
-                            val allocated) {
+			      val allocated) {
     word_t *res= (word_t*)(((uintptr_t)allocated)
                        + (uintptr_t)process->alloc_area_fresh);
     ASSERT(allocated);
@@ -285,6 +285,7 @@ typedef int16_t fixaddint_t;
 /* An integer large enough to represent the result of fixnum * fixnum;
    also see dword_t for unsigned variant. */
 typedef int32_t fixmulint_t;
+
 /*
   Is is never useful? e.g. (FIXMULINT_HI(x) == WORD_MAX) is wrong,
   would have to compare against -1. But maybe that may be useful?  But
