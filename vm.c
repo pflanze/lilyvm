@@ -241,7 +241,9 @@ void vm_process_run(struct vm_process *process, uint8_t *code) {
     // ^ XX boundary checks!
 
 #ifdef VM_TRACE
-# define TRACE_OP(opcodename) vm_trace(process, pc-code, opcodename)
+# define TRACE_OP(opcodename) do {                                      \
+        if (process->trace_on) vm_trace(process, pc-code, opcodename);        \
+    } while (0)
 #else
 # define TRACE_OP(opcodename)
 #endif

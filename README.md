@@ -137,9 +137,9 @@ decimal result 14930352).
 
 For small optimized binaries, set `SMALL` in the environment. To
 compile in C++ mode, set `CPLUSPLUS`. To use clang/clang++, set
-`CLANG`. To enable execution tracing, set `VM_TRACE` (currently can't
-be enabled/disabled at runtime). All env variables are checked for
-their existence, not their value.
+`CLANG`. To enable execution tracing, set `VM_TRACE` (it needs to also
+be enabled at runtime via the `trace_on` opcode). All env variables
+are checked for their existence, not their value.
 
 (Note: currently the build system is buggy, `clean` is needed both for
 the env var changes and in general for safety.)

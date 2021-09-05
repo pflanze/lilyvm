@@ -34,6 +34,8 @@
 #define OP_CMPBR_KEEP_LT_IM_REL8     100 /* 0x64; 3 */
 #define OP_DEC__DUP                  200 /* 0xc8; 0 */
 #define OP_SWAP__DEC                 201 /* 0xc9; 0 */
+#define OP_TRACE_ON                  252 /* 0xfc; 0 */
+#define OP_TRACE_OFF                 253 /* 0xfd; 0 */
 #define OP_NOP                       254 /* 0xfe; 0 */
 #define OP_HALT                      255 /* 0xff; 0 */
 #define OP_FIB                       220 /* 0xdc; 0 */

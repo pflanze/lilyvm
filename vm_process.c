@@ -48,6 +48,9 @@ struct vm_process *malloc_process(uint16_t stacklen,
         p->gc_moves = 0;
         p->num_val_roots = 0;
         p->num_ptr_roots = 0;
+#ifdef VM_TRACE
+        p->trace_on = false;
+#endif
 #if DEBUG_MEM_SET
         memset(p->alloc_area, 0xAA, p->alloc_size);
         memset(p->alloc_area_fresh, 0xBB, p->alloc_size);

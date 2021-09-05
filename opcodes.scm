@@ -233,6 +233,19 @@ if (1) { // actually faster??
     ;; / combined opcodes
 
     ;; Some rarely used instructions:
+    (252 trace_on 0 #t "
+#ifdef VM_TRACE
+  vm_process_trace_on(process, true);
+#else
+  // XX add WARN_ONCE
+  WARN(\"tracing not supported (please recompile with VM_TRACE)\");
+#endif
+")
+    (253 trace_off 0 #t "
+#ifdef VM_TRACE
+  vm_process_trace_on(process, false);
+#endif
+")
     (254 nop 0 #t "")
     (255 halt 0 #t "
 goto halt;"

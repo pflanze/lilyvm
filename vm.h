@@ -11,6 +11,13 @@
 #include "vm_mem.h"
 #include "vm_process.h"
 
+#ifdef VM_TRACE
+INLINE static
+void vm_process_trace_on(struct vm_process *process, bool yes) {
+    process->trace_on = yes;
+}
+#endif
+
 void vm_process_run(struct vm_process *process, uint8_t *code);
 
 void vm_process_stack_writeln(struct vm_process *process);

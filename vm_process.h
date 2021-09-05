@@ -76,6 +76,10 @@ struct vm_process {
     // pointers to *body* pointer variables:
     word_t** ptr_roots[VM_NUM_PTR_ROOTS];
 
+#ifdef VM_TRACE
+    bool trace_on;
+#endif
+
     // Execution stack:
     struct vm_stack stack;
 };
