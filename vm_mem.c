@@ -823,7 +823,7 @@ val scm_bitwise_and(UNUSED struct vm_process *process,
 static val scm_write_bignum_hex(struct vm_process *process, val v) {
     uint8_t i = ALLOCATED_NUMWORDS(v);
     word_t *p = ALLOCATED_BODY(v);
-    printf("bignum{");
+    printf("#bignum{");
     while (i) {
         i--;
         word_t d = p[i];

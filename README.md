@@ -132,7 +132,7 @@ Note that the result of the fibonacci calculation is a bignum (since
 currently immediates are only 16 bits wide for the mentioned 16-bit
 CPU target), and bignum division is not yet implemented and hence the
 Scheme writer cannot print the numbers in decimal and thus shows them
-in hex (like `bignum{00e3-d1b0}` here, which represents the expected
+in hex (like `#bignum{00e3-d1b0}` here, which represents the expected
 decimal result 14930352).
 
 For small optimized binaries, set `SMALL=1` in the environment. To
