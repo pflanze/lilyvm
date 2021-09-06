@@ -232,9 +232,11 @@ if (1) { // actually faster??
 ")
     ;; (The following really didn't change ~anything at all [when using gcc]: )
     (202 jsr_rel8__swap 1 #f "
-LET_POP(x);
-PUSH(PCNUM(PC+2)); //XX make safe
-PUSH(x);
+STACK_ENSURE(1);
+val x = STACK_UNSAFE_REF(0);
+STACK_UNSAFE_SET(0, PCNUM(PC+2)); //XX make safe
+STACK_ALLOC(1);
+STACK_UNSAFE_SET(0, x);
 pc += (int8_t)ARGB1;")
     ;; / combined opcodes
 
