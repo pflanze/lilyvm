@@ -262,7 +262,7 @@ TEST(basics) {
     /*6*/  OP(FIB_WITH_REGISTERS); //1
     program_end = pc;
     bytecode_write_file(program, program_end-program,
-                        "fib_register_35.bytecode");
+                        "fib_compiled_register_35.bytecode");
     
     if (0) {
         vm_process_stack_clear(process);

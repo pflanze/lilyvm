@@ -119,7 +119,7 @@ in [`vmtest.c`](vmtest.c)). You can run those via:
     time target-local/lilyvm fib_35.bytecode
     time target-local/lilyvm fib_combinedop_35.bytecode
     time target-local/lilyvm fib_compiled_35.bytecode 
-    time target-local/lilyvm fib_register_35.bytecode # segv with g++
+    time target-local/lilyvm fib_compiled_register_35.bytecode # segv with g++
 
 There is currently no disassembler. To understand what those files do,
 read the sections in [`vmtest.c`](vmtest.c) where the opcodes that are

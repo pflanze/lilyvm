@@ -267,7 +267,7 @@ goto halt;"
 
 (define optim-opcodes
   ;; These depend on `computed-goto?` being #t (meaning,
-  ;; fib_register_35.bytecode won't work and vmtest can't be compiled)
+  ;; fib_compiled*_35.bytecode won't work and vmtest can't be compiled)
   '(
     ;; Test full program compilation:
     (220 fib 0 #f "
