@@ -182,7 +182,7 @@ TEST(basics) {
     pc = program;
     /*0*/  OP_IM(PUSH_IM, FIX(35));
     bytecode_write_file(program, program_end-program, "fib_35.bytecode");
-    if (1) {
+    if (0) {
         vm_process_stack_clear(process);
         vm_process_run(process, program);
         ASSERT_EQ_(uint16_t, process->stack.sp, 1);
@@ -220,6 +220,55 @@ TEST(basics) {
     /*0*/  OP_IM(PUSH_IM, FIX(35));
     bytecode_write_file(program, program_end-program,
                         "fib_combinedop_35.bytecode");
+    if (0) {
+        vm_process_stack_clear(process);
+        vm_process_run(process, program);
+        ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+        WRITELN(process->stack.vals[0]);
+        ASSERT_EQ(SCM_NUMBER_EQUAL(process->stack.vals[0],
+                                   FIXMULINT_TO_SCM(14930352)),
+                  TRU);
+    }
+
+
+    // Naive fibonacci again, but using registers (not using combined
+    // opcodes):
+    pc = program;
+    /*0*/  OP_IM(LOADA_IM, FIX(16));//3
+    /*3*/  OP(TRACE_ON); //1
+    /*4*/  OP(REGISTERA); // 1
+    /*5*/  OP_IM(LOADB_IM, FAL); //3  -- not actually used now, though
+    /*8*/  OP(REGISTERB); // 1
+    /*9*/  OP_B(JSR_REL8, 6); //2
+    /*11*/ OP(PUSHA);//1
+    /*12*/ OP(UNREGISTER2); // 1
+    /*13*/ OP(TRACE_OFF);//1
+    /*14*/ OP(HALT); //1
+
+    // fib: n is in register A; return result in register A
+    /*15*/ OP_IM_B(CMPBR_A_LT_IM_REL8, FIX(2), 14); //4   end:
+    /*19*/ OP(DECA); //1
+    /*20*/ OP(PUSHA); //1
+    /*21*/ OP_B(JSR_REL8, -6); //2 fib
+    /*23*/ OP(SWAPA); //1
+    /*24*/ OP(DECA); //1
+    /*25*/ OP_B(JSR_REL8, -10); //2 fib
+    /*27*/ OP(ADDA); //1
+    /*28*/ OP(RET);//1
+    // end:
+    /*29*/ OP_IM(LOADA_IM, FIX(1));//3
+    /*32*/ OP(RET);
+    // ---
+    program_end = pc;
+    vm_process_stack_clear(process);
+    vm_process_run(process, program);
+    ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+    ASSERT_EQ_(val, process->stack.vals[0], FIX(1597));
+
+    pc = program;
+    /*0*/  OP_IM(LOADA_IM, FIX(35));
+    bytecode_write_file(program, program_end-program,
+                        "fib_registers_35.bytecode");
     if (0) {
         vm_process_stack_clear(process);
         vm_process_run(process, program);

@@ -26,18 +26,51 @@
 (define normal-opcodes
   '(
     ;; opnum, name, numargbytes, needspcinc, C-code
-    (10 push_im 2 #t "
+
+    (1 registerA 0 #t "
+VAL_REGISTER(reg1);")
+    (2 registerB 0 #t "
+VAL_REGISTER(reg2);")
+    (3 unregister1 0 #t "
+VAL_UNREGISTER(1);")
+    (4 unregister2 0 #t "
+VAL_UNREGISTER(2);")
+    (5 loadA_im 2 #t "
+reg1 = ARGIM1;")
+    (6 loadB_im 2 #t "
+reg2 = ARGIM1;")
+    (7 pushA 0 #t "
+PUSH(reg1);")
+    (8 pushB 0 #t "
+PUSH(reg2);")
+    (9 popA 0 #t "
+LET_POP(x);
+reg1 = x;")
+    (10 popB 0 #t "
+LET_POP(x);
+reg2 = x;")
+    (11 TAB 0 #t "
+reg2 = reg1;")
+    (12 TBA 0 #t "
+reg1 = reg2;")
+    (13 swapA 0 #t "
+STACK_ENSURE(1);
+val x = STACK_UNSAFE_REF(0);
+STACK_UNSAFE_SET(0, reg1);
+reg1 = x;")
+    
+    (14 push_im 2 #t "
 PUSH(ARGIM1);")
-    (11 drop1 0 #t "
+    (15 drop1 0 #t "
 STACK_DROP1;")
-    (12 pick_b 1 #t "
+    (16 pick_b 1 #t "
 // copy the nth-last argument (0 meaning the last, i.e. top element
 // of the stack) from the stack
 LET_STACK_REF(x, ARGB1);
 PUSH(x);")
-    (13 swap 0 #t "
+    (17 swap 0 #t "
 STACK_SWAP;")
-    (14 dup 0 #t "
+    (18 dup 0 #t "
 STACK_DUP;")
     
     (20 inc 0 #t "
@@ -50,6 +83,8 @@ STACK_UNSAFE_SET_LAST(SCM_INC(x));")
     (21 inc_ 1 #t "
 LET_STACK_REF(x, ARGB1);
 PUSH(SCM_INC(x));")
+    (22 incA 0 #t "
+reg1 = SCM_INC(reg1);")
 
     (25 dec 0 #t "
 /*
@@ -58,6 +93,8 @@ PUSH(SCM_DEC(x));
 */
 LET_STACK_LAST(x);
 STACK_UNSAFE_SET_LAST(SCM_DEC(x));")
+    (26 decA 0 #t "
+reg1 = SCM_DEC(reg1);")
 
     (30 add 0 #t "
 /*
@@ -75,7 +112,7 @@ STACK_UNSAFE_REMOVE(1);
 LET_POP(x);
 PUSH(SCM_ADD(x, ARGIM1));")
 
-    ;; add x y  means s[x] += s[y]
+    ;; add x y  means stack[x] += stack[y]
     (32 add__ 2 #t "
 uint8_t i = ARGB1;
 LET_STACK_REF(a, i);
@@ -84,7 +121,12 @@ LET_STACK_REF(a, i);
     STACK_SET(i, SCM_ADD(a, b));
 }
 ")
-    (33 mul__ 2 #t "
+    ;; A += pop
+    (33 addA 0 #t "
+LET_POP(x);
+reg1 = SCM_ADD(reg1, x);")
+
+    (35 mul__ 2 #t "
 uint8_t i = ARGB1;
 LET_STACK_REF(a, i);
 {
@@ -196,12 +238,18 @@ if (x == FIX(0)) {
 }")
 
     (100 cmpbr_keep_lt_im_rel8 3 #f "
-// compare and branch; (if (< x 1234) lbl).
-// The literal must be a fixnum; x must be a number.
+// compare with literal and branch if smaller; (if (< (stack-last) 1234) lbl).
 LET_STACK_LAST(x);
 // (Optim by checking for fixnum and then doing C-level comparison?
 //  Didn't help.)
 if (SCM_NUMBER_CMP(x, ARGIM1) == LT) {
+    pc += (uint8_t)ARGB3;
+} else {
+    pc += 4;
+}")
+    (101 cmpbr_A_lt_im_rel8 3 #f "
+// compare with literal and branch if smaller; (if (< registerA 1234) lbl).
+if (SCM_NUMBER_CMP(reg1, ARGIM1) == LT) {
     pc += (uint8_t)ARGB3;
 } else {
     pc += 4;

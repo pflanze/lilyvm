@@ -4,18 +4,34 @@
 #define _OPCODE_CONSTANTS_H_
 
 //                          opcode  /* hex; numargbytes */
-#define OP_PUSH_IM                   10 /* 0x0a; 2 */
-#define OP_DROP1                     11 /* 0x0b; 0 */
-#define OP_PICK_B                    12 /* 0x0c; 1 */
-#define OP_SWAP                      13 /* 0x0d; 0 */
-#define OP_DUP                       14 /* 0x0e; 0 */
+#define OP_REGISTERA                 1 /* 0x01; 0 */
+#define OP_REGISTERB                 2 /* 0x02; 0 */
+#define OP_UNREGISTER1               3 /* 0x03; 0 */
+#define OP_UNREGISTER2               4 /* 0x04; 0 */
+#define OP_LOADA_IM                  5 /* 0x05; 2 */
+#define OP_LOADB_IM                  6 /* 0x06; 2 */
+#define OP_PUSHA                     7 /* 0x07; 0 */
+#define OP_PUSHB                     8 /* 0x08; 0 */
+#define OP_POPA                      9 /* 0x09; 0 */
+#define OP_POPB                      10 /* 0x0a; 0 */
+#define OP_TAB                       11 /* 0x0b; 0 */
+#define OP_TBA                       12 /* 0x0c; 0 */
+#define OP_SWAPA                     13 /* 0x0d; 0 */
+#define OP_PUSH_IM                   14 /* 0x0e; 2 */
+#define OP_DROP1                     15 /* 0x0f; 0 */
+#define OP_PICK_B                    16 /* 0x10; 1 */
+#define OP_SWAP                      17 /* 0x11; 0 */
+#define OP_DUP                       18 /* 0x12; 0 */
 #define OP_INC                       20 /* 0x14; 0 */
 #define OP_INC_                      21 /* 0x15; 1 */
+#define OP_INCA                      22 /* 0x16; 0 */
 #define OP_DEC                       25 /* 0x19; 0 */
+#define OP_DECA                      26 /* 0x1a; 0 */
 #define OP_ADD                       30 /* 0x1e; 0 */
 #define OP_ADD_IM                    31 /* 0x1f; 2 */
 #define OP_ADD__                     32 /* 0x20; 2 */
-#define OP_MUL__                     33 /* 0x21; 2 */
+#define OP_ADDA                      33 /* 0x21; 0 */
+#define OP_MUL__                     35 /* 0x23; 2 */
 #define OP_BITWISE_AND               40 /* 0x28; 0 */
 #define OP_UNSAFE_BITWISE_AND        41 /* 0x29; 0 */
 #define OP_UNSAFE_BITWISE_OR         42 /* 0x2a; 0 */
@@ -32,6 +48,7 @@
 #define OP_BZ_KEEP_REL16             95 /* 0x5f; 2 */
 #define OP_BZ_REL16                  96 /* 0x60; 2 */
 #define OP_CMPBR_KEEP_LT_IM_REL8     100 /* 0x64; 3 */
+#define OP_CMPBR_A_LT_IM_REL8        101 /* 0x65; 3 */
 #define OP_DEC__DUP                  200 /* 0xc8; 0 */
 #define OP_SWAP__DEC                 201 /* 0xc9; 0 */
 #define OP_JSR_REL8__SWAP            202 /* 0xca; 1 */
