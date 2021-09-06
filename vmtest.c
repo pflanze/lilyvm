@@ -195,21 +195,20 @@ TEST(basics) {
     // Naive fibonacci again, but with combined opcodes:
     pc = program;
     /*0*/  OP_IM(PUSH_IM, FIX(2));
-    /*3*/  OP_B(JSR_REL8, 3); //2
+    /*3*/  OP_B(JSR_REL8__SWAP, 3); //2
     /*5*/  OP(HALT); //1
 
-    // fib: n is last on stack before ret addr
-    /*6*/  OP(SWAP); //1
-    /*7*/  OP_IM_B(CMPBR_KEEP_LT_IM_REL8, FIX(2), 12); //4   end:
-    /*11*/ OP(DEC__DUP); //1
-    /*12*/ OP_B(JSR_REL8, -6); //2 fib
-    /*14*/ OP(SWAP__DEC); //1
-    /*15*/ OP_B(JSR_REL8, -9); //2 fib
-    /*17*/ OP(ADD); //1
-    /*18*/ OP(RET_POP);//1
+    // fib: n is last on stack (after ret addr)
+    /*6*/  OP_IM_B(CMPBR_KEEP_LT_IM_REL8, FIX(2), 12); //4   end:
+    /*10*/ OP(DEC__DUP); //1
+    /*11*/ OP_B(JSR_REL8__SWAP, -5); //2 fib
+    /*13*/ OP(SWAP__DEC); //1
+    /*14*/ OP_B(JSR_REL8__SWAP, -8); //2 fib
+    /*16*/ OP(ADD); //1
+    /*17*/ OP(RET_POP);//1
     // end:
-    /*19*/ OP(DROP1);
-    /*20*/ OP_IM(RET_IM, FIX(1));
+    /*18*/ OP(DROP1);
+    /*19*/ OP_IM(RET_IM, FIX(1));
     // ---
     program_end = pc;
     vm_process_stack_clear(process);
