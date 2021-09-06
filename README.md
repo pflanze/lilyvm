@@ -15,13 +15,11 @@ Precise memory management (do not retain memory in lazy code
 
 Efficient call/cc.
 
-Reasonably fast bytecode interpreter (it is currently running naive
-fibonacci about 3x faster than CPython (when assuming that the
-fibonacci function can't be redefined while running)). Explore
-possible performance improvements via combined ops, custom ops /
-compilation via C, using local unsafety in provably safe ways, and
-partially using lowlevel data formats in compiled programs (under
-manual direction) instead of GC'd ones.
+Reasonably fast bytecode interpreter. Explore possible performance
+improvements via combined ops, custom ops / compilation via C, using
+local unsafety in provably safe ways, and partially using lowlevel
+data formats in compiled programs (under manual direction) instead of
+GC'd ones.
 
 Concurrency: offer shared-nothing processes (CSP / Erlang style),
 scheduled in user-space and perhaps (explicitly?) also across
@@ -75,6 +73,16 @@ with clang and clang++.
 The 6502 adaptions are outdated and it won't currently compile for
 that architecture.
 
+The interpreter is currently running naive fibonacci about 5x faster
+than CPython (`fib_registers_35.bytecode`, i.e. when assuming that the
+fibonacci function can't be redefined while running, using register
+ops, the vm is compiled with clang++, and running on an Intel i5-2520M
+in 64-bit mode). Real programs will be slower than that in the end due
+to added features (and possibly use of a larger word width), realtime
+GC, and the compiler not generating bytecode as optimal as the
+hand-coded examples (unless using controlled unsafety can make up for
+the slowdown).
+
 ## Notes
 
 The code is in roughly C89 since that's what cc65, the compiler for
@@ -111,13 +119,14 @@ To run with debugging and ASAN enabled:
 To benchmark:
 
     RELEASE=1 make -f Makefile-local.mk clean target-local/{vmtest,lilyvm}
-    time target-local/vmtest
+    target-local/vmtest
 
 This generates some bytecode files (via calls to `bytecode_write_file`
 in [`vmtest.c`](vmtest.c)). You can run those via:
 
     time target-local/lilyvm fib_35.bytecode
     time target-local/lilyvm fib_combinedop_35.bytecode
+    time target-local/lilyvm fib_registers_35.bytecode
     time target-local/lilyvm fib_compiled_35.bytecode 
     time target-local/lilyvm fib_compiled_register_35.bytecode # segv with g++
 
