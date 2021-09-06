@@ -146,14 +146,31 @@ void stack_clear(struct vm_stack *s) {
     s->sp = 0;
 }
 
-void vm_process_stack_writeln(struct vm_process *process) {
-    uint16_t i;
-    printf("(");
-    for (i=0; i < process->stack.sp; i++) {
-        if (i) printf(" ");
-        SCM_WRITE(process->stack.vals[i]);
+#define VALARRAY_WRITE(vals, len)               \
+    {                                           \
+        uint16_t i;                             \
+        printf("(");                            \
+        for (i=0; i < (len); i++) {             \
+            if (i) printf(" ");                 \
+            SCM_WRITE(DEREF((vals)[i]));        \
+        }                                       \
+        printf(")");                            \
     }
-    printf(")\n");
+
+void vm_process_stack_writeln(struct vm_process *process) {
+#define DEREF(x) x
+    VALARRAY_WRITE(process->stack.vals, process->stack.sp);
+#undef DEREF
+    // print the register stacks, too
+    printf(" ");
+#define DEREF(x) *(x)
+    VALARRAY_WRITE(process->val_roots, process->num_val_roots);
+#undef DEREF
+    printf(" ");
+#define DEREF(x) ALLOCATED_FROM_POINTER((*(x))-1)
+    VALARRAY_WRITE(process->ptr_roots, process->num_ptr_roots);
+#undef DEREF
+    printf("\n");
 }
 
 void vm_process_stack_clear(struct vm_process *process) {
