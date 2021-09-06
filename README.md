@@ -104,13 +104,28 @@ There are two executables, `vmtest` which runs the unit tests and
 generates bytecode files, and `lilyvm` which can run existing bytecode
 files.
 
+The `gendeps` script in chj-ctest has a dependency on FunctionalPerl,
+hence you'll need:
+
+    sudo cpan install FunctionalPerl
+
+or follow https://metacpan.org/pod/local::lib if you can't use
+root. Then:
+
     git clone https://github.com/pflanze/chj-ctest
     git clone https://github.com/pflanze/chj-64lib
     git clone https://github.com/pflanze/lilyvm
-    # I suggest you check the Git version tag signatures
-    # in each repository via "git tag -v ...".
+    
+I suggest you check the latest Git version tag signatures in each
+repository via `git tag -v ...` at this point to verify that the
+source is coming from me. Then:
+
     cd lilyvm
-    touch *opcode*.h # ensure generated files are newer (avoid regen)
+    touch *opcode*.h
+    
+The latter is to ensure that the generated files are newer, to avoid
+make trying to regenerate them, which needs a Scheme system (see
+below).
 
 To run with debugging and ASAN enabled:
 
