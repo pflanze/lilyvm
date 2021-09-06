@@ -238,7 +238,7 @@ if (1) { // actually faster??
   vm_process_trace_on(process, true);
 #else
   // XX add WARN_ONCE
-  WARN(\"tracing not supported (please recompile with VM_TRACE)\");
+  WARN(\"trace_on: tracing not supported (please recompile with VM_TRACE)\");
 #endif
 ")
     (253 trace_off 0 #t "
