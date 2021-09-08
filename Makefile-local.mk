@@ -57,12 +57,58 @@ ifdef VM_TRACE
   DEFS+=-DVM_TRACE
 endif
 
-CFLAGS=-fdiagnostics-color -Wall -Wextra -gdwarf-4 -g3 -fverbose-asm -I.. $(OPTIM) $(PROFILE) $(GPROF) $(LTO) $(DEFS)
+# https://laptrinhx.com/recommended-compiler-and-linker-flags-for-gcc-2717284731/
+
+ifdef SECURITY
+  CFLAGS_SECURITY+=-D_FORTIFY_SOURCE=2
+  ifdef CPLUSPLUS
+    CFLAGS_SECURITY+=-D_GLIBCXX_ASSERTIONS
+  endif
+  CFLAGS_SECURITY+=-fstack-protector-strong
+  CFLAGS_SECURITY+=-fno-strict-aliasing
+  # Enable table-based thread cancellation
+  CFLAGS_SECURITY+=-fexceptions
+  ifdef CLANG
+    # https://blog.llvm.org/posts/2021-01-05-stack-clash-protection/
+    # XX add for recent enough versions
+    #CFLAGS_SECURITY+=-fstack-clash-protection
+  else
+    # assumes GCC
+    CFLAGS_SECURITY+=-fstack-clash-protection
+  endif
+endif
+# Increased reliability of backtraces
+CFLAGS_SECURITY_CHEAP+=-fasynchronous-unwind-tables
+# Store compiler flags in debugging information
+CFLAGS_SECURITY_CHEAP+=-grecord-gcc-switches
+CFLAGS_SECURITY_CHEAP+=-Werror=format-security -Werror=implicit-function-declaration
+
+# Control flow integrity protection
+#CFLAGS_SECURITY+=-mcet -fcf-protection
+
+
+CFLAGS=-fdiagnostics-color -Wall -Wextra -gdwarf-4 -g3 -fverbose-asm -I.. $(OPTIM) $(PROFILE) $(GPROF) $(LTO) $(CFLAGS_SECURITY) $(CFLAGS_SECURITY_CHEAP) $(DEFS)
 # How does one get macros in symbols from clang? -ggdb3 -fdebug-macro
 # does not help either.
 
+
 AFLAGS=$(PROFILE) $(GPROF) $(LTO)
 LDFLAGS=$(PROFILE) $(GPROF) $(LTO)
+
+# https://laptrinhx.com/recommended-compiler-and-linker-flags-for-gcc-2717284731/
+
+# Full ASLR for executables
+ifndef CLANG
+  LDFLAGS+=-fpie -Wl,-pie
+  # XX clang: "relocation R_X86_64_32 against hidden symbol `__TMC_END__' can not be used when making a PIE object"
+endif
+# Detect and reject underlinking
+LDFLAGS+=-Wl,-z,defs
+# Disable lazy binding
+LDFLAGS+=-Wl,-z,now
+# Read-only segments after relocation
+LDFLAGS+=-Wl,-z,relro
+
 
 CC=$(COMPILER) $(SAN)
 AS=$(ASSEMBLER) -c
