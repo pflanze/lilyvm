@@ -575,6 +575,13 @@ fib_with_registers_ret_2:
 (define (name.computed-goto-label name)
   (string-append "op_" (symbol->string name)))
 
+(define registerdecls "
+// registered with GC
+val reg1 = FAL;
+val reg2 = FAL;
+// not registered with GC, used just to avoid needing local vars
+val tmp1;")
+
 (define (print-opcodes_dispatch_h)
   (let lp ((init-code-strings '())
            (dispatch-code-strings '())
@@ -646,9 +653,9 @@ fib_with_registers_ret_2:
                           (if (not (= i (- num-opcodes 1)))
                               (display ", "))
                           (lp (+ i 1))))))
-                (display " };
-    val reg1, reg2; // register variables, to be registered with VAL_REGISTER
-    val tmp1; // not to be registered with VAL_REGISTER (to avoid local vars)
+                (display " };")
+                (display registerdecls)
+                (display "
 
 #define DISPATCH                             \\
     {                                        \\
@@ -668,9 +675,8 @@ fib_with_registers_ret_2:
               
               ;; Switch based dispatch
               (begin
+                (display registerdecls)
                 (display "
-val reg1, reg2; // register variables, to be registered with VAL_REGISTER
-val tmp1; // not to be registered with VAL_REGISTER (to avoid local vars)
 
 while (1) {
     MEM_VERIFY;
