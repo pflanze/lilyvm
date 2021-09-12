@@ -566,7 +566,7 @@ static val fixnum_add(struct vm_process *process, val a, val b) {
 
 bool trace = 0;
 #ifdef DEBUG
-# define TRACE(fmt, var)                         \
+# define TRACE(fmt, var)                        \
     if (trace) {                                \
         printf("%s = ", #var);                  \
         printf(fmt, var);                       \
