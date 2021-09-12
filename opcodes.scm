@@ -11,10 +11,12 @@
 ;; more compact? Benchmarking didn't show any difference, though.
 (define renumber? #f)
 
-;; Including undefined ones
-(define num-opcodes 256)
-
 ;; /Config.
+
+;; Size of the dispatch table--tied to the numbers used in
+;; normal-opcodes, and would need to add verification of OPCODE if not
+;; fitting exactly.
+(define num-opcodes 256)
 
 
 (define (opcode.opnum o) (list-ref o 0))
