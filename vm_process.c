@@ -7,6 +7,7 @@
 #include "chj-64lib/assert.h"
 #include "chj-64lib/util.h"
 #include "vm_process.h"
+#include "vm_mem.h" /* for UNINITIALIZED, strictly speaking circular dep */
 
 struct vm_process *malloc_process(uint16_t stacklen,
                                   uint16_t numheapwords) {
@@ -39,6 +40,8 @@ struct vm_process *malloc_process(uint16_t stacklen,
         p->stack.sp = 0;
         p->stack.len = stacklen;
 
+        p->A = UNINITIALIZED;
+        p->B = UNINITIALIZED;
         p->alloc_area_base = (word_t*)ph;
         p->alloc_size = sz0;
         p->alloc_area = (word_t*)ph;

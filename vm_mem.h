@@ -223,13 +223,15 @@ word_t* vm_process_alloc(struct vm_process* process, numwords_t n) {
 // [11000000 00000001]
 
 // special values
-#define FAL   (IMMEDIATE_KIND_SPECIAL | 1 | (0<<1))
+#define FAL           (IMMEDIATE_KIND_SPECIAL | 1 | (0<<1))
 // [11000000 00000001] = FAL 
-#define TRU   (IMMEDIATE_KIND_SPECIAL | 1 | (1<<1))
+#define TRU           (IMMEDIATE_KIND_SPECIAL | 1 | (1<<1))
 // [11000000 00000011] = TRU 
-#define NIL   (IMMEDIATE_KIND_SPECIAL | 1 | (2<<1))
-#define VOID  (IMMEDIATE_KIND_SPECIAL | 1 | (3<<1))
-#define UNDEF (IMMEDIATE_KIND_SPECIAL | 1 | (4<<1))
+#define NIL           (IMMEDIATE_KIND_SPECIAL | 1 | (2<<1))
+#define VOID          (IMMEDIATE_KIND_SPECIAL | 1 | (3<<1))
+#define UNDEF         (IMMEDIATE_KIND_SPECIAL | 1 | (4<<1))
+#define UNINITIALIZED (IMMEDIATE_KIND_SPECIAL | 1 | (5<<1))
+
 
 // cmp 'type'/value group? good or horribly bad idea ? use for now,
 // replace with symbols later?

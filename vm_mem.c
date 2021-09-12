@@ -176,6 +176,11 @@ void vm_mem_gc(struct vm_process* process) {
     // GC root sets: walk them, copy non-moved allocated objects to
     // the new space. Update pointers at the same time.
     {
+        // The registers
+        GC_HANDLE_SLOT(process->A, newptr);
+        GC_HANDLE_SLOT(process->B, newptr);
+    }
+    {
         // The root stacks
         uint8_t i;
         for (i = 0; i < process->num_val_roots; i++) {

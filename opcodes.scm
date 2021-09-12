@@ -30,28 +30,28 @@
     ;; opnum, name, numargbytes, needspcinc, C-code
 
     (5 loadA_im 2 #t "
-reg1 = ARGIM1;")
+A = ARGIM1;")
     (6 loadB_im 2 #t "
-reg2 = ARGIM1;")
+B = ARGIM1;")
     (7 pushA 0 #t "
-PUSH(reg1);")
+PUSH(A);")
     (8 pushB 0 #t "
-PUSH(reg2);")
+PUSH(B);")
     (9 popA 0 #t "
 LET_POP(x);
-reg1 = x;")
+A = x;")
     (10 popB 0 #t "
 LET_POP(x);
-reg2 = x;")
+B = x;")
     (11 TAB 0 #t "
-reg2 = reg1;")
+B = A;")
     (12 TBA 0 #t "
-reg1 = reg2;")
+A = B;")
     (13 swapA 0 #t "
 STACK_ENSURE(1);
 val x = STACK_UNSAFE_REF(0);
-STACK_UNSAFE_SET(0, reg1);
-reg1 = x;")
+STACK_UNSAFE_SET(0, A);
+A = x;")
     
     (14 push_im 2 #t "
 PUSH(ARGIM1);")
@@ -78,7 +78,7 @@ STACK_UNSAFE_SET_LAST(SCM_INC(x));")
 LET_STACK_REF(x, ARGB1);
 PUSH(SCM_INC(x));")
     (22 incA 0 #t "
-reg1 = SCM_INC(reg1);")
+A = SCM_INC(A);")
 
     (25 dec 0 #t "
 /*
@@ -88,7 +88,7 @@ PUSH(SCM_DEC(x));
 LET_STACK_LAST(x);
 STACK_UNSAFE_SET_LAST(SCM_DEC(x));")
     (26 decA 0 #t "
-reg1 = SCM_DEC(reg1);")
+A = SCM_DEC(A);")
 
     (30 add 0 #t "
 /*
@@ -118,7 +118,7 @@ LET_STACK_REF(a, i);
     ;; A += pop
     (33 addA 0 #t "
 LET_POP(x);
-reg1 = SCM_ADD(reg1, x);")
+A = SCM_ADD(A, x);")
 
     (35 mul__ 2 #t "
 uint8_t i = ARGB1;
@@ -243,7 +243,7 @@ if (SCM_NUMBER_CMP(x, ARGIM1) == LT) {
 }")
     (101 cmpbr_A_lt_im_rel8 3 #f "
 // compare with literal and branch if smaller; (if (< registerA 1234) lbl).
-if (SCM_NUMBER_CMP(reg1, ARGIM1) == LT) {
+if (SCM_NUMBER_CMP(A, ARGIM1) == LT) {
     pc += (uint8_t)ARGB3;
 } else {
     pc += 4;
@@ -403,19 +403,19 @@ STACK_ENSURE(2);
 // used in a scope where no goto happens), apparently that's not the problem?
 
 
-// Change calling conventions (reg1 is used for the first argument
+// Change calling conventions (A is used for the first argument
 // and the return value):
 STACK_SWAP;
 {
     LET_POP(n);
-    reg1 = n;
+    A = n;
 }
 // jsr fib_with_registers_entry
 PUSH(FIX((uintptr_t)&&fib_with_registers_end_calling_conventions
          - (uintptr_t)&&fib_with_registers_entry));
 goto fib_with_registers_entry;
 fib_with_registers_end_calling_conventions:
-PUSH(reg1);
+PUSH(A);
 STACK_SWAP;
 goto op_ret;
 
@@ -424,14 +424,14 @@ goto op_ret;
 fib_with_registers_entry:
 // (CMPBR_KEEP_LT_IM_REL8, FIX(2), 12)
 {
-#define x reg1
+#define x A
     if (SCM_NUMBER_CMP(x, FIX(2)) == LT) {
         // LET_POP(origpc);
         // STACK_ENSURE(1);
 #define origpc tmp1
         origpc = STACK_UNSAFE_REF(0);
         STACK_UNSAFE_REMOVE(1);
-        reg1 = FIX(1);
+        A = FIX(1);
         // optim: it now never returns to a PC!--ehr, makes it SLOWER
         if (1 || is_fixnum(origpc)) {
             goto *(const void *)((uintptr_t)&&fib_with_registers_entry
@@ -447,11 +447,11 @@ fib_with_registers_entry:
 // DEC__DUP
 {
 #ifdef FIXNUM_UNSAFE
-    reg1 = POSITIVEFIXNUM_UNSAFE_DEC(reg1);
+    A = POSITIVEFIXNUM_UNSAFE_DEC(A);
 #else
-    reg1 = SCM_DEC(reg1);
+    A = SCM_DEC(A);
 #endif
-    PUSH(reg1);
+    PUSH(A);
 }
 // (JSR_REL8, -6)
 {
@@ -469,11 +469,11 @@ fib_with_registers_ret_1:
 {
 #define oldx tmp1
     oldx = STACK_UNSAFE_REF(0);
-    STACK_UNSAFE_SET_LAST(reg1);
+    STACK_UNSAFE_SET_LAST(A);
 #ifdef FIXNUM_UNSAFE
-    reg1 = POSITIVEFIXNUM_UNSAFE_DEC(oldx);
+    A = POSITIVEFIXNUM_UNSAFE_DEC(oldx);
 #else
-    reg1 = SCM_DEC(oldx);
+    A = SCM_DEC(oldx);
 #endif
 #undef oldx
 }
@@ -487,7 +487,7 @@ fib_with_registers_ret_2:
 // ADD
 {
     // STACK_ENSURE(1); // optim: leave off
-    reg1 = SCM_ADD(reg1, STACK_UNSAFE_REF(0));
+    A = SCM_ADD(A, STACK_UNSAFE_REF(0));
     STACK_UNSAFE_REMOVE(1);
 }
 // RET_POP
@@ -568,14 +568,10 @@ fib_with_registers_ret_2:
   (string-append "op_" (symbol->string name)))
 
 (define registerdecls "
-// registered with GC
-val reg1 = FAL;
-val reg2 = FAL;
 // not registered with GC, used just to avoid needing local vars
 val tmp1;
-
-VAL_REGISTER(reg1);
-VAL_REGISTER(reg2);
+#define A process->A
+#define B process->B
 ")
 
 (define (print-opcodes_dispatch_h)

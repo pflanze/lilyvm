@@ -58,6 +58,9 @@ struct vm_stack {
 #define VM_NUM_PTR_ROOTS 4
 
 struct vm_process {
+    // Registers
+    val A;
+    val B;
     // GC heap:
     // start of concatenated allocation areas:
     /* const */ word_t* alloc_area_base;

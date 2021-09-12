@@ -3,14 +3,10 @@
 
 {
     static void* op2label[256] = { &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_loadA_im, &&op_loadB_im, &&op_pushA, &&op_pushB, &&op_popA, &&op_popB, &&op_TAB, &&op_TBA, &&op_swapA, &&op_push_im, &&op_drop1, &&op_pick_b, &&op_swap, &&op_dup, &&invalid_op, &&op_inc, &&op_inc_, &&op_incA, &&invalid_op, &&invalid_op, &&op_dec, &&op_decA, &&invalid_op, &&invalid_op, &&invalid_op, &&op_add, &&op_add_im, &&op_add__, &&op_addA, &&invalid_op, &&op_mul__, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_bitwise_and, &&op_unsafe_bitwise_and, &&op_unsafe_bitwise_or, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_jmp_rel8, &&op_jmp_rel16, &&invalid_op, &&invalid_op, &&invalid_op, &&op_jsr_rel8, &&op_ret, &&op_ret_im, &&op_ret_pop, &&invalid_op, &&invalid_op, &&op_beq_im_rel16, &&op_bpos_keep_rel16, &&op_bneg0_keep_rel16, &&op_bneg_keep_rel16, &&op_bz_keep_rel16, &&op_bz_rel16, &&invalid_op, &&invalid_op, &&invalid_op, &&op_cmpbr_keep_lt_im_rel8, &&op_cmpbr_A_lt_im_rel8, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_dec__dup, &&op_swap__dec, &&op_jsr_rel8__swap, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_fib, &&op_fib_with_registers, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_trace_on, &&op_trace_off, &&op_nop, &&op_halt };
-// registered with GC
-val reg1 = FAL;
-val reg2 = FAL;
 // not registered with GC, used just to avoid needing local vars
 val tmp1;
-
-VAL_REGISTER(reg1);
-VAL_REGISTER(reg2);
+#define A process->A
+#define B process->B
 
 
 #define DISPATCH                             \
@@ -24,28 +20,28 @@ VAL_REGISTER(reg2);
     op_loadA_im: /* loadA_im, 2 */
         TRACE_OP("loadA_im");
         {
-            reg1 = ARGIM1;
+            A = ARGIM1;
         }
         pc += 3;
         DISPATCH;
     op_loadB_im: /* loadB_im, 2 */
         TRACE_OP("loadB_im");
         {
-            reg2 = ARGIM1;
+            B = ARGIM1;
         }
         pc += 3;
         DISPATCH;
     op_pushA: /* pushA, 0 */
         TRACE_OP("pushA");
         {
-            PUSH(reg1);
+            PUSH(A);
         }
         pc += 1;
         DISPATCH;
     op_pushB: /* pushB, 0 */
         TRACE_OP("pushB");
         {
-            PUSH(reg2);
+            PUSH(B);
         }
         pc += 1;
         DISPATCH;
@@ -53,7 +49,7 @@ VAL_REGISTER(reg2);
         TRACE_OP("popA");
         {
             LET_POP(x);
-            reg1 = x;
+            A = x;
         }
         pc += 1;
         DISPATCH;
@@ -61,21 +57,21 @@ VAL_REGISTER(reg2);
         TRACE_OP("popB");
         {
             LET_POP(x);
-            reg2 = x;
+            B = x;
         }
         pc += 1;
         DISPATCH;
     op_TAB: /* TAB, 0 */
         TRACE_OP("TAB");
         {
-            reg2 = reg1;
+            B = A;
         }
         pc += 1;
         DISPATCH;
     op_TBA: /* TBA, 0 */
         TRACE_OP("TBA");
         {
-            reg1 = reg2;
+            A = B;
         }
         pc += 1;
         DISPATCH;
@@ -84,8 +80,8 @@ VAL_REGISTER(reg2);
         {
             STACK_ENSURE(1);
             val x = STACK_UNSAFE_REF(0);
-            STACK_UNSAFE_SET(0, reg1);
-            reg1 = x;
+            STACK_UNSAFE_SET(0, A);
+            A = x;
         }
         pc += 1;
         DISPATCH;
@@ -150,7 +146,7 @@ VAL_REGISTER(reg2);
     op_incA: /* incA, 0 */
         TRACE_OP("incA");
         {
-            reg1 = SCM_INC(reg1);
+            A = SCM_INC(A);
         }
         pc += 1;
         DISPATCH;
@@ -169,7 +165,7 @@ VAL_REGISTER(reg2);
     op_decA: /* decA, 0 */
         TRACE_OP("decA");
         {
-            reg1 = SCM_DEC(reg1);
+            A = SCM_DEC(A);
         }
         pc += 1;
         DISPATCH;
@@ -215,7 +211,7 @@ VAL_REGISTER(reg2);
         TRACE_OP("addA");
         {
             LET_POP(x);
-            reg1 = SCM_ADD(reg1, x);
+            A = SCM_ADD(A, x);
         }
         pc += 1;
         DISPATCH;
@@ -410,7 +406,7 @@ VAL_REGISTER(reg2);
         TRACE_OP("cmpbr_A_lt_im_rel8");
         {
             // compare with literal and branch if smaller; (if (< registerA 1234) lbl).
-            if (SCM_NUMBER_CMP(reg1, ARGIM1) == LT) {
+            if (SCM_NUMBER_CMP(A, ARGIM1) == LT) {
                 pc += (uint8_t)ARGB3;
             } else {
                 pc += 4;
@@ -591,19 +587,19 @@ VAL_REGISTER(reg2);
             // used in a scope where no goto happens), apparently that's not the problem?
             
             
-            // Change calling conventions (reg1 is used for the first argument
+            // Change calling conventions (A is used for the first argument
             // and the return value):
             STACK_SWAP;
             {
                 LET_POP(n);
-                reg1 = n;
+                A = n;
             }
             // jsr fib_with_registers_entry
             PUSH(FIX((uintptr_t)&&fib_with_registers_end_calling_conventions
                      - (uintptr_t)&&fib_with_registers_entry));
             goto fib_with_registers_entry;
             fib_with_registers_end_calling_conventions:
-            PUSH(reg1);
+            PUSH(A);
             STACK_SWAP;
             goto op_ret;
             
@@ -612,14 +608,14 @@ VAL_REGISTER(reg2);
             fib_with_registers_entry:
             // (CMPBR_KEEP_LT_IM_REL8, FIX(2), 12)
             {
-            #define x reg1
+            #define x A
                 if (SCM_NUMBER_CMP(x, FIX(2)) == LT) {
                     // LET_POP(origpc);
                     // STACK_ENSURE(1);
             #define origpc tmp1
                     origpc = STACK_UNSAFE_REF(0);
                     STACK_UNSAFE_REMOVE(1);
-                    reg1 = FIX(1);
+                    A = FIX(1);
                     // optim: it now never returns to a PC!--ehr, makes it SLOWER
                     if (1 || is_fixnum(origpc)) {
                         goto *(const void *)((uintptr_t)&&fib_with_registers_entry
@@ -635,11 +631,11 @@ VAL_REGISTER(reg2);
             // DEC__DUP
             {
             #ifdef FIXNUM_UNSAFE
-                reg1 = POSITIVEFIXNUM_UNSAFE_DEC(reg1);
+                A = POSITIVEFIXNUM_UNSAFE_DEC(A);
             #else
-                reg1 = SCM_DEC(reg1);
+                A = SCM_DEC(A);
             #endif
-                PUSH(reg1);
+                PUSH(A);
             }
             // (JSR_REL8, -6)
             {
@@ -657,11 +653,11 @@ VAL_REGISTER(reg2);
             {
             #define oldx tmp1
                 oldx = STACK_UNSAFE_REF(0);
-                STACK_UNSAFE_SET_LAST(reg1);
+                STACK_UNSAFE_SET_LAST(A);
             #ifdef FIXNUM_UNSAFE
-                reg1 = POSITIVEFIXNUM_UNSAFE_DEC(oldx);
+                A = POSITIVEFIXNUM_UNSAFE_DEC(oldx);
             #else
-                reg1 = SCM_DEC(oldx);
+                A = SCM_DEC(oldx);
             #endif
             #undef oldx
             }
@@ -675,7 +671,7 @@ VAL_REGISTER(reg2);
             // ADD
             {
                 // STACK_ENSURE(1); // optim: leave off
-                reg1 = SCM_ADD(reg1, STACK_UNSAFE_REF(0));
+                A = SCM_ADD(A, STACK_UNSAFE_REF(0));
                 STACK_UNSAFE_REMOVE(1);
             }
             // RET_POP
