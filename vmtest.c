@@ -236,12 +236,12 @@ TEST(basics) {
     pc = program;
     /*0*/  OP_IM(LOADA_IM, FIX(16));//3
     /*3*/  OP(TRACE_ON); //1
-    /*4*/  OP(REGISTERA); // 1
+    /*4*/  OP(NOP); // 1 -- had GC registering and unregistering ops here
     /*5*/  OP_IM(LOADB_IM, FAL); //3  -- not actually used now, though
-    /*8*/  OP(REGISTERB); // 1
+    /*8*/  OP(NOP); // 1
     /*9*/  OP_B(JSR_REL8, 6); //2
     /*11*/ OP(PUSHA);//1
-    /*12*/ OP(UNREGISTER2); // 1
+    /*12*/ OP(NOP); // 1
     /*13*/ OP(TRACE_OFF);//1
     /*14*/ OP(HALT); //1
 

@@ -277,6 +277,7 @@ void vm_process_run(struct vm_process *process, uint8_t *code) {
 
 halt:
     /* WARN("machine halted"); */
+    VAL_UNREGISTER(2);
     return;
 on_error:
     DIE_("vm_process_run: error at PC %" PRIuPTR ": \n"

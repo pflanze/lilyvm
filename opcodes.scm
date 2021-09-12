@@ -29,14 +29,6 @@
   '(
     ;; opnum, name, numargbytes, needspcinc, C-code
 
-    (1 registerA 0 #t "
-VAL_REGISTER(reg1);")
-    (2 registerB 0 #t "
-VAL_REGISTER(reg2);")
-    (3 unregister1 0 #t "
-VAL_UNREGISTER(1);")
-    (4 unregister2 0 #t "
-VAL_UNREGISTER(2);")
     (5 loadA_im 2 #t "
 reg1 = ARGIM1;")
     (6 loadB_im 2 #t "
@@ -418,14 +410,12 @@ STACK_SWAP;
     LET_POP(n);
     reg1 = n;
 }
-VAL_REGISTER(reg1);
 // jsr fib_with_registers_entry
 PUSH(FIX((uintptr_t)&&fib_with_registers_end_calling_conventions
          - (uintptr_t)&&fib_with_registers_entry));
 goto fib_with_registers_entry;
 fib_with_registers_end_calling_conventions:
 PUSH(reg1);
-VAL_UNREGISTER(1);
 STACK_SWAP;
 goto op_ret;
 
@@ -582,7 +572,11 @@ fib_with_registers_ret_2:
 val reg1 = FAL;
 val reg2 = FAL;
 // not registered with GC, used just to avoid needing local vars
-val tmp1;")
+val tmp1;
+
+VAL_REGISTER(reg1);
+VAL_REGISTER(reg2);
+")
 
 (define (print-opcodes_dispatch_h)
   (let lp ((init-code-strings '())

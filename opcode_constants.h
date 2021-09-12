@@ -4,10 +4,6 @@
 #define _OPCODE_CONSTANTS_H_
 
 //                          opcode  /* hex; numargbytes */
-#define OP_REGISTERA                 1 /* 0x01; 0 */
-#define OP_REGISTERB                 2 /* 0x02; 0 */
-#define OP_UNREGISTER1               3 /* 0x03; 0 */
-#define OP_UNREGISTER2               4 /* 0x04; 0 */
 #define OP_LOADA_IM                  5 /* 0x05; 2 */
 #define OP_LOADB_IM                  6 /* 0x06; 2 */
 #define OP_PUSHA                     7 /* 0x07; 0 */
