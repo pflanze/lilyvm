@@ -5,8 +5,16 @@
     static void* op2label[256] = { &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_loadA_im, &&op_loadB_im, &&op_pushA, &&op_pushB, &&op_popA, &&op_popB, &&op_TAB, &&op_TBA, &&op_swapA, &&op_push_im, &&op_drop1, &&op_pick_b, &&op_swap, &&op_dup, &&invalid_op, &&op_inc, &&op_inc_, &&op_incA, &&invalid_op, &&invalid_op, &&op_dec, &&op_decA, &&invalid_op, &&invalid_op, &&invalid_op, &&op_add, &&op_add_im, &&op_add__, &&op_addA, &&invalid_op, &&op_mul__, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_bitwise_and, &&op_unsafe_bitwise_and, &&op_unsafe_bitwise_or, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_jmp_rel8, &&op_jmp_rel16, &&invalid_op, &&invalid_op, &&invalid_op, &&op_jsr_rel8, &&op_ret, &&op_ret_im, &&op_ret_pop, &&invalid_op, &&invalid_op, &&op_beq_im_rel16, &&op_bpos_keep_rel16, &&op_bneg0_keep_rel16, &&op_bneg_keep_rel16, &&op_bz_keep_rel16, &&op_bz_rel16, &&invalid_op, &&invalid_op, &&invalid_op, &&op_cmpbr_keep_lt_im_rel8, &&op_cmpbr_A_lt_im_rel8, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_dec__dup, &&op_swap__dec, &&op_jsr_rel8__swap, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_fib, &&op_fib_with_registers, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_trace_on, &&op_trace_off, &&op_nop, &&op_halt };
 // not registered with GC, used just to avoid needing local vars
 val tmp1;
-#define A process->A
-#define B process->B
+// not registered, but copied to process struct and back when needed
+val A = UNINITIALIZED;
+val B = UNINITIALIZED;
+
+#define _STORE(X) do { process->X = X; } while (0)
+#define _RESTORE(X) do { X = process->X; } while (0)
+#define STORE_ALL do { _STORE(A); _STORE(B); } while (0);
+#define RESTORE_ALL do { _RESTORE(A); _RESTORE(B); } while (0);
+#define STORE_EXCEPT_A do { _STORE(B); } while (0);
+#define RESTORE_EXCEPT_A do { _RESTORE(B); } while (0);
 
 
 #define DISPATCH                             \
@@ -126,12 +134,11 @@ val tmp1;
     op_inc: /* inc, 0 */
         TRACE_OP("inc");
         {
-            /*
-            LET_POP(x);
-            PUSH(SCM_INC(x));
-            */
             LET_STACK_LAST(x);
+            STORE_ALL;
             STACK_UNSAFE_SET_LAST(SCM_INC(x));
+            RESTORE_ALL;
+            
         }
         pc += 1;
         DISPATCH;
@@ -139,49 +146,52 @@ val tmp1;
         TRACE_OP("inc_");
         {
             LET_STACK_REF(x, ARGB1);
+            STORE_ALL;
             PUSH(SCM_INC(x));
+            RESTORE_ALL;
+            
         }
         pc += 2;
         DISPATCH;
     op_incA: /* incA, 0 */
         TRACE_OP("incA");
         {
+            STORE_EXCEPT_A;
             A = SCM_INC(A);
+            RESTORE_EXCEPT_A;
+            
         }
         pc += 1;
         DISPATCH;
     op_dec: /* dec, 0 */
         TRACE_OP("dec");
         {
-            /*
-            LET_POP(x);
-            PUSH(SCM_DEC(x));
-            */
             LET_STACK_LAST(x);
+            STORE_ALL;
             STACK_UNSAFE_SET_LAST(SCM_DEC(x));
+            RESTORE_ALL;
+            
         }
         pc += 1;
         DISPATCH;
     op_decA: /* decA, 0 */
         TRACE_OP("decA");
         {
+            STORE_EXCEPT_A;
             A = SCM_DEC(A);
+            RESTORE_EXCEPT_A;
+            
         }
         pc += 1;
         DISPATCH;
     op_add: /* add, 0 */
         TRACE_OP("add");
         {
-            /*
-            LET_POP(b);
-            {
-                LET_POP(a);
-                PUSH(SCM_ADD(a, b));
-            }
-            */
             STACK_ENSURE(2);
+            STORE_ALL;
             STACK_UNSAFE_SET(1, SCM_ADD(STACK_UNSAFE_REF(1), STACK_UNSAFE_REF(0)));
             STACK_UNSAFE_REMOVE(1);
+            RESTORE_ALL;
             
         }
         pc += 1;
@@ -189,8 +199,11 @@ val tmp1;
     op_add_im: /* add_im, 2 */
         TRACE_OP("add_im");
         {
-            LET_POP(x);
-            PUSH(SCM_ADD(x, ARGIM1));
+            STACK_ENSURE(1);
+            STORE_ALL;
+            STACK_UNSAFE_SET(0, SCM_ADD(STACK_UNSAFE_REF(0), ARGIM1));
+            RESTORE_ALL;
+            
         }
         pc += 3;
         DISPATCH;
@@ -201,7 +214,9 @@ val tmp1;
             LET_STACK_REF(a, i);
             {
                 LET_STACK_REF(b, ARGB2);
+                STORE_ALL;
                 STACK_SET(i, SCM_ADD(a, b));
+                RESTORE_ALL;
             }
             
         }
@@ -210,8 +225,12 @@ val tmp1;
     op_addA: /* addA, 0 */
         TRACE_OP("addA");
         {
-            LET_POP(x);
-            A = SCM_ADD(A, x);
+            STACK_ENSURE(1);
+            STORE_EXCEPT_A;
+            A = SCM_ADD(A, STACK_UNSAFE_REF(0));
+            STORE_EXCEPT_A;
+            STACK_UNSAFE_REMOVE(1);
+            
         }
         pc += 1;
         DISPATCH;
@@ -222,7 +241,9 @@ val tmp1;
             LET_STACK_REF(a, i);
             {
                 LET_STACK_REF(b, ARGB2);
+                STORE_ALL;
                 STACK_SET(i, SCM_MUL(a, b));
+                RESTORE_ALL;
             }
             
         }
@@ -234,7 +255,9 @@ val tmp1;
             LET_POP(b);
             {
                 LET_POP(a);
+                STORE_ALL;
                 PUSH(SCM_BITWISE_AND(a, b));
+                RESTORE_ALL;
             }
             
         }
@@ -416,15 +439,13 @@ val tmp1;
     op_dec__dup: /* dec__dup, 0 */
         TRACE_OP("dec__dup");
         {
-            /*
-            LET_STACK_LAST(x);
-            STACK_UNSAFE_SET_LAST(SCM_DEC(x));
-            STACK_DUP;
-            */
             STACK_ALLOC(1);
+            STORE_ALL;
             val x = SCM_DEC(STACK_UNSAFE_REF(1));
             STACK_UNSAFE_SET(1, x);
             STACK_UNSAFE_SET(0, x);
+            RESTORE_ALL;
+            
         }
         pc += 1;
         DISPATCH;
@@ -434,12 +455,16 @@ val tmp1;
             if (1) { // actually faster??
                 STACK_SWAP;
                 LET_STACK_LAST(x);
+                STORE_ALL;
                 STACK_UNSAFE_SET_LAST(SCM_DEC(x));
+                RESTORE_ALL;
             } else {
                 STACK_ENSURE(2);
+                STORE_ALL;
                 val tmp = SCM_DEC(STACK_UNSAFE_REF(1));
                 STACK_UNSAFE_SET(1, STACK_UNSAFE_REF(0));
                 STACK_UNSAFE_SET(0, tmp);
+                RESTORE_ALL;
             }
             
         }
@@ -633,7 +658,9 @@ val tmp1;
             #ifdef FIXNUM_UNSAFE
                 A = POSITIVEFIXNUM_UNSAFE_DEC(A);
             #else
+            STORE_EXCEPT_A;
                 A = SCM_DEC(A);
+            RESTORE_EXCEPT_A;
             #endif
                 PUSH(A);
             }
@@ -657,7 +684,9 @@ val tmp1;
             #ifdef FIXNUM_UNSAFE
                 A = POSITIVEFIXNUM_UNSAFE_DEC(oldx);
             #else
+            STORE_EXCEPT_A;
                 A = SCM_DEC(oldx);
+            RESTORE_EXCEPT_A;
             #endif
             #undef oldx
             }
@@ -671,7 +700,9 @@ val tmp1;
             // ADD
             {
                 // STACK_ENSURE(1); // optim: leave off
+            STORE_EXCEPT_A;
                 A = SCM_ADD(A, STACK_UNSAFE_REF(0));
+            RESTORE_EXCEPT_A;
                 STACK_UNSAFE_REMOVE(1);
             }
             // RET_POP

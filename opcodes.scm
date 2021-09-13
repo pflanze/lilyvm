@@ -68,43 +68,48 @@ STACK_SWAP;")
 STACK_DUP;")
     
     (20 inc 0 #t "
-/*
-LET_POP(x);
-PUSH(SCM_INC(x));
-*/
 LET_STACK_LAST(x);
-STACK_UNSAFE_SET_LAST(SCM_INC(x));")
+STORE_ALL;
+STACK_UNSAFE_SET_LAST(SCM_INC(x));
+RESTORE_ALL;
+")
     (21 inc_ 1 #t "
 LET_STACK_REF(x, ARGB1);
-PUSH(SCM_INC(x));")
+STORE_ALL;
+PUSH(SCM_INC(x));
+RESTORE_ALL;
+")
     (22 incA 0 #t "
-A = SCM_INC(A);")
+STORE_EXCEPT_A;
+A = SCM_INC(A);
+RESTORE_EXCEPT_A;
+")
 
     (25 dec 0 #t "
-/*
-LET_POP(x);
-PUSH(SCM_DEC(x));
-*/
 LET_STACK_LAST(x);
-STACK_UNSAFE_SET_LAST(SCM_DEC(x));")
+STORE_ALL;
+STACK_UNSAFE_SET_LAST(SCM_DEC(x));
+RESTORE_ALL;
+")
     (26 decA 0 #t "
-A = SCM_DEC(A);")
+STORE_EXCEPT_A;
+A = SCM_DEC(A);
+RESTORE_EXCEPT_A;
+")
 
     (30 add 0 #t "
-/*
-LET_POP(b);
-{
-    LET_POP(a);
-    PUSH(SCM_ADD(a, b));
-}
-*/
 STACK_ENSURE(2);
+STORE_ALL;
 STACK_UNSAFE_SET(1, SCM_ADD(STACK_UNSAFE_REF(1), STACK_UNSAFE_REF(0)));
 STACK_UNSAFE_REMOVE(1);
+RESTORE_ALL;
 ")
     (31 add_im 2 #t "
-LET_POP(x);
-PUSH(SCM_ADD(x, ARGIM1));")
+STACK_ENSURE(1);
+STORE_ALL;
+STACK_UNSAFE_SET(0, SCM_ADD(STACK_UNSAFE_REF(0), ARGIM1));
+RESTORE_ALL;
+")
 
     ;; add x y  means stack[x] += stack[y]
     (32 add__ 2 #t "
@@ -112,20 +117,28 @@ uint8_t i = ARGB1;
 LET_STACK_REF(a, i);
 {
     LET_STACK_REF(b, ARGB2);
+    STORE_ALL;
     STACK_SET(i, SCM_ADD(a, b));
+    RESTORE_ALL;
 }
 ")
     ;; A += pop
     (33 addA 0 #t "
-LET_POP(x);
-A = SCM_ADD(A, x);")
+STACK_ENSURE(1);
+STORE_EXCEPT_A;
+A = SCM_ADD(A, STACK_UNSAFE_REF(0));
+STORE_EXCEPT_A;
+STACK_UNSAFE_REMOVE(1);
+")
 
     (35 mul__ 2 #t "
 uint8_t i = ARGB1;
 LET_STACK_REF(a, i);
 {
     LET_STACK_REF(b, ARGB2);
+    STORE_ALL;
     STACK_SET(i, SCM_MUL(a, b));
+    RESTORE_ALL;
 }
 ")
 
@@ -133,7 +146,9 @@ LET_STACK_REF(a, i);
 LET_POP(b);
 {
     LET_POP(a);
+    STORE_ALL;
     PUSH(SCM_BITWISE_AND(a, b));
+    RESTORE_ALL;
 }
 ")
     ;; Can be used for booleans and fixnums (both parameters *must* be
@@ -251,25 +266,27 @@ if (SCM_NUMBER_CMP(A, ARGIM1) == LT) {
 
     ;; Some combined opcodes (to test for the performance advantage):
     (200 dec__dup 0 #t "
-/*
-LET_STACK_LAST(x);
-STACK_UNSAFE_SET_LAST(SCM_DEC(x));
-STACK_DUP;
-*/
 STACK_ALLOC(1);
+STORE_ALL;
 val x = SCM_DEC(STACK_UNSAFE_REF(1));
 STACK_UNSAFE_SET(1, x);
-STACK_UNSAFE_SET(0, x);")
+STACK_UNSAFE_SET(0, x);
+RESTORE_ALL;
+")
     (201 swap__dec 0 #t "
 if (1) { // actually faster??
     STACK_SWAP;
     LET_STACK_LAST(x);
+    STORE_ALL;
     STACK_UNSAFE_SET_LAST(SCM_DEC(x));
+    RESTORE_ALL;
 } else {
     STACK_ENSURE(2);
+    STORE_ALL;
     val tmp = SCM_DEC(STACK_UNSAFE_REF(1));
     STACK_UNSAFE_SET(1, STACK_UNSAFE_REF(0));
     STACK_UNSAFE_SET(0, tmp);
+    RESTORE_ALL;
 }
 ")
     ;; (The following really didn't change ~anything at all [when using gcc]: )
@@ -449,7 +466,9 @@ fib_with_registers_entry:
 #ifdef FIXNUM_UNSAFE
     A = POSITIVEFIXNUM_UNSAFE_DEC(A);
 #else
+STORE_EXCEPT_A;
     A = SCM_DEC(A);
+RESTORE_EXCEPT_A;
 #endif
     PUSH(A);
 }
@@ -473,7 +492,9 @@ fib_with_registers_ret_1:
 #ifdef FIXNUM_UNSAFE
     A = POSITIVEFIXNUM_UNSAFE_DEC(oldx);
 #else
+STORE_EXCEPT_A;
     A = SCM_DEC(oldx);
+RESTORE_EXCEPT_A;
 #endif
 #undef oldx
 }
@@ -487,7 +508,9 @@ fib_with_registers_ret_2:
 // ADD
 {
     // STACK_ENSURE(1); // optim: leave off
+STORE_EXCEPT_A;
     A = SCM_ADD(A, STACK_UNSAFE_REF(0));
+RESTORE_EXCEPT_A;
     STACK_UNSAFE_REMOVE(1);
 }
 // RET_POP
@@ -570,8 +593,16 @@ fib_with_registers_ret_2:
 (define registerdecls "
 // not registered with GC, used just to avoid needing local vars
 val tmp1;
-#define A process->A
-#define B process->B
+// not registered, but copied to process struct and back when needed
+val A = UNINITIALIZED;
+val B = UNINITIALIZED;
+
+#define _STORE(X) do { process->X = X; } while (0)
+#define _RESTORE(X) do { X = process->X; } while (0)
+#define STORE_ALL do { _STORE(A); _STORE(B); } while (0);
+#define RESTORE_ALL do { _RESTORE(A); _RESTORE(B); } while (0);
+#define STORE_EXCEPT_A do { _STORE(B); } while (0);
+#define RESTORE_EXCEPT_A do { _RESTORE(B); } while (0);
 ")
 
 (define (print-opcodes_dispatch_h)
