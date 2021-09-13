@@ -228,7 +228,7 @@ val B = UNINITIALIZED;
             STACK_ENSURE(1);
             STORE_EXCEPT_A;
             A = SCM_ADD(A, STACK_UNSAFE_REF(0));
-            STORE_EXCEPT_A;
+            RESTORE_EXCEPT_A;
             STACK_UNSAFE_REMOVE(1);
             
         }
