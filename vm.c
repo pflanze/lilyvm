@@ -157,7 +157,7 @@ void stack_clear(struct vm_stack *s) {
         printf(")");                            \
     }
 
-void vm_process_stack_writeln(struct vm_process *process) {
+void vm_process_stack_write(struct vm_process *process) {
 #define DEREF(x) x
     VALARRAY_WRITE(process->stack.vals, process->stack.sp);
 #undef DEREF
@@ -170,7 +170,14 @@ void vm_process_stack_writeln(struct vm_process *process) {
 #define DEREF(x) ALLOCATED_FROM_POINTER((*(x))-1)
     VALARRAY_WRITE(process->ptr_roots, process->num_ptr_roots);
 #undef DEREF
-    printf("\n");
+}
+
+void vm_process_registers_write(struct vm_process *process,
+                                const char* separator) {
+    printf("A=");
+    SCM_WRITE(process->A);
+    printf("%sB=", separator);
+    SCM_WRITE(process->B);
 }
 
 void vm_process_stack_clear(struct vm_process *process) {
@@ -183,8 +190,10 @@ static void vm_trace(struct vm_process *process,
                      uintptr_t pcoffset,
                      const char *opcodename) {
     printf("           ");
-    vm_process_stack_writeln(process);
-    printf("%3" PRIu16 " - %4" PRIuPTR " %s\n",
+    vm_process_stack_write(process);
+    printf(", ");
+    vm_process_registers_write(process, ", ");
+    printf("\n%3" PRIu16 " - %4" PRIuPTR " %s\n",
            process->stack.sp, pcoffset, opcodename);
 }
 

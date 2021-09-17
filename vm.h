@@ -20,7 +20,9 @@ void vm_process_trace_on(struct vm_process *process, bool yes) {
 
 void vm_process_run(struct vm_process *process, uint8_t *code);
 
-void vm_process_stack_writeln(struct vm_process *process);
+void vm_process_stack_write(struct vm_process *process);
+void vm_process_registers_write(struct vm_process *process,
+                                const char* separator);
 
 void vm_process_stack_clear(struct vm_process *process);
 

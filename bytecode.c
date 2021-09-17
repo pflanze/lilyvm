@@ -68,7 +68,10 @@ bool bytecode_load_and_run(const char* path,
     printf("gc_count = %" PRIu32 ", gc_moves = %" PRIu64 "\n",
            process->gc_count, process->gc_moves);
     printf("stack = ");
-    vm_process_stack_writeln(process);
+    vm_process_stack_write(process);
+    printf("\nregisters:\n  ");
+    vm_process_registers_write(process, "\n  ");
+    printf("\n");
     FREE_VM_PROCESS(process);
     
     munmap(mapping, st.st_size);
