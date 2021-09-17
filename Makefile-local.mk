@@ -15,7 +15,11 @@ endif
 
 ASSEMBLER=gcc
 
-LTO=-flto
+ifdef LTO
+  LTOFLAGS=-flto
+else
+  LTOFLAGS=
+endif
 
 #PROFILE=-fprofile-generate=.profile
 #PROFILE=-fprofile-use=.profile
@@ -87,13 +91,13 @@ CFLAGS_SECURITY_CHEAP+=-Werror=format-security -Werror=implicit-function-declara
 #CFLAGS_SECURITY+=-mcet -fcf-protection
 
 
-CFLAGS=-fdiagnostics-color -Wall -Wextra -gdwarf-4 -g3 -fverbose-asm -I.. $(OPTIM) $(PROFILE) $(GPROF) $(LTO) $(CFLAGS_SECURITY) $(CFLAGS_SECURITY_CHEAP) $(DEFS)
+CFLAGS=-fdiagnostics-color -Wall -Wextra -gdwarf-4 -g3 -fverbose-asm -I.. $(OPTIM) $(PROFILE) $(GPROF) $(LTOFLAGS) $(CFLAGS_SECURITY) $(CFLAGS_SECURITY_CHEAP) $(DEFS)
 # How does one get macros in symbols from clang? -ggdb3 -fdebug-macro
 # does not help either.
 
 
-AFLAGS=$(PROFILE) $(GPROF) $(LTO)
-LDFLAGS=$(PROFILE) $(GPROF) $(LTO)
+AFLAGS=$(PROFILE) $(GPROF) $(LTOFLAGS)
+LDFLAGS=$(PROFILE) $(GPROF) $(LTOFLAGS)
 
 # https://laptrinhx.com/recommended-compiler-and-linker-flags-for-gcc-2717284731/
 

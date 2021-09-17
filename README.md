@@ -163,7 +163,9 @@ For small optimized binaries, set `SMALL` in the environment. To
 compile in C++ mode, set `CPLUSPLUS`. To use clang/clang++, set
 `CLANG`. To enable execution tracing, set `VM_TRACE` (it needs to also
 be enabled at runtime via the `trace_on` opcode). Set `SECURITY` if
-you're interested in security over speed. 
+you're interested in security over speed (although it probably won't
+hurt the latter). Set `LTO` for link time optimization (although that
+may make it slower).
 
 All of those env variables are checked for their existence, not their
 value.
