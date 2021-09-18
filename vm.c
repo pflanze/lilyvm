@@ -189,6 +189,7 @@ void vm_process_stack_clear(struct vm_process *process) {
 static void vm_trace(struct vm_process *process,
                      uintptr_t pcoffset,
                      const char *opcodename) {
+    // Note: bytecode_load_and_run is printing very similar output
     printf("           ");
     vm_process_stack_write(process);
     printf("\n           ");

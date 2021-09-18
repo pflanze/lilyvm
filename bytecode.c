@@ -64,7 +64,10 @@ bool bytecode_load_and_run(const char* path,
     }
 
     LET_NEW_VM_PROCESS(process, stacklen, heaplen);
+
     vm_process_run(process, mapping);
+
+    // Note: vm_trace is printing very similar output
     printf("gc_count = %" PRIu32 ", gc_moves = %" PRIu64 "\n",
            process->gc_count, process->gc_moves);
     printf("stack = ");
@@ -72,6 +75,7 @@ bool bytecode_load_and_run(const char* path,
     printf("\nregisters:\n  ");
     vm_process_registers_write(process, "\n  ");
     printf("\n");
+
     FREE_VM_PROCESS(process);
     
     munmap(mapping, st.st_size);
