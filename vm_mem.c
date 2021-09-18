@@ -886,6 +886,8 @@ val scm_write(struct vm_process *process, val v) {
         PRINT("#!void");
     } else if (is_undef(v)) {
         PRINT("#!undefined");
+    } else if (is_uninitialized(v)) {
+        PRINT("#!uninitialized");
     } else if (is_fixnum(v)) {
         printf("%i", INT(v));
     } else if (is_pcnum(v)) {

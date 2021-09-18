@@ -275,6 +275,7 @@ word_t* vm_process_alloc(struct vm_process* process, numwords_t n) {
 #define is_trueish(x) (!is_false(x))
 #define is_void(x) ((x) == VOID)
 #define is_undef(x) ((x) == UNDEF)
+#define is_uninitialized(x) ((x) == UNINITIALIZED)
 #define is_fixnum(x)  (((x) & (IMMEDIATE_KIND_MASK | IMMEDIATE_BIT_MASK)) == (IMMEDIATE_KIND_FIXNUM | IMMEDIATE_BIT_MASK))
 #define is_pcnum(x)  (((x) & (IMMEDIATE_KIND_MASK | IMMEDIATE_BIT_MASK)) == (IMMEDIATE_KIND_PCNUM | IMMEDIATE_BIT_MASK))
 #define is_char(x)    (((x) & (IMMEDIATE_KIND_MASK | IMMEDIATE_BIT_MASK)) == (IMMEDIATE_KIND_CHAR | IMMEDIATE_BIT_MASK))
