@@ -191,7 +191,7 @@ static void vm_trace(struct vm_process *process,
                      const char *opcodename) {
     printf("           ");
     vm_process_stack_write(process);
-    printf(", ");
+    printf("\n           ");
     vm_process_registers_write(process, ", ");
     printf("\n%3" PRIu16 " - %4" PRIuPTR " %s\n",
            process->stack.sp, pcoffset, opcodename);
