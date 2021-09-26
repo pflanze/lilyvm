@@ -148,7 +148,9 @@ in [`vmtest.c`](vmtest.c)). You can run those via:
 There is currently no disassembler. To understand what those files do,
 read the sections in [`vmtest.c`](vmtest.c) where the opcodes that are
 stored to them are being written to memory, and then
-[`opcodes.scm`](opcodes.scm) to see how the opcodes are implemented.
+[`normal-opcodes.scm`](normal-opcodes.scm) and
+[`optim-opcodes.scm`](optim-opcodes.scm) to see how the opcodes are
+implemented.
 
 Run `target-local/lilyvm --help` for help on command line options.
 
