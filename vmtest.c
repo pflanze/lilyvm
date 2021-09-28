@@ -235,7 +235,7 @@ TEST(basics) {
     // opcodes):
     pc = program;
     /*0*/  OP_IM(LOADA_IM, FIX(16));//3
-    /*3*/  OP(TRACE_ON); //1
+    /*3*/  OP(NOP /* TRACE_ON */); //1
     /*4*/  OP(NOP); // 1 -- had GC registering and unregistering ops here
     /*5*/  OP_IM(LOADB_IM, FAL); //3  -- not actually used now, though
     /*8*/  OP(NOP); // 1
@@ -269,6 +269,59 @@ TEST(basics) {
     /*0*/  OP_IM(LOADA_IM, FIX(35));
     bytecode_write_file(program, program_end-program,
                         "fib_registers_35.bytecode");
+    if (0) {
+        vm_process_stack_clear(process);
+        vm_process_run(process, program);
+        ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+        WRITELN(process->stack.vals[0]);
+        ASSERT_EQ(SCM_NUMBER_EQUAL(process->stack.vals[0],
+                                   FIXMULINT_TO_SCM(14930352)),
+                  TRU);
+    }
+
+    // Naive fibonacci using registers again, but taking advantage of
+    // static typing for the input register (unsafe, assumes a
+    // bytecode verifier that can check types). Values also need to be
+    // kept on the stack in which case they need to be converted to
+    // fixnums, hence can't do the same optimization for the result
+    // type (since it goes into bignums, even though the M register
+    // would be large enough).
+    pc = program;
+    /*0*/  OP_IM(LOADN_IM, 16);//3
+    /*3*/  OP(TRACE_ON); //1
+    /*4*/  OP(NOP); // 1 -- had GC registering and unregistering ops here
+    /*5*/  OP_IM(LOADB_IM, FAL); //3  -- not actually used now, though
+    /*8*/  OP(NOP); // 1
+    /*9*/  OP_B(JSR_REL8, 6); //2
+    /*11*/ OP(PUSHA);//1
+    /*12*/ OP(NOP); // 1
+    /*13*/ OP(TRACE_OFF);//1
+    /*14*/ OP(HALT); //1
+
+    // fib: n is in register N; return result in register A
+    /*15*/ OP_IM_B(CMPBR_N_LT_IM_REL8, 2, 14); //4   end:
+    /*19*/ OP(DECN); //1
+    /*20*/ OP(PUSHN); //1
+    /*21*/ OP_B(JSR_REL8, -6); //2 fib
+    /*23*/ OP(POPN__PUSHA); //1 -- ok this is a combined op
+    /*24*/ OP(DECN); //1
+    /*25*/ OP_B(JSR_REL8, -10); //2 fib
+    /*27*/ OP(ADDA); //1
+    /*28*/ OP(RET);//1
+    // end:
+    /*29*/ OP_IM(LOADA_IM, FIX(1));//3
+    /*32*/ OP(RET);
+    // ---
+    program_end = pc;
+    vm_process_stack_clear(process);
+    vm_process_run(process, program);
+    ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+    ASSERT_EQ_(val, process->stack.vals[0], FIX(1597));
+
+    pc = program;
+    /*0*/  OP_IM(LOADN_IM, 35);
+    bytecode_write_file(program, program_end-program,
+                        "fib_binaryregisters_35.bytecode");
     if (0) {
         vm_process_stack_clear(process);
         vm_process_run(process, program);

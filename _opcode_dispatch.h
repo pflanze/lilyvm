@@ -2,10 +2,18 @@
 
 
 {
-    static void* op2label[256] = { &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_loadA_im, &&op_loadB_im, &&op_pushA, &&op_pushB, &&op_popA, &&op_popB, &&op_TAB, &&op_TBA, &&op_swapA, &&op_push_im, &&op_drop1, &&op_pick_b, &&op_swap, &&op_dup, &&invalid_op, &&op_inc, &&op_inc_, &&op_incA, &&invalid_op, &&invalid_op, &&op_dec, &&op_decA, &&invalid_op, &&invalid_op, &&invalid_op, &&op_add, &&op_add_im, &&op_add__, &&op_addA, &&invalid_op, &&op_mul__, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_bitwise_and, &&op_unsafe_bitwise_and, &&op_unsafe_bitwise_or, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_jmp_rel8, &&op_jmp_rel16, &&invalid_op, &&invalid_op, &&invalid_op, &&op_jsr_rel8, &&op_ret, &&op_ret_im, &&op_ret_pop, &&invalid_op, &&invalid_op, &&op_beq_im_rel16, &&op_bpos_keep_rel16, &&op_bneg0_keep_rel16, &&op_bneg_keep_rel16, &&op_bz_keep_rel16, &&op_bz_rel16, &&invalid_op, &&invalid_op, &&invalid_op, &&op_cmpbr_keep_lt_im_rel8, &&op_cmpbr_A_lt_im_rel8, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_dec__dup, &&op_swap__dec, &&op_jsr_rel8__swap, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_fib, &&op_fib_with_registers, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_trace_on, &&op_trace_off, &&op_nop, &&op_halt };
+    static void* op2label[256] = { &&invalid_op, &&op_loadM_im, &&op_loadN_im, &&op_loadX_im, &&op_loadY_im, &&op_loadA_im, &&op_loadB_im, &&op_pushA, &&op_pushB, &&op_popA, &&op_popB, &&op_TAB, &&op_TBA, &&op_swapA, &&op_push_im, &&op_drop1, &&op_pick_b, &&op_swap, &&op_dup, &&op_pushM, &&op_inc, &&op_inc_, &&op_incA, &&op_pushN, &&op_swapN, &&op_dec, &&op_decA, &&op_decN, &&invalid_op, &&invalid_op, &&op_add, &&op_add_im, &&op_add__, &&op_addA, &&op_addM, &&op_mul__, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_bitwise_and, &&op_unsafe_bitwise_and, &&op_unsafe_bitwise_or, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_jmp_rel8, &&op_jmp_rel16, &&invalid_op, &&invalid_op, &&invalid_op, &&op_jsr_rel8, &&op_ret, &&op_ret_im, &&op_ret_pop, &&invalid_op, &&invalid_op, &&op_beq_im_rel16, &&op_bpos_keep_rel16, &&op_bneg0_keep_rel16, &&op_bneg_keep_rel16, &&op_bz_keep_rel16, &&op_bz_rel16, &&invalid_op, &&invalid_op, &&invalid_op, &&op_cmpbr_keep_lt_im_rel8, &&op_cmpbr_A_lt_im_rel8, &&op_cmpbr_N_lt_im_rel8, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_popN__pushA, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_dec__dup, &&op_swap__dec, &&op_jsr_rel8__swap, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_fib, &&op_fib_with_registers, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_trace_on, &&op_trace_off, &&op_nop, &&op_halt };
 // not registered with GC, used just to avoid needing local vars
-val tmp1;
-// not registered, but copied to process struct and back when needed
+word_t tmp1;
+
+// Registers for binary data (not registered with GC):
+dword_t M = 0;
+word_t N = 0;
+word_t X = 0;
+word_t Y = 0;
+
+// Registers for (not registered, but copied to process struct and
+// back when needed):
 val A = UNINITIALIZED;
 val B = UNINITIALIZED;
 
@@ -25,6 +33,34 @@ val B = UNINITIALIZED;
 
     DISPATCH;
 
+    op_loadM_im: /* loadM_im, 2 */
+        TRACE_OP("loadM_im");
+        {
+            M = ARGIM1;
+        }
+        pc += 3;
+        DISPATCH;
+    op_loadN_im: /* loadN_im, 2 */
+        TRACE_OP("loadN_im");
+        {
+            N = ARGIM1;
+        }
+        pc += 3;
+        DISPATCH;
+    op_loadX_im: /* loadX_im, 2 */
+        TRACE_OP("loadX_im");
+        {
+            X = ARGIM1;
+        }
+        pc += 3;
+        DISPATCH;
+    op_loadY_im: /* loadY_im, 2 */
+        TRACE_OP("loadY_im");
+        {
+            Y = ARGIM1;
+        }
+        pc += 3;
+        DISPATCH;
     op_loadA_im: /* loadA_im, 2 */
         TRACE_OP("loadA_im");
         {
@@ -90,6 +126,39 @@ val B = UNINITIALIZED;
             val x = STACK_UNSAFE_REF(0);
             STACK_UNSAFE_SET(0, A);
             A = x;
+        }
+        pc += 1;
+        DISPATCH;
+    op_pushM: /* pushM, 0 */
+        TRACE_OP("pushM");
+        {
+            PUSH(FIX(M)); // unsafe
+        }
+        pc += 1;
+        DISPATCH;
+    op_pushN: /* pushN, 0 */
+        TRACE_OP("pushN");
+        {
+            PUSH(FIX(N)); // unsafe
+        }
+        pc += 1;
+        DISPATCH;
+    op_swapN: /* swapN, 0 */
+        TRACE_OP("swapN");
+        {
+            STACK_ENSURE(1);
+            val x = STACK_UNSAFE_REF(0);
+            STACK_UNSAFE_SET(0, FIX(N)); // unsafe
+            N = INT(x); // unsafe
+        }
+        pc += 1;
+        DISPATCH;
+    op_popN__pushA: /* popN__pushA, 0 */
+        TRACE_OP("popN__pushA");
+        {
+            STACK_ENSURE(1);
+            N = INT(STACK_UNSAFE_REF(0)); // unsafe
+            STACK_UNSAFE_SET(0, A);
         }
         pc += 1;
         DISPATCH;
@@ -184,6 +253,14 @@ val B = UNINITIALIZED;
         }
         pc += 1;
         DISPATCH;
+    op_decN: /* decN, 0 */
+        TRACE_OP("decN");
+        {
+            N = ((signed_word_t)N) - 1; // unsafe (no overflow/UB check)!
+            
+        }
+        pc += 1;
+        DISPATCH;
     op_add: /* add, 0 */
         TRACE_OP("add");
         {
@@ -229,6 +306,16 @@ val B = UNINITIALIZED;
             STORE_EXCEPT_A;
             A = SCM_ADD(A, STACK_UNSAFE_REF(0));
             RESTORE_EXCEPT_A;
+            STACK_UNSAFE_REMOVE(1);
+            
+        }
+        pc += 1;
+        DISPATCH;
+    op_addM: /* addM, 0 */
+        TRACE_OP("addM");
+        {
+            STACK_ENSURE(1);
+            M = (signed_dword_t)M + (signed_dword_t)INT(STACK_UNSAFE_REF(0)); // unsafe
             STACK_UNSAFE_REMOVE(1);
             
         }
@@ -430,6 +517,17 @@ val B = UNINITIALIZED;
         {
             // compare with literal and branch if smaller; (if (< registerA 1234) lbl).
             if (SCM_NUMBER_CMP(A, ARGIM1) == LT) {
+                pc += (uint8_t)ARGB3;
+            } else {
+                pc += 4;
+            }
+        }
+        DISPATCH;
+    op_cmpbr_N_lt_im_rel8: /* cmpbr_N_lt_im_rel8, 3 */
+        TRACE_OP("cmpbr_N_lt_im_rel8");
+        {
+            // compare with *binary* literal and branch if smaller; (if (< registerA 1234) lbl).
+            if (((signed_word_t)N) < ((signed_word_t)ARGIM1)) {
                 pc += (uint8_t)ARGB3;
             } else {
                 pc += 4;

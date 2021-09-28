@@ -4,6 +4,10 @@
 #define _OPCODE_CONSTANTS_H_
 
 //                          opcode  /* hex; numargbytes */
+#define OP_LOADM_IM                  1 /* 0x01; 2 */
+#define OP_LOADN_IM                  2 /* 0x02; 2 */
+#define OP_LOADX_IM                  3 /* 0x03; 2 */
+#define OP_LOADY_IM                  4 /* 0x04; 2 */
 #define OP_LOADA_IM                  5 /* 0x05; 2 */
 #define OP_LOADB_IM                  6 /* 0x06; 2 */
 #define OP_PUSHA                     7 /* 0x07; 0 */
@@ -13,6 +17,10 @@
 #define OP_TAB                       11 /* 0x0b; 0 */
 #define OP_TBA                       12 /* 0x0c; 0 */
 #define OP_SWAPA                     13 /* 0x0d; 0 */
+#define OP_PUSHM                     19 /* 0x13; 0 */
+#define OP_PUSHN                     23 /* 0x17; 0 */
+#define OP_SWAPN                     24 /* 0x18; 0 */
+#define OP_POPN__PUSHA               130 /* 0x82; 0 */
 #define OP_PUSH_IM                   14 /* 0x0e; 2 */
 #define OP_DROP1                     15 /* 0x0f; 0 */
 #define OP_PICK_B                    16 /* 0x10; 1 */
@@ -23,10 +31,12 @@
 #define OP_INCA                      22 /* 0x16; 0 */
 #define OP_DEC                       25 /* 0x19; 0 */
 #define OP_DECA                      26 /* 0x1a; 0 */
+#define OP_DECN                      27 /* 0x1b; 0 */
 #define OP_ADD                       30 /* 0x1e; 0 */
 #define OP_ADD_IM                    31 /* 0x1f; 2 */
 #define OP_ADD__                     32 /* 0x20; 2 */
 #define OP_ADDA                      33 /* 0x21; 0 */
+#define OP_ADDM                      34 /* 0x22; 0 */
 #define OP_MUL__                     35 /* 0x23; 2 */
 #define OP_BITWISE_AND               40 /* 0x28; 0 */
 #define OP_UNSAFE_BITWISE_AND        41 /* 0x29; 0 */
@@ -45,6 +55,7 @@
 #define OP_BZ_REL16                  96 /* 0x60; 2 */
 #define OP_CMPBR_KEEP_LT_IM_REL8     100 /* 0x64; 3 */
 #define OP_CMPBR_A_LT_IM_REL8        101 /* 0x65; 3 */
+#define OP_CMPBR_N_LT_IM_REL8        102 /* 0x66; 3 */
 #define OP_DEC__DUP                  200 /* 0xc8; 0 */
 #define OP_SWAP__DEC                 201 /* 0xc9; 0 */
 #define OP_JSR_REL8__SWAP            202 /* 0xca; 1 */

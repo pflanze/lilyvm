@@ -142,6 +142,7 @@ in [`vmtest.c`](vmtest.c)). You can run those via:
     time target-local/lilyvm fib_35.bytecode
     time target-local/lilyvm fib_combinedop_35.bytecode
     time target-local/lilyvm fib_registers_35.bytecode
+    time target-local/lilyvm fib_binaryregisters_35.bytecode
     time target-local/lilyvm fib_compiled_35.bytecode 
     time target-local/lilyvm fib_compiled_register_35.bytecode # segv with g++
 

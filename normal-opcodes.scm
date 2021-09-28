@@ -2,6 +2,15 @@
   '(
     ;; opnum, name, numargbytes, needspcinc, C-code
 
+    (1 loadM_im 2 #t "
+M = ARGIM1;")
+    (2 loadN_im 2 #t "
+N = ARGIM1;")
+    (3 loadX_im 2 #t "
+X = ARGIM1;")
+    (4 loadY_im 2 #t "
+Y = ARGIM1;")
+
     (5 loadA_im 2 #t "
 A = ARGIM1;")
     (6 loadB_im 2 #t "
@@ -25,6 +34,22 @@ STACK_ENSURE(1);
 val x = STACK_UNSAFE_REF(0);
 STACK_UNSAFE_SET(0, A);
 A = x;")
+
+    (19 pushM 0 #t "
+PUSH(FIX(M)); // unsafe")
+    (23 pushN 0 #t "
+PUSH(FIX(N)); // unsafe")
+    (24 swapN 0 #t "
+STACK_ENSURE(1);
+val x = STACK_UNSAFE_REF(0);
+STACK_UNSAFE_SET(0, FIX(N)); // unsafe
+N = INT(x); // unsafe")
+    ;; pop into N, push A (call it swapAN ?)
+    (130 popN__pushA 0 #t "
+STACK_ENSURE(1);
+N = INT(STACK_UNSAFE_REF(0)); // unsafe
+STACK_UNSAFE_SET(0, A);")
+
     
     (14 push_im 2 #t "
 PUSH(ARGIM1);")
@@ -69,6 +94,9 @@ STORE_EXCEPT_A;
 A = SCM_DEC(A);
 RESTORE_EXCEPT_A;
 ")
+    (27 decN 0 #t "
+N = ((signed_word_t)N) - 1; // unsafe (no overflow/UB check)!
+")
 
     (30 add 0 #t "
 STACK_ENSURE(2);
@@ -101,6 +129,13 @@ STACK_ENSURE(1);
 STORE_EXCEPT_A;
 A = SCM_ADD(A, STACK_UNSAFE_REF(0));
 RESTORE_EXCEPT_A;
+STACK_UNSAFE_REMOVE(1);
+")
+
+    ;; M += INT(pop) -- unsafe!
+    (34 addM 0 #t "
+STACK_ENSURE(1);
+M = (signed_dword_t)M + (signed_dword_t)INT(STACK_UNSAFE_REF(0)); // unsafe
 STACK_UNSAFE_REMOVE(1);
 ")
 
@@ -232,6 +267,13 @@ if (SCM_NUMBER_CMP(x, ARGIM1) == LT) {
     (101 cmpbr_A_lt_im_rel8 3 #f "
 // compare with literal and branch if smaller; (if (< registerA 1234) lbl).
 if (SCM_NUMBER_CMP(A, ARGIM1) == LT) {
+    pc += (uint8_t)ARGB3;
+} else {
+    pc += 4;
+}")
+    (102 cmpbr_N_lt_im_rel8 3 #f "
+// compare with *binary* literal and branch if smaller; (if (< registerA 1234) lbl).
+if (((signed_word_t)N) < ((signed_word_t)ARGIM1)) {
     pc += (uint8_t)ARGB3;
 } else {
     pc += 4;

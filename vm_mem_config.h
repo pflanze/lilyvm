@@ -15,7 +15,8 @@
 */
 typedef uint16_t word_t;
 typedef int16_t signed_word_t; // *should* always be same as fixaddint_t ? XX
-typedef uint32_t dword_t; // double word; also see fixmulint_t for signed
+typedef uint32_t dword_t; // double word
+typedef int32_t signed_dword_t; // *should* always be same as fixmulint_t ?
 
 /* a tagged value (immediate or allocated) */
 typedef word_t val;

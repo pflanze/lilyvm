@@ -91,8 +91,16 @@
 
 (define registerdecls "
 // not registered with GC, used just to avoid needing local vars
-val tmp1;
-// not registered, but copied to process struct and back when needed
+word_t tmp1;
+
+// Registers for binary data (not registered with GC):
+dword_t M = 0;
+word_t N = 0;
+word_t X = 0;
+word_t Y = 0;
+
+// Registers for (not registered, but copied to process struct and
+// back when needed):
 val A = UNINITIALIZED;
 val B = UNINITIALIZED;
 
