@@ -186,15 +186,46 @@ void vm_process_stack_clear(struct vm_process *process) {
 
 #ifdef VM_TRACE
 
+const char *before = "           ";
+const char *after = "\n";
+
+static void vm_trace_dword(const char* name, dword_t val) {
+    printf("%s"
+           "%s=" FPRI_dword " " FPRI_signed_dword " " FPRIx_dword
+           "%s",
+           before,
+           name, val, val, val,
+           after);
+}
+
+static void vm_trace_word(const char* name, word_t val) {
+    printf("%s"
+           "%s=" FPRI_word " " FPRI_signed_word " " FPRIx_word
+           "%s",
+           before,
+           name, val, val, val,
+           after);
+}
+
 static void vm_trace(struct vm_process *process,
                      uintptr_t pcoffset,
-                     const char *opcodename) {
+                     const char *opcodename,
+                     /* copies of non-GC'd registers: */
+                     dword_t M,
+                     word_t N,
+                     word_t X,
+                     word_t Y) {
     // Note: bytecode_load_and_run is printing very similar output
     printf("           ");
     vm_process_stack_write(process);
     printf("\n           ");
     vm_process_registers_write(process, ", ");
-    printf("\n%3" PRIu16 " - %4" PRIuPTR " %s\n",
+    printf("\n");
+    vm_trace_dword("M", M);
+    vm_trace_word("N", N);
+    vm_trace_word("X", X);
+    vm_trace_word("Y", Y);
+    printf("%3" PRIu16 " - %4" PRIuPTR " %s\n",
            process->stack.sp, pcoffset, opcodename);
 }
 
@@ -272,7 +303,7 @@ void vm_process_run(struct vm_process *process, uint8_t *code) {
             if (process->trace_on) {                                    \
                 process->A = A;                                         \
                 process->B = B;                                         \
-                vm_trace(process, pc-code, opcodename);                 \
+                vm_trace(process, pc-code, opcodename, M, N, X, Y);     \
             }                                                           \
     } while (0)
 #else
