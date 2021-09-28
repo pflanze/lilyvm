@@ -90,8 +90,7 @@ CFLAGS_SECURITY_CHEAP+=-Werror=format-security -Werror=implicit-function-declara
 # Control flow integrity protection
 #CFLAGS_SECURITY+=-mcet -fcf-protection
 
-
-CFLAGS=-fdiagnostics-color -Wall -Wextra -gdwarf-4 -g3 -fverbose-asm -I.. $(OPTIM) $(PROFILE) $(GPROF) $(LTOFLAGS) $(CFLAGS_SECURITY) $(CFLAGS_SECURITY_CHEAP) $(DEFS)
+CFLAGS+=-fdiagnostics-color -Wall -Wextra -gdwarf-4 -g3 -fverbose-asm -I.. $(OPTIM) $(PROFILE) $(GPROF) $(LTOFLAGS) $(CFLAGS_SECURITY) $(CFLAGS_SECURITY_CHEAP) $(DEFS)
 # How does one get macros in symbols from clang? -ggdb3 -fdebug-macro
 # does not help either.
 
