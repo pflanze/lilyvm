@@ -188,10 +188,17 @@ word_t *allocated_ptr_tospace(struct vm_process *process,
 
 word_t* _vm_process_alloc_slow(struct vm_process* process, numwords_t n);
 
+#if DEBUG_MEM_SET
+# define IF_DEBUG_MEM_SET(expr) expr
+#else
+# define IF_DEBUG_MEM_SET(expr)
+#endif
+
 INLINE static
 word_t* vm_process_alloc(struct vm_process* process, numwords_t n) {
     word_t *ptr = process->alloc_ptr;
     ASSERT(ptr);
+    // XXX how do we ensure this does not underflow?!!:
     ptr -= n;
     // Need to avoid allocating the last word, since that would give
     // the 0 val on non-C64 systems, which would clash with the error
@@ -201,12 +208,60 @@ word_t* vm_process_alloc(struct vm_process* process, numwords_t n) {
         return _vm_process_alloc_slow(process, n);
     } else {
         process->alloc_ptr = ptr;
-#if DEBUG_MEM_SET
-        memset(ptr, 0x99, n * sizeof(word_t));
-#endif
+        IF_DEBUG_MEM_SET(memset(ptr, 0x99, n * sizeof(word_t)));
         return ptr;
     }
 }
+
+/* A variant of vm_process_alloc that saves registers, and only when
+   the GC has to run. Takes `process` from the context. */
+#define LILYVM_ALLOC(save_regs, restore_regs, return, numwords)         \
+    {                                                                   \
+    word_t *ptr = process->alloc_ptr;                                   \
+    ASSERT(ptr);                                                        \
+    /* XXX how do we ensure this does not underflow?!!: */              \
+    ptr -= numwords;                                                    \
+    /* ditto "Need to avoid allocating the last word" */                \
+    if (((uintptr_t)ptr) <= ((uintptr_t)process->alloc_area)) {         \
+        save_regs;                                                      \
+        ptr = _vm_process_alloc_slow(process, numwords);                \
+        restore_regs;                                                   \
+        return ptr;                                                     \
+    } else {                                                            \
+        process->alloc_ptr = ptr;                                       \
+        IF_DEBUG_MEM_SET(memset(ptr, 0x99, numwords * sizeof(word_t))); \
+        return ptr;                                                     \
+    }                                                                   \
+    }
+
+
+/* Allocate memory from the reserve, never calls GC (hence doesn't
+   need to push registers). Requires VM_PROCESS_ALLOC_ENSURE to be
+   called beforehand. */
+INLINE static
+word_t* vm_process_alloc_unsafe(struct vm_process* process, numwords_t n) {
+    word_t *ptr = process->alloc_ptr;
+    ptr -= n;
+    ASSERT(! (((uintptr_t)ptr) <= ((uintptr_t)process->alloc_area)));
+    process->alloc_ptr = ptr;
+    return ptr;
+}
+
+/* Ensure vm_process_alloc_unsafe can be called; i.e. run GC if
+   there's not enough space left, and if there's still not enough
+   space, stop with out of memory error. */
+
+void _vm_process_alloc_ensure_slow(struct vm_process* process, numwords_t n);
+// XXX how do we ensure (process->alloc_ptr - (numwords)) does not
+// underflow?!!
+#define VM_PROCESS_ALLOC_ENSURE(process, save_regs, restore_regs, numwords) \
+    /* ditto "Need to avoid allocating the last word" */                \
+    if ((uintptr_t)(process->alloc_ptr - (numwords))                    \
+        <= ((uintptr_t)process->alloc_area)) {                          \
+        save_regs;                                                      \
+        _vm_process_alloc_ensure_slow(process, (numwords));             \
+        restore_regs;                                                   \
+    }
 
 
 #define IMMEDIATE_BIT_MASK 1
