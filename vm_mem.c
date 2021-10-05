@@ -348,12 +348,12 @@ val scm_dec(struct vm_process* process, val x) {
 
 // Tried a non-macro inline variant (see history) but oddly sometimes
 // leads to larger code (in SMALL case), and oddly slower, too.
-#define RETURN_BIGNUM_DISPATCH(x, y, fixnum_op, bignum_op)              \
+#define BIGNUM_DISPATCH(return, x, y, fixnum_op, bignum_op)             \
     if (is_fixnum(x)) {                                                 \
         if (is_fixnum(y)) {                                             \
             return fixnum_op(process, x, y);                            \
         } else if (IS_BIGNUM(y)) {                                      \
-            word_t xw = INT(x);                                           \
+            word_t xw = INT(x);                                         \
             return bignum_op(process,                                   \
                              &xw, 1, false,                             \
                              ALLOCATED_BODY(y), ALLOCATED_NUMWORDS(y), true); \
@@ -362,7 +362,7 @@ val scm_dec(struct vm_process* process, val x) {
         }                                                               \
     } else if (IS_BIGNUM(x)) {                                          \
         if (is_fixnum(y)) {                                             \
-            word_t yw = INT(y);                                           \
+            word_t yw = INT(y);                                         \
             return bignum_op(process,                                   \
                              ALLOCATED_BODY(x), ALLOCATED_NUMWORDS(x), true, \
                              &yw, 1, false);                            \
@@ -376,6 +376,7 @@ val scm_dec(struct vm_process* process, val x) {
     } else {                                                            \
         ERROR_INTEGER(x);                                               \
     }
+
 
 // These return a scm boolean
 
@@ -395,7 +396,7 @@ static val bignum_equal(UNUSED struct vm_process* process,
     return TRU;
 }
 val scm_number_equal(struct vm_process* process, val x, val y) {
-    RETURN_BIGNUM_DISPATCH(x, y, fixnum_equal, bignum_equal);
+    BIGNUM_DISPATCH(return, x, y, fixnum_equal, bignum_equal);
 }
 
 
@@ -445,7 +446,7 @@ static val bignum_cmp(UNUSED struct vm_process* process,
     }
 }
 val scm_number_cmp(struct vm_process* process, val x, val y) {
-    RETURN_BIGNUM_DISPATCH(x, y, fixnum_cmp, bignum_cmp);
+    BIGNUM_DISPATCH(return, x, y, fixnum_cmp, bignum_cmp);
 }
 
 TEST(scm_number_cmp) {
@@ -648,7 +649,7 @@ static val bignum_add(struct vm_process *process,
 }
 
 val scm_add(struct vm_process* process, val x, val y) {
-    RETURN_BIGNUM_DISPATCH(x, y, fixnum_add, bignum_add);
+    BIGNUM_DISPATCH(return, x, y, fixnum_add, bignum_add);
 }
 
 static void _assert_number_equal(struct vm_process* process,
@@ -750,7 +751,7 @@ static val bignum_mul(UNUSED struct vm_process *process,
 
 
 val scm_mul(struct vm_process *process, val x, val y) {
-    RETURN_BIGNUM_DISPATCH(x, y, fixnum_mul, bignum_mul);
+    BIGNUM_DISPATCH(return, x, y, fixnum_mul, bignum_mul);
 }
 
 val scm_length(struct vm_process *process, val l) {
