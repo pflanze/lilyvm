@@ -395,22 +395,15 @@ bool is_bignum(struct vm_process *process, val v) {
 // time anyway.)
 
 
-#define _FIXADDINT_ALLOC_SIZE 2 /* header, 1 field */
-
-#define FIXADDINT_TO_BIGNUM_UNSAFE(return, /* fixaddint_t */ x)         \
-    word_t *p = vm_process_alloc_unsafe(process, _FIXADDINT_ALLOC_SIZE); \
-    p[0] = HEAD_OF_LEN_TYPE(1, TYPE_BIGNUM);                            \
-    p[1] = x;                                                           \
-    return ALLOCATED_FROM_POINTER(p);
-
-#define FIXADDINT_TO_SCM(save_regs, restore_regs, return, x)    \
-    if (IS_IN_FIX_RANGE(x)) {                                   \
-        return FIX(x);                                          \
-    } else {                                                    \
-        VM_PROCESS_ALLOC_ENSURE(process,                        \
-                                save_regs, restore_regs,        \
-                                _FIXADDINT_ALLOC_SIZE);         \
-        FIXADDINT_TO_BIGNUM_UNSAFE(return, x);                  \
+#define FIXADDINT_TO_SCM(save_regs, restore_regs, return, x)            \
+    if (IS_IN_FIX_RANGE(x)) {                                           \
+        return FIX(x);                                                  \
+    } else {                                                            \
+        word_t *p;                                                      \
+        LILYVM_ALLOC(save_regs, restore_regs, p=, 2);                   \
+        p[0] = HEAD_OF_LEN_TYPE(1, TYPE_BIGNUM);                        \
+        p[1] = x;                                                       \
+        return ALLOCATED_FROM_POINTER(p);                               \
     }
 
 val fixmulint_to_scm(struct vm_process* process, fixmulint_t x);
