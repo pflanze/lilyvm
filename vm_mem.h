@@ -394,24 +394,24 @@ bool is_bignum(struct vm_process *process, val v) {
 // (todo: easy de-macrofication? But anyway, only using it once each
 // time anyway.)
 
-INLINE static
-val fixaddint_to_bignum(struct vm_process* process, fixaddint_t x) {
-    word_t *p = vm_process_alloc(process, 2); // header, 1 field
-    p[0] = HEAD_OF_LEN_TYPE(1, TYPE_BIGNUM);
-    p[1] = x;
-    return ALLOCATED_FROM_POINTER(p);
-}
-#define FIXADDINT_TO_BIGNUM(x) fixaddint_to_bignum(process, x)
 
-INLINE static
-val fixaddint_to_scm(struct vm_process* process, fixaddint_t x) {
-    if (IS_IN_FIX_RANGE(x)) {
-        return FIX(x);
-    } else {
-        return FIXADDINT_TO_BIGNUM(x);
+#define _FIXADDINT_ALLOC_SIZE 2 /* header, 1 field */
+
+#define FIXADDINT_TO_BIGNUM_UNSAFE(return, /* fixaddint_t */ x)         \
+    word_t *p = vm_process_alloc_unsafe(process, _FIXADDINT_ALLOC_SIZE); \
+    p[0] = HEAD_OF_LEN_TYPE(1, TYPE_BIGNUM);                            \
+    p[1] = x;                                                           \
+    return ALLOCATED_FROM_POINTER(p);
+
+#define FIXADDINT_TO_SCM(save_regs, restore_regs, return, x)    \
+    if (IS_IN_FIX_RANGE(x)) {                                   \
+        return FIX(x);                                          \
+    } else {                                                    \
+        VM_PROCESS_ALLOC_ENSURE(process,                        \
+                                save_regs, restore_regs,        \
+                                _FIXADDINT_ALLOC_SIZE);         \
+        FIXADDINT_TO_BIGNUM_UNSAFE(return, x);                  \
     }
-}
-#define FIXADDINT_TO_SCM(x) fixaddint_to_scm(process, x)
 
 val fixmulint_to_scm(struct vm_process* process, fixmulint_t x);
 #define FIXMULINT_TO_SCM(x) fixmulint_to_scm(process, x)
