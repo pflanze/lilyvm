@@ -266,19 +266,6 @@ word_t* _vm_process_alloc_slow(struct vm_process* process, numwords_t n) {
     }
 }
 
-// XX make _vm_process_alloc_slow use this, too, to avoid copy-pasta,
-// or better yet, provide building blocks as macros to make the
-// functions and macros in vm_mem.h work with the same definitions,
-// too.
-void _vm_process_alloc_ensure_slow(struct vm_process* process, numwords_t n) {
-    vm_mem_gc(process);
-    word_t *ptr = process->alloc_ptr;
-    ptr -= n;
-    if (((uintptr_t)ptr) <= ((uintptr_t)process->alloc_area)) {
-        DIE("out of memory");
-    }
-}
-
 
 #ifdef __C64__
 val fastcons(val a, val b);
