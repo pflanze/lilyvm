@@ -346,37 +346,6 @@ val scm_dec(struct vm_process* process, val x) {
     }
 }
 
-// Tried a non-macro inline variant (see history) but oddly sometimes
-// leads to larger code (in SMALL case), and oddly slower, too.
-#define BIGNUM_DISPATCH(return, x, y, fixnum_op, bignum_op)             \
-    if (is_fixnum(x)) {                                                 \
-        if (is_fixnum(y)) {                                             \
-            return fixnum_op(process, x, y);                            \
-        } else if (IS_BIGNUM(y)) {                                      \
-            word_t xw = INT(x);                                         \
-            return bignum_op(process,                                   \
-                             &xw, 1, false,                             \
-                             ALLOCATED_BODY(y), ALLOCATED_NUMWORDS(y), true); \
-        } else {                                                        \
-            ERROR_INTEGER(y);                                           \
-        }                                                               \
-    } else if (IS_BIGNUM(x)) {                                          \
-        if (is_fixnum(y)) {                                             \
-            word_t yw = INT(y);                                         \
-            return bignum_op(process,                                   \
-                             ALLOCATED_BODY(x), ALLOCATED_NUMWORDS(x), true, \
-                             &yw, 1, false);                            \
-        } else if (IS_BIGNUM(y)) {                                      \
-            return bignum_op(process,                                   \
-                             ALLOCATED_BODY(x), ALLOCATED_NUMWORDS(x), true, \
-                             ALLOCATED_BODY(y), ALLOCATED_NUMWORDS(y), true); \
-        } else {                                                        \
-            ERROR_INTEGER(y);                                           \
-        }                                                               \
-    } else {                                                            \
-        ERROR_INTEGER(x);                                               \
-    }
-
 
 // These return a scm boolean
 
