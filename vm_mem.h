@@ -464,6 +464,10 @@ bool is_bignum(struct vm_process *process, val v) {
 /* Safe: reporting an error if inputs are not numbers. Take `process`
    from the context. */
 
+val bignum_add(struct vm_process *process,
+               word_t *a, numwords_t lena, bool amoves,
+               word_t *b, numwords_t lenb, bool bmoves);
+
 #define SCM_ADD(save_regs, restore_regs, return, x, y)          \
     _NUMBER_DISPATCH(save_regs, restore_regs,                   \
                      FIXNUM_ADD, bignum_add,                    \

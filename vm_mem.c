@@ -495,9 +495,9 @@ bool trace = 0;
 # define TRACEPTR(var)
 #endif //DEBUG
 
-static val bignum_add(struct vm_process *process,
-                      word_t *a, numwords_t lena, bool amoves,
-                      word_t *b, numwords_t lenb, bool bmoves) {
+val bignum_add(struct vm_process *process,
+               word_t *a, numwords_t lena, bool amoves,
+               word_t *b, numwords_t lenb, bool bmoves) {
     numwords_t i;
     numwords_t len1; // len of the shorter
     numwords_t len2; // len of the longer
