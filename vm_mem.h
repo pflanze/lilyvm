@@ -362,20 +362,33 @@ bool is_bignum(struct vm_process *process, val v) {
 // Need it for both fixaddint_t and fixmulint_t, thus use a macro:
 #define IS_IN_FIX_RANGE(x) (((x) <= FIXNUM_MAXINT) && ((x) >= FIXNUM_MININT))
 
-// (todo: easy de-macrofication? But anyway, only using it once each
-// time anyway.)
-
-
-#define FIXADDINT_TO_SCM(save_regs, restore_regs, return, x)            \
-    if (IS_IN_FIX_RANGE(x)) {                                           \
-        return FIX(x);                                                  \
-    } else {                                                            \
-        word_t *p;                                                      \
-        LILYVM_ALLOC(save_regs, restore_regs, p=, 2);                   \
-        p[0] = HEAD_OF_LEN_TYPE(1, TYPE_BIGNUM);                        \
-        p[1] = x;                                                       \
-        return ALLOCATED_FROM_POINTER(p);                               \
+#define FIXADDINT_TO_SCM(save_regs, restore_regs, return, x_expr)       \
+    {                                                                   \
+        fixaddint_t x = x_expr;                                         \
+        if (IS_IN_FIX_RANGE(x)) {                                       \
+            return FIX(x);                                              \
+        } else {                                                        \
+            word_t *p;                                                  \
+            LILYVM_ALLOC(save_regs, restore_regs, p=, 2);               \
+            p[0] = HEAD_OF_LEN_TYPE(1, TYPE_BIGNUM);                    \
+            p[1] = x;                                                   \
+            return ALLOCATED_FROM_POINTER(p);                           \
+        }                                                               \
     }
+
+/* Input type unsafe: a and b must be fixnums. Safely overflows to
+   bignums, though. Takes `process` from the context. */
+#define FIXNUM_ADD(save_regs, restore_regs, return, a, b)       \
+    FIXADDINT_TO_SCM(save_regs, restore_regs, return,           \
+                     ((fixaddint_t)INT(a))                      \
+                     +                                          \
+                     ((fixaddint_t)INT(b)));
+
+/* Safe: reports an error if inputs are not numbers. Takes `process`
+   from the context. */
+#define SCM_ADD(save_regs, restore_regs, return, x, y)          \
+    BIGNUM_DISPATCH(return, x, y, FIXNUM_ADD, bignum_add);
+
 
 val fixmulint_to_scm(struct vm_process* process, fixmulint_t x);
 #define FIXMULINT_TO_SCM(x) fixmulint_to_scm(process, x)

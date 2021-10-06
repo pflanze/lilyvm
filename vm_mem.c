@@ -517,12 +517,6 @@ TEST(scm_number_cmp) {
 /* #undef ASSERT_NUMBER_GT */
 }
 
-static val fixnum_add(struct vm_process *process, val a, val b) {
-    return FIXADDINT_TO_SCM(((fixaddint_t)INT(a))
-                            +
-                            ((fixaddint_t)INT(b)));
-}
-
 bool trace = 0;
 #ifdef DEBUG
 # define TRACE(fmt, var)                        \
@@ -646,10 +640,6 @@ static val bignum_add(struct vm_process *process,
     }
     z[0] = HEAD_OF_LEN_TYPE(i, TYPE_BIGNUM);
     return ALLOCATED_FROM_POINTER(z);
-}
-
-val scm_add(struct vm_process* process, val x, val y) {
-    BIGNUM_DISPATCH(return, x, y, fixnum_add, bignum_add);
 }
 
 static void _assert_number_equal(struct vm_process* process,
