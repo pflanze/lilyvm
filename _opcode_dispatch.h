@@ -301,11 +301,8 @@ val B = UNINITIALIZED;
         TRACE_OP("addA");
         {
             STACK_ENSURE(1);
-            STORE_EXCEPT_A;
-            A = SCM_ADD(A, STACK_UNSAFE_REF(0));
-            RESTORE_EXCEPT_A;
+            DO_SCM_ADD(STORE_EXCEPT_A, RESTORE_EXCEPT_A, A=, A, STACK_UNSAFE_REF(0));
             STACK_UNSAFE_REMOVE(1);
-            
         }
         pc += 1;
         DISPATCH;
