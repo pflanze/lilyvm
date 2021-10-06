@@ -364,15 +364,15 @@ bool is_bignum(struct vm_process *process, val v) {
 
 #define FIXADDINT_TO_SCM(save_regs, restore_regs, return, x_expr)       \
     {                                                                   \
-        fixaddint_t x = x_expr;                                         \
-        if (IS_IN_FIX_RANGE(x)) {                                       \
-            return FIX(x);                                              \
+        fixaddint_t _fai2scm_x = x_expr;                                \
+        if (IS_IN_FIX_RANGE(_fai2scm_x)) {                              \
+            return FIX(_fai2scm_x);                                     \
         } else {                                                        \
-            word_t *p;                                                  \
-            LILYVM_ALLOC(save_regs, restore_regs, p=, 2);               \
-            p[0] = HEAD_OF_LEN_TYPE(1, TYPE_BIGNUM);                    \
-            p[1] = x;                                                   \
-            return ALLOCATED_FROM_POINTER(p);                           \
+            word_t *_fai2scm_p;                                         \
+            LILYVM_ALLOC(save_regs, restore_regs, _fai2scm_p=, 2);      \
+            _fai2scm_p[0] = HEAD_OF_LEN_TYPE(1, TYPE_BIGNUM);           \
+            _fai2scm_p[1] = _fai2scm_x;                                 \
+            return ALLOCATED_FROM_POINTER(_fai2scm_p);                  \
         }                                                               \
     }
 
