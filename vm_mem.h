@@ -493,6 +493,17 @@ val bignum_add(struct vm_process *process,
                      DO_FIXNUM_MUL, bignum_mul,                 \
                      return, x, y);
 
+#define DO_SCM_DEC(save_regs, restore_regs, return, x)  \
+    if (is_fixnum(x)) {                                 \
+        DO_FIXADDINT_TO_SCM(save_regs, restore_regs,    \
+                            return, INT(x) - 1);        \
+    } else if (IS_BIGNUM(x)) {                          \
+        UNFINISHED;                                     \
+    } else {                                            \
+        ERROR_INTEGER(x);                               \
+    }
+
+
 //XX finish and update these!
 val fixmulint_to_scm(struct vm_process* process, fixmulint_t x);
 #define FIXMULINT_TO_SCM(x) fixmulint_to_scm(process, x)
