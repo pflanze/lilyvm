@@ -54,7 +54,7 @@ typedef int32_t fixmulint_t;
   integer type for the number of words contained in the body of an
   allocated object
 */
-typedef unsigned char numwords_t;
+typedef uint8_t numwords_t;
 
 
 

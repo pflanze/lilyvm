@@ -348,9 +348,9 @@ static val fixnum_equal(UNUSED struct vm_process* process,
     return BOOL(a == b);
 }
 static val bignum_equal(UNUSED struct vm_process* process,
-                        word_t *a, uint8_t lena, UNUSED bool amoves,
-                        word_t *b, uint8_t lenb, UNUSED bool bmoves) {
-    uint8_t i;
+                        word_t *a, numwords_t lena, UNUSED bool amoves,
+                        word_t *b, numwords_t lenb, UNUSED bool bmoves) {
+    numwords_t i;
     if (lena != lenb) return FAL;
     for (i=0; i < lena; i++) {
         if (a[i] != b[i]) return FAL;
@@ -371,15 +371,15 @@ static val fixnum_cmp(UNUSED struct vm_process* process,
     return x == y ? EQ : x < y ? LT : GT;
 }
 static val bignum_cmp(UNUSED struct vm_process* process,
-                      word_t *a, uint8_t lena, UNUSED bool amoves,
-                      word_t *b, uint8_t lenb, UNUSED bool bmoves) {
+                      word_t *a, numwords_t lena, UNUSED bool amoves,
+                      word_t *b, numwords_t lenb, UNUSED bool bmoves) {
     if (lena == lenb) {
 
 #define CHECK(t, a, b)                          \
         if (((t)(a)) < ((t)(b))) return LT;     \
         if (((t)(a)) > ((t)(b))) return GT;     \
 
-        uint8_t i = lena - 1;
+        numwords_t i = lena - 1;
         CHECK(int16_t, a[i], b[i]);
         while (i) {
             i--;
@@ -496,11 +496,11 @@ bool trace = 0;
 #endif //DEBUG
 
 static val bignum_add(struct vm_process *process,
-                      word_t *a, uint8_t lena, bool amoves,
-                      word_t *b, uint8_t lenb, bool bmoves) {
-    uint8_t i;
-    uint8_t len1; // len of the shorter
-    uint8_t len2; // len of the longer
+                      word_t *a, numwords_t lena, bool amoves,
+                      word_t *b, numwords_t lenb, bool bmoves) {
+    numwords_t i;
+    numwords_t len1; // len of the shorter
+    numwords_t len2; // len of the longer
     uint8_t last_signs;
     bool need_overflow;
     word_t *z;
@@ -668,7 +668,7 @@ TEST(scm_add) {
         c = SCM_ADD(c, c);
         ASSERT_NUMBER_EQUAL(c, FIXMULINT_TO_SCM(-128000));
         {
-            uint8_t i;
+            numwords_t i;
             for (i=0; i<16; i++) {
                 c = SCM_ADD(c, c);
             }
@@ -696,8 +696,8 @@ static val fixnum_mul(struct vm_process *process,
     return FIXMULINT_TO_SCM(INT(a) * INT(b));
 }
 static val bignum_mul(UNUSED struct vm_process *process,
-                      UNUSED word_t *a, UNUSED uint8_t lena, UNUSED bool amoves,
-                      UNUSED word_t *b, UNUSED uint8_t lenb, UNUSED bool bmoves) {
+                      UNUSED word_t *a, UNUSED numwords_t lena, UNUSED bool amoves,
+                      UNUSED word_t *b, UNUSED numwords_t lenb, UNUSED bool bmoves) {
     UNFINISHED;
 }
 
@@ -732,7 +732,7 @@ val scm_bitwise_and(UNUSED struct vm_process *process,
 
 #define SCM_WRITE_BIGNUM_HEX(v) scm_write_bignum_hex(process, v)
 static val scm_write_bignum_hex(struct vm_process *process, val v) {
-    uint8_t i = ALLOCATED_NUMWORDS(v);
+    numwords_t i = ALLOCATED_NUMWORDS(v);
     word_t *p = ALLOCATED_BODY(v);
     printf("#bignum{");
     while (i) {
