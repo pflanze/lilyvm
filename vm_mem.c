@@ -306,7 +306,7 @@ val fixmulint_to_scm(struct vm_process* process, fixmulint_t x) {
             ((DWORD_HI(x) == WORD_MAX) &&
              WORD_IS_NEGATIVE(DWORD_LO(x)))) {
             IFVERBOSE(printf("bignum 1 "));
-            return IFVERBOSE(PP_THROUGH)(FIXADDINT_TO_BIGNUM(DWORD_LO(x)));
+            return IFVERBOSE(PP_THROUGH)(FIXADDINT_TO_SCM(DWORD_LO(x)));
         } else {
             word_t *p = vm_process_alloc(process, 3); // header, 2 fields
             p[0] = HEAD_OF_LEN_TYPE(2, TYPE_BIGNUM);
