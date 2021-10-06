@@ -369,10 +369,15 @@ bool is_bignum(struct vm_process *process, val v) {
 #define ERROR_INTEGER(v) error_integer(process, v)
 
 /*
-  do_fixnum_op(save_regs, restore_regs, return, a, b)
-  bignum_op(struct vm_process *process,
-            word_t *a, numwords_t lena, bool amoves,
-            word_t *b, numwords_t lenb, bool bmoves) -> val
+  _NUMBER_DISPATCH: dispatch on number type, and allocate in a way
+  that accesses the processor register variables directly from the
+  context to store them mostly *only when needed*.
+
+  Arguments:
+    do_fixnum_op(save_regs, restore_regs, return, a, b)
+    bignum_op(struct vm_process *process,
+              word_t *a, numwords_t lena, bool amoves,
+              word_t *b, numwords_t lenb, bool bmoves) -> val
 */
 // Tried a non-macro inline variant of an earlier version of this (see
 // history) but oddly sometimes leads to larger code (in SMALL case),
