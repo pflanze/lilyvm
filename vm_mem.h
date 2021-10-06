@@ -39,6 +39,7 @@
 #include "chj-64lib/util.h"
 #include "vm_process.h"
 #include "vm_mem_config.h"
+#include "errors.h"
 
 
 #define WORD_BITS (sizeof(word_t) * 8)
@@ -359,6 +360,9 @@ bool is_bignum(struct vm_process *process, val v) {
 #define UNSAFE_CDR(p) ALLOCATED_SLOT(p, 2)
 
 
+
+#define ERROR_INTEGER(v) error_integer(process, v)
+
 // Tried a non-macro inline variant (see history) but oddly sometimes
 // leads to larger code (in SMALL case), and oddly slower, too.
 #define BIGNUM_DISPATCH(return, x, y, fixnum_op, bignum_op)             \
@@ -452,6 +456,10 @@ val pp_through(struct vm_process* process, val v);
 
 #define WRITELN(e) do { printf("%s = ", #e); SCM_WRITE(e); newline(); } while(0)
 
+static NORETURN error_integer(struct vm_process* process, val v) {
+    WRITELN(v);
+    ERROR("not an integer: %i", v);
+}
 
 // #define POSITIVEFIXNUM_UNSAFE_DEC(n) FIX(INT(n) - 1)
 #define POSITIVEFIXNUM_UNSAFE_DEC(n) ((n) - 2)

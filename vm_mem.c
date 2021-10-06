@@ -9,7 +9,6 @@
 #include "chj-64lib/debug.h"
 #include "chj-64lib/assert.h"
 #include "chj-ctest/test.h"
-#include "errors.h"
 #include "cmp.h"
 #include "vm_mem.h"
 #include "vm_process.h"
@@ -319,12 +318,6 @@ val fixmulint_to_scm(struct vm_process* process, fixmulint_t x) {
     }
 }
 
-
-static NORETURN error_integer(struct vm_process* process, val v) {
-    WRITELN(v);
-    ERROR("not an integer: %i", v);
-}
-#define ERROR_INTEGER(v) error_integer(process, v)
 
 val scm_inc(struct vm_process* process, val x) {
     if (is_fixnum(x)) {
