@@ -526,7 +526,8 @@ val pp_through(struct vm_process* process, val v);
 
 #define WRITELN(e) do { printf("%s = ", #e); SCM_WRITE(e); newline(); } while(0)
 
-static NORETURN error_integer(struct vm_process* process, val v) {
+UNUSED static
+NORETURN error_integer(struct vm_process* process, val v) {
     WRITELN(v);
     ERROR("not an integer: %i", v);
 }
