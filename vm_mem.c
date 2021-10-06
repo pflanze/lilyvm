@@ -605,7 +605,7 @@ val bignum_add(struct vm_process *process,
 }
 
 val scm_add(struct vm_process* process, val x, val y) {
-    SCM_ADD(_NOOP, _NOOP, return, x, y);
+    DO_SCM_ADD(_NOOP, _NOOP, return, x, y);
 }
 
 static void _assert_number_equal(struct vm_process* process,
@@ -707,7 +707,7 @@ static val bignum_mul(UNUSED struct vm_process *process,
 
 
 val scm_mul(struct vm_process *process, val x, val y) {
-    SCM_MUL(_NOOP, _NOOP, return, x, y);
+    DO_SCM_MUL(_NOOP, _NOOP, return, x, y);
 }
 
 val scm_length(struct vm_process *process, val l) {

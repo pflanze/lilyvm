@@ -369,22 +369,22 @@ bool is_bignum(struct vm_process *process, val v) {
 #define ERROR_INTEGER(v) error_integer(process, v)
 
 /*
-  fixnum_op(save_regs, restore_regs, return, a, b)
+  do_fixnum_op(save_regs, restore_regs, return, a, b)
   bignum_op(struct vm_process *process,
             word_t *a, numwords_t lena, bool amoves,
-            word_t *b, numwords_t lenb, bool bmoves)
+            word_t *b, numwords_t lenb, bool bmoves) -> val
 */
 // Tried a non-macro inline variant of an earlier version of this (see
 // history) but oddly sometimes leads to larger code (in SMALL case),
 // and slower (oddly, in non-SMALL case), too.
 #define _NUMBER_DISPATCH(save_regs, restore_regs,                       \
-                         fixnum_op, bignum_op,                          \
+                         do_fixnum_op, bignum_op,                       \
                          return, x_expr, y_expr)                        \
     val _bnd_x = x_expr;                                                \
     val _bnd_y = y_expr;                                                \
     if (is_fixnum(_bnd_x)) {                                            \
         if (is_fixnum(_bnd_y)) {                                        \
-            fixnum_op(save_regs, restore_regs, return, _bnd_x, _bnd_y); \
+            do_fixnum_op(save_regs, restore_regs, return, _bnd_x, _bnd_y); \
         } else if (IS_BIGNUM(_bnd_y)) {                                 \
             word_t _bnd_xw = INT(_bnd_x);                               \
             save_regs;                                                  \
@@ -435,7 +435,7 @@ bool is_bignum(struct vm_process *process, val v) {
 // Need it for both fixaddint_t and fixmulint_t, thus use a macro:
 #define IS_IN_FIX_RANGE(x) (((x) <= FIXNUM_MAXINT) && ((x) >= FIXNUM_MININT))
 
-#define FIXADDINT_TO_SCM(save_regs, restore_regs, return, x_expr)       \
+#define DO_FIXADDINT_TO_SCM(save_regs, restore_regs, return, x_expr)    \
     {                                                                   \
         fixaddint_t _fai2scm_x = x_expr;                                \
         if (IS_IN_FIX_RANGE(_fai2scm_x)) {                              \
@@ -449,16 +449,26 @@ bool is_bignum(struct vm_process *process, val v) {
         }                                                               \
     }
 
+/* A version of DO_FIXADDINT_TO_SCM that works as an expression, but
+   requires registers to be pushed by caller. */
+INLINE static
+val fixaddint_to_scm(struct vm_process* process, fixaddint_t x) {
+    DO_FIXADDINT_TO_SCM(_NOOP, _NOOP, return, x);
+}
+#define FIXADDINT_TO_SCM(x)                     \
+    fixaddint_to_scm(process, x)
+
+
 /* Inputs type unsafe: a and b must be fixnums. Safely overflows to
    bignums, though. Take `process` from the context. */
 
-#define FIXNUM_ADD(save_regs, restore_regs, return, a, b)       \
-    FIXADDINT_TO_SCM(save_regs, restore_regs, return,           \
-                     ((fixaddint_t)INT(a))                      \
-                     +                                          \
-                     ((fixaddint_t)INT(b)));
+#define DO_FIXNUM_ADD(save_regs, restore_regs, return, a, b)    \
+    DO_FIXADDINT_TO_SCM(save_regs, restore_regs, return,        \
+                        ((fixaddint_t)INT(a))                   \
+                        +                                       \
+                        ((fixaddint_t)INT(b)));
 
-#define FIXNUM_MUL(save_regs, restore_regs, return, a, b)       \
+#define DO_FIXNUM_MUL(save_regs, restore_regs, return, a, b)    \
     DIE("unfinished");
 
 /* Safe: reporting an error if inputs are not numbers. Take `process`
@@ -468,14 +478,14 @@ val bignum_add(struct vm_process *process,
                word_t *a, numwords_t lena, bool amoves,
                word_t *b, numwords_t lenb, bool bmoves);
 
-#define SCM_ADD(save_regs, restore_regs, return, x, y)          \
+#define DO_SCM_ADD(save_regs, restore_regs, return, x, y)       \
     _NUMBER_DISPATCH(save_regs, restore_regs,                   \
-                     FIXNUM_ADD, bignum_add,                    \
+                     DO_FIXNUM_ADD, bignum_add,                 \
                      return, x, y);
 
-#define SCM_MUL(save_regs, restore_regs, return, x, y)          \
+#define DO_SCM_MUL(save_regs, restore_regs, return, x, y)       \
     _NUMBER_DISPATCH(save_regs, restore_regs,                   \
-                     FIXNUM_MUL, bignum_mul,                    \
+                     DO_FIXNUM_MUL, bignum_mul,                 \
                      return, x, y);
 
 //XX finish and update these!
@@ -493,8 +503,12 @@ val scm_inc(struct vm_process* process, val x);
 #define SCM_INC(x) scm_inc(process, x)
 val scm_dec(struct vm_process* process, val x);
 #define SCM_DEC(x) scm_dec(process, x)
-val scm_add(struct vm_process* process, val x, val y); //XX remove?
-val scm_mul(struct vm_process* process, val x, val y); //XX remove?
+// XX remove these?:
+val scm_add(struct vm_process* process, val x, val y);
+#define SCM_ADD(x, y) scm_add(process, x, y)
+val scm_mul(struct vm_process* process, val x, val y);
+#define SCM_MUL(x, y) scm_mul(process, x, y)
+// /remove
 val scm_bitwise_and(struct vm_process* process, val a, val b);
 #define SCM_BITWISE_AND(x, y) scm_bitwise_and(process, x, y)
 val scm_number_equal(struct vm_process* process, val x, val y);
