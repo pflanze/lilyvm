@@ -363,11 +363,15 @@ bool is_bignum(struct vm_process *process, val v) {
 
 #define ERROR_INTEGER(v) error_integer(process, v)
 
-// fixnum_op(save_regs, restore_regs, return, a, b)
-// ç
-
-// Tried a non-macro inline variant (see history) but oddly sometimes
-// leads to larger code (in SMALL case), and oddly slower, too.
+/*
+  fixnum_op(save_regs, restore_regs, return, a, b)
+  bignum_op(struct vm_process *process,
+            word_t *a, numwords_t lena, bool amoves,
+            word_t *b, numwords_t lenb, bool bmoves)
+*/
+// Tried a non-macro inline variant of an earlier version of this (see
+// history) but oddly sometimes leads to larger code (in SMALL case),
+// and slower (oddly, in non-SMALL case), too.
 #define _NUMBER_DISPATCH(save_regs, restore_regs,                       \
                          fixnum_op, bignum_op,                          \
                          return, x_expr, y_expr)                        \
@@ -378,30 +382,43 @@ bool is_bignum(struct vm_process *process, val v) {
             fixnum_op(save_regs, restore_regs, return, _bnd_x, _bnd_y); \
         } else if (IS_BIGNUM(_bnd_y)) {                                 \
             word_t _bnd_xw = INT(_bnd_x);                               \
-            return bignum_op(process,                                   \
-                             &_bnd_xw, 1, false,                        \
-                             ALLOCATED_BODY(_bnd_y),                    \
-                             ALLOCATED_NUMWORDS(_bnd_y),                \
-                             true);                                     \
+            save_regs;                                                  \
+            val _bnd_res = bignum_op(process,                           \
+                                     &_bnd_xw,                          \
+                                     1,                                 \
+                                     false,                             \
+                                     ALLOCATED_BODY(_bnd_y),            \
+                                     ALLOCATED_NUMWORDS(_bnd_y),        \
+                                     true);                             \
+            restore_regs;                                               \
+            return _bnd_res;                                            \
         } else {                                                        \
             ERROR_INTEGER(_bnd_y);                                      \
         }                                                               \
     } else if (IS_BIGNUM(_bnd_x)) {                                     \
         if (is_fixnum(_bnd_y)) {                                        \
             word_t _bnd_yw = INT(_bnd_y);                               \
-            return bignum_op(process,                                   \
-                             ALLOCATED_BODY(_bnd_x),                    \
-                             ALLOCATED_NUMWORDS(_bnd_x),                \
-                             true,                                      \
-                             &_bnd_yw, 1, false);                       \
+            save_regs;                                                  \
+            val _bnd_res = bignum_op(process,                           \
+                                     ALLOCATED_BODY(_bnd_x),            \
+                                     ALLOCATED_NUMWORDS(_bnd_x),        \
+                                     true,                              \
+                                     &_bnd_yw,                          \
+                                     1,                                 \
+                                     false);                            \
+            restore_regs;                                               \
+            return _bnd_res;                                            \
         } else if (IS_BIGNUM(_bnd_y)) {                                 \
-            return bignum_op(process,                                   \
-                             ALLOCATED_BODY(_bnd_x),                    \
-                             ALLOCATED_NUMWORDS(_bnd_x),                \
-                             true,                                      \
-                             ALLOCATED_BODY(_bnd_y),                    \
-                             ALLOCATED_NUMWORDS(_bnd_y),                \
-                             true);                                     \
+            save_regs;                                                  \
+            val _bnd_res = bignum_op(process,                           \
+                                     ALLOCATED_BODY(_bnd_x),            \
+                                     ALLOCATED_NUMWORDS(_bnd_x),        \
+                                     true,                              \
+                                     ALLOCATED_BODY(_bnd_y),            \
+                                     ALLOCATED_NUMWORDS(_bnd_y),        \
+                                     true);                             \
+            restore_regs;                                               \
+            return _bnd_res;                                            \
         } else {                                                        \
             ERROR_INTEGER(_bnd_y);                                      \
         }                                                               \
