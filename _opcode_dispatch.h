@@ -246,10 +246,7 @@ val B = UNINITIALIZED;
     op_decA: /* decA, 0 */
         TRACE_OP("decA");
         {
-            STORE_EXCEPT_A;
-            A = SCM_DEC(A);
-            RESTORE_EXCEPT_A;
-            
+            DO_SCM_DEC(STORE_EXCEPT_A, RESTORE_EXCEPT_A, A=, A);
         }
         pc += 1;
         DISPATCH;

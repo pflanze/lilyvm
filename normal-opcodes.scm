@@ -90,10 +90,7 @@ STACK_UNSAFE_SET_LAST(SCM_DEC(x));
 RESTORE_ALL;
 ")
     (26 decA 0 #t "
-STORE_EXCEPT_A;
-A = SCM_DEC(A);
-RESTORE_EXCEPT_A;
-")
+DO_SCM_DEC(STORE_EXCEPT_A, RESTORE_EXCEPT_A, A=, A);")
     (27 decN 0 #t "
 N = ((signed_word_t)N) - 1; // unsafe (no overflow/UB check)!
 ")
