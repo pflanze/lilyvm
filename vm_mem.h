@@ -363,35 +363,50 @@ bool is_bignum(struct vm_process *process, val v) {
 
 #define ERROR_INTEGER(v) error_integer(process, v)
 
+// fixnum_op(save_regs, restore_regs, return, a, b)
+// ç
+
 // Tried a non-macro inline variant (see history) but oddly sometimes
 // leads to larger code (in SMALL case), and oddly slower, too.
-#define _NUMBER_DISPATCH(return, x, y, fixnum_op, bignum_op)            \
-    if (is_fixnum(x)) {                                                 \
-        if (is_fixnum(y)) {                                             \
-            return fixnum_op(process, x, y);                            \
-        } else if (IS_BIGNUM(y)) {                                      \
-            word_t xw = INT(x);                                         \
+#define _NUMBER_DISPATCH(save_regs, restore_regs,                       \
+                         fixnum_op, bignum_op,                          \
+                         return, x_expr, y_expr)                        \
+    val _bnd_x = x_expr;                                                \
+    val _bnd_y = y_expr;                                                \
+    if (is_fixnum(_bnd_x)) {                                            \
+        if (is_fixnum(_bnd_y)) {                                        \
+            fixnum_op(save_regs, restore_regs, return, _bnd_x, _bnd_y); \
+        } else if (IS_BIGNUM(_bnd_y)) {                                 \
+            word_t _bnd_xw = INT(_bnd_x);                               \
             return bignum_op(process,                                   \
-                             &xw, 1, false,                             \
-                             ALLOCATED_BODY(y), ALLOCATED_NUMWORDS(y), true); \
+                             &_bnd_xw, 1, false,                        \
+                             ALLOCATED_BODY(_bnd_y),                    \
+                             ALLOCATED_NUMWORDS(_bnd_y),                \
+                             true);                                     \
         } else {                                                        \
-            ERROR_INTEGER(y);                                           \
+            ERROR_INTEGER(_bnd_y);                                      \
         }                                                               \
-    } else if (IS_BIGNUM(x)) {                                          \
-        if (is_fixnum(y)) {                                             \
-            word_t yw = INT(y);                                         \
+    } else if (IS_BIGNUM(_bnd_x)) {                                     \
+        if (is_fixnum(_bnd_y)) {                                        \
+            word_t _bnd_yw = INT(_bnd_y);                               \
             return bignum_op(process,                                   \
-                             ALLOCATED_BODY(x), ALLOCATED_NUMWORDS(x), true, \
-                             &yw, 1, false);                            \
-        } else if (IS_BIGNUM(y)) {                                      \
+                             ALLOCATED_BODY(_bnd_x),                    \
+                             ALLOCATED_NUMWORDS(_bnd_x),                \
+                             true,                                      \
+                             &_bnd_yw, 1, false);                       \
+        } else if (IS_BIGNUM(_bnd_y)) {                                 \
             return bignum_op(process,                                   \
-                             ALLOCATED_BODY(x), ALLOCATED_NUMWORDS(x), true, \
-                             ALLOCATED_BODY(y), ALLOCATED_NUMWORDS(y), true); \
+                             ALLOCATED_BODY(_bnd_x),                    \
+                             ALLOCATED_NUMWORDS(_bnd_x),                \
+                             true,                                      \
+                             ALLOCATED_BODY(_bnd_y),                    \
+                             ALLOCATED_NUMWORDS(_bnd_y),                \
+                             true);                                     \
         } else {                                                        \
-            ERROR_INTEGER(y);                                           \
+            ERROR_INTEGER(_bnd_y);                                      \
         }                                                               \
     } else {                                                            \
-        ERROR_INTEGER(x);                                               \
+        ERROR_INTEGER(_bnd_x);                                          \
     }
 
 
