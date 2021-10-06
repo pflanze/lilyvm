@@ -449,20 +449,32 @@ bool is_bignum(struct vm_process *process, val v) {
         }                                                               \
     }
 
-/* Input type unsafe: a and b must be fixnums. Safely overflows to
-   bignums, though. Takes `process` from the context. */
+/* Inputs type unsafe: a and b must be fixnums. Safely overflows to
+   bignums, though. Take `process` from the context. */
+
 #define FIXNUM_ADD(save_regs, restore_regs, return, a, b)       \
     FIXADDINT_TO_SCM(save_regs, restore_regs, return,           \
                      ((fixaddint_t)INT(a))                      \
                      +                                          \
                      ((fixaddint_t)INT(b)));
 
-/* Safe: reports an error if inputs are not numbers. Takes `process`
+#define FIXNUM_MUL(save_regs, restore_regs, return, a, b)       \
+    DIE("unfinished");
+
+/* Safe: reporting an error if inputs are not numbers. Take `process`
    from the context. */
+
 #define SCM_ADD(save_regs, restore_regs, return, x, y)          \
-    _NUMBER_DISPATCH(return, x, y, FIXNUM_ADD, bignum_add);
+    _NUMBER_DISPATCH(save_regs, restore_regs,                   \
+                     FIXNUM_ADD, bignum_add,                    \
+                     return, x, y);
 
+#define SCM_MUL(save_regs, restore_regs, return, x, y)          \
+    _NUMBER_DISPATCH(save_regs, restore_regs,                   \
+                     FIXNUM_MUL, bignum_mul,                    \
+                     return, x, y);
 
+//XX finish and update these!
 val fixmulint_to_scm(struct vm_process* process, fixmulint_t x);
 #define FIXMULINT_TO_SCM(x) fixmulint_to_scm(process, x)
 
@@ -477,10 +489,8 @@ val scm_inc(struct vm_process* process, val x);
 #define SCM_INC(x) scm_inc(process, x)
 val scm_dec(struct vm_process* process, val x);
 #define SCM_DEC(x) scm_dec(process, x)
-val scm_add(struct vm_process* process, val x, val y);
-#define SCM_ADD(x, y) scm_add(process, x, y)
-val scm_mul(struct vm_process* process, val x, val y);
-#define SCM_MUL(x, y) scm_mul(process, x, y)
+val scm_add(struct vm_process* process, val x, val y); //XX remove?
+val scm_mul(struct vm_process* process, val x, val y); //XX remove?
 val scm_bitwise_and(struct vm_process* process, val a, val b);
 #define SCM_BITWISE_AND(x, y) scm_bitwise_and(process, x, y)
 val scm_number_equal(struct vm_process* process, val x, val y);
