@@ -365,7 +365,7 @@ bool is_bignum(struct vm_process *process, val v) {
 
 // Tried a non-macro inline variant (see history) but oddly sometimes
 // leads to larger code (in SMALL case), and oddly slower, too.
-#define BIGNUM_DISPATCH(return, x, y, fixnum_op, bignum_op)             \
+#define _NUMBER_DISPATCH(return, x, y, fixnum_op, bignum_op)            \
     if (is_fixnum(x)) {                                                 \
         if (is_fixnum(y)) {                                             \
             return fixnum_op(process, x, y);                            \
@@ -423,7 +423,7 @@ bool is_bignum(struct vm_process *process, val v) {
 /* Safe: reports an error if inputs are not numbers. Takes `process`
    from the context. */
 #define SCM_ADD(save_regs, restore_regs, return, x, y)          \
-    BIGNUM_DISPATCH(return, x, y, FIXNUM_ADD, bignum_add);
+    _NUMBER_DISPATCH(return, x, y, FIXNUM_ADD, bignum_add);
 
 
 val fixmulint_to_scm(struct vm_process* process, fixmulint_t x);

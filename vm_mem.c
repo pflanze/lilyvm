@@ -358,7 +358,7 @@ static val bignum_equal(UNUSED struct vm_process* process,
     return TRU;
 }
 val scm_number_equal(struct vm_process* process, val x, val y) {
-    BIGNUM_DISPATCH(return, x, y, fixnum_equal, bignum_equal);
+    _NUMBER_DISPATCH(return, x, y, fixnum_equal, bignum_equal);
 }
 
 
@@ -408,7 +408,7 @@ static val bignum_cmp(UNUSED struct vm_process* process,
     }
 }
 val scm_number_cmp(struct vm_process* process, val x, val y) {
-    BIGNUM_DISPATCH(return, x, y, fixnum_cmp, bignum_cmp);
+    _NUMBER_DISPATCH(return, x, y, fixnum_cmp, bignum_cmp);
 }
 
 TEST(scm_number_cmp) {
@@ -703,7 +703,7 @@ static val bignum_mul(UNUSED struct vm_process *process,
 
 
 val scm_mul(struct vm_process *process, val x, val y) {
-    BIGNUM_DISPATCH(return, x, y, fixnum_mul, bignum_mul);
+    _NUMBER_DISPATCH(return, x, y, fixnum_mul, bignum_mul);
 }
 
 val scm_length(struct vm_process *process, val l) {
