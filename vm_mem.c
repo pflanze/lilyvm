@@ -347,6 +347,14 @@ static val fixnum_equal(UNUSED struct vm_process* process,
                         val a, val b) {
     return BOOL(a == b);
 }
+#define DO_FIXNUM_EQUAL(save_regs, restore_regs, return, a, b) \
+    {                                                          \
+        save_regs;                                             \
+        val res = fixnum_equal(process, a, b);                 \
+        restore_regs;                                          \
+        return res;                                            \
+    }
+
 static val bignum_equal(UNUSED struct vm_process* process,
                         word_t *a, numwords_t lena, UNUSED bool amoves,
                         word_t *b, numwords_t lenb, UNUSED bool bmoves) {
@@ -357,8 +365,9 @@ static val bignum_equal(UNUSED struct vm_process* process,
     }
     return TRU;
 }
+
 val scm_number_equal(struct vm_process* process, val x, val y) {
-    _NUMBER_DISPATCH(_NOOP, _NOOP, fixnum_equal, bignum_equal, return, x, y);
+    _NUMBER_DISPATCH(_NOOP, _NOOP, DO_FIXNUM_EQUAL, bignum_equal, return, x, y);
 }
 
 
@@ -370,6 +379,14 @@ static val fixnum_cmp(UNUSED struct vm_process* process,
     fixaddint_t y = INT(b);
     return x == y ? EQ : x < y ? LT : GT;
 }
+#define DO_FIXNUM_CMP(save_regs, restore_regs, return, a, b)   \
+    {                                                          \
+        save_regs;                                             \
+        val res = fixnum_cmp(process, a, b);                   \
+        restore_regs;                                          \
+        return res;                                            \
+    }
+
 static val bignum_cmp(UNUSED struct vm_process* process,
                       word_t *a, numwords_t lena, UNUSED bool amoves,
                       word_t *b, numwords_t lenb, UNUSED bool bmoves) {
@@ -408,7 +425,7 @@ static val bignum_cmp(UNUSED struct vm_process* process,
     }
 }
 val scm_number_cmp(struct vm_process* process, val x, val y) {
-    _NUMBER_DISPATCH(_NOOP, _NOOP, fixnum_cmp, bignum_cmp, return, x, y);
+    _NUMBER_DISPATCH(_NOOP, _NOOP, DO_FIXNUM_CMP, bignum_cmp, return, x, y);
 }
 
 TEST(scm_number_cmp) {
