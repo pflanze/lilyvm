@@ -216,6 +216,11 @@ word_t* vm_process_alloc(struct vm_process* process, numwords_t n) {
 
 /* A variant of vm_process_alloc that saves registers, and only when
    the GC has to run. Takes `process` from the context. */
+
+// really have to use some C code for noop, so that macro calls work
+INLINE static void _noop() {}
+#define _NOOP _noop()
+
 #define LILYVM_ALLOC(save_regs, restore_regs, return, numwords)         \
     {                                                                   \
     word_t *ptr = process->alloc_ptr;                                   \
