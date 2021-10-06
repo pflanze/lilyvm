@@ -100,17 +100,15 @@ N = ((signed_word_t)N) - 1; // unsafe (no overflow/UB check)!
 
     (30 add 0 #t "
 STACK_ENSURE(2);
-STORE_ALL;
-STACK_UNSAFE_SET(1, SCM_ADD(STACK_UNSAFE_REF(1), STACK_UNSAFE_REF(0)));
-STACK_UNSAFE_REMOVE(1);
-RESTORE_ALL;
-")
+val res;
+DO_SCM_ADD(STORE_ALL, RESTORE_ALL, res=, STACK_UNSAFE_REF(1), STACK_UNSAFE_REF(0))
+STACK_UNSAFE_SET(1, res);
+STACK_UNSAFE_REMOVE(1);")
     (31 add_im 2 #t "
 STACK_ENSURE(1);
-STORE_ALL;
-STACK_UNSAFE_SET(0, SCM_ADD(STACK_UNSAFE_REF(0), ARGIM1));
-RESTORE_ALL;
-")
+val res;
+DO_SCM_ADD(STORE_ALL, RESTORE_ALL, res=, STACK_UNSAFE_REF(0), ARGIM1);
+STACK_UNSAFE_SET(0, res);")
 
     ;; add x y  means stack[x] += stack[y]
     (32 add__ 2 #t "

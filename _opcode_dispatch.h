@@ -265,11 +265,10 @@ val B = UNINITIALIZED;
         TRACE_OP("add");
         {
             STACK_ENSURE(2);
-            STORE_ALL;
-            STACK_UNSAFE_SET(1, SCM_ADD(STACK_UNSAFE_REF(1), STACK_UNSAFE_REF(0)));
+            val res;
+            DO_SCM_ADD(STORE_ALL, RESTORE_ALL, res=, STACK_UNSAFE_REF(1), STACK_UNSAFE_REF(0))
+            STACK_UNSAFE_SET(1, res);
             STACK_UNSAFE_REMOVE(1);
-            RESTORE_ALL;
-            
         }
         pc += 1;
         DISPATCH;
@@ -277,10 +276,9 @@ val B = UNINITIALIZED;
         TRACE_OP("add_im");
         {
             STACK_ENSURE(1);
-            STORE_ALL;
-            STACK_UNSAFE_SET(0, SCM_ADD(STACK_UNSAFE_REF(0), ARGIM1));
-            RESTORE_ALL;
-            
+            val res;
+            DO_SCM_ADD(STORE_ALL, RESTORE_ALL, res=, STACK_UNSAFE_REF(0), ARGIM1);
+            STACK_UNSAFE_SET(0, res);
         }
         pc += 3;
         DISPATCH;
