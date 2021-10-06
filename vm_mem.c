@@ -292,7 +292,8 @@ val fixmulint_to_scm(struct vm_process* process, fixmulint_t x) {
         return IFVERBOSE(PP_THROUGH)(FIX(x));
     } else {
         // x is 2 words wide, but upper word might be empty
-        if (// positive representable in LO
+        if (// XX these checks should be their own macro right?:
+            // positive representable in LO
             ((DWORD_HI(x) == 0) &&
              !WORD_IS_NEGATIVE(DWORD_LO(x)))
             ||
