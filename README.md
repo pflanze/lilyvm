@@ -146,6 +146,11 @@ in [`vmtest.c`](vmtest.c)). You can run those via:
     time target-local/lilyvm fib_compiled_35.bytecode 
     time target-local/lilyvm fib_compiled_register_35.bytecode # segv with GCC
 
+or also
+
+    time target-local/lilyvm fib_registers_40.bytecode
+    time target-local/lilyvm fib_binaryregisters_40.bytecode
+
 There is currently no disassembler. To understand what those files do,
 read the sections in [`vmtest.c`](vmtest.c) where the opcodes that are
 stored to them are being written to memory, and then
@@ -159,8 +164,9 @@ Note that the result of the fibonacci calculation is a bignum (since
 currently immediates are only 16 bits wide for the mentioned 16-bit
 CPU target), and bignum division is not yet implemented and hence the
 Scheme writer cannot print the numbers in decimal and thus shows them
-in hex (like `#bignum{00e3-d1b0}` here, which represents the expected
-decimal result 14930352).
+in hex (like `#bignum{00e3-d1b0}` here for fib(35), which represents
+the expected decimal result 14930352, or `#bignum{09de-8d6d}`
+(165580141) for fib(40)).
 
 For small optimized binaries, set `SMALL` in the environment. To
 compile in C++ mode, set `CPLUSPLUS`. To use clang/clang++, set

@@ -278,6 +278,10 @@ TEST(basics) {
                                    FIXMULINT_TO_SCM(14930352)),
                   TRU);
     }
+    pc = program;
+    /*0*/  OP_IM(LOADA_IM, FIX(40));
+    bytecode_write_file(program, program_end-program,
+                        "fib_registers_40.bytecode");
 
     // Naive fibonacci using registers again, but taking advantage of
     // static typing for the input register (unsafe, assumes a
@@ -331,6 +335,10 @@ TEST(basics) {
                                    FIXMULINT_TO_SCM(14930352)),
                   TRU);
     }
+    pc = program;
+    /*0*/  OP_IM(LOADN_IM, 40);
+    bytecode_write_file(program, program_end-program,
+                        "fib_binaryregisters_40.bytecode");
 
 
     // Naive fibonacci again, but with "full program compilation as
