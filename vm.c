@@ -115,10 +115,10 @@ bool stack_dup(struct vm_stack *s) {
 }
 
 INLINE static
-bool stack_ensure(struct vm_stack *s, uint16_t n) {
+bool stack_ensure_has(struct vm_stack *s, uint16_t n) {
     // ensure stack has at least n elements.
     if (s->sp >= n) return true;
-    FAIL2(s->failure, "stack_ensure", "missing elements on stack");
+    FAIL2(s->failure, "stack_ensure_has", "missing elements on stack");
 }
 
 INLINE static
@@ -275,7 +275,7 @@ void vm_process_run(struct vm_process *process, uint8_t *code) {
     if (! stack_dup(&process->stack)) FAIL1(failure, "STACK_DUP");
 // evil optimizations:
 #define STACK_ENSURE_HAS(n)                         \
-    if (! stack_ensure(&process->stack, n)) \
+    if (! stack_ensure_has(&process->stack, n)) \
         FAIL1(failure, "STACK_ENSURE_HAS");
 #define STACK_ENSURE_FREE(n)                     \
     if (! stack_ensure_free(&process->stack, n)) \
