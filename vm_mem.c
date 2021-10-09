@@ -221,7 +221,7 @@ void vm_mem_gc(struct vm_process* process) {
                 ASSERT (len); // those are the copies, they can't be fwd!
                 if (! TYPE_IS_BINARY(PTR_TYPE(ptr))) {
                     // walk object body
-                    uint16_t i;
+                    numwords_t i;
                     for (i = 1; i < len; i++) {
                         GC_HANDLE_SLOT(ptr[i], newptr);
                     }
