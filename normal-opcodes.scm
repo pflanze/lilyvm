@@ -30,7 +30,7 @@ B = A;")
     (12 TBA 0 #t "
 A = B;")
     (13 swapA 0 #t "
-STACK_ENSURE(1);
+STACK_ENSURE_HAS(1);
 val x = STACK_UNSAFE_REF(0);
 STACK_UNSAFE_SET(0, A);
 A = x;")
@@ -40,13 +40,13 @@ PUSH(FIX(M)); // unsafe")
     (23 pushN 0 #t "
 PUSH(FIX(N)); // unsafe")
     (24 swapN 0 #t "
-STACK_ENSURE(1);
+STACK_ENSURE_HAS(1);
 val x = STACK_UNSAFE_REF(0);
 STACK_UNSAFE_SET(0, FIX(N)); // unsafe
 N = INT(x); // unsafe")
     ;; pop into N, push A (call it swapAN ?)
     (130 popN__pushA 0 #t "
-STACK_ENSURE(1);
+STACK_ENSURE_HAS(1);
 N = INT(STACK_UNSAFE_REF(0)); // unsafe
 STACK_UNSAFE_SET(0, A);")
 
@@ -96,13 +96,13 @@ N = ((signed_word_t)N) - 1; // unsafe (no overflow/UB check)!
 ")
 
     (30 add 0 #t "
-STACK_ENSURE(2);
+STACK_ENSURE_HAS(2);
 val res;
 DO_SCM_ADD(STORE_ALL, RESTORE_ALL, res=, STACK_UNSAFE_REF(1), STACK_UNSAFE_REF(0))
 STACK_UNSAFE_SET(1, res);
 STACK_UNSAFE_REMOVE(1);")
     (31 add_im 2 #t "
-STACK_ENSURE(1);
+STACK_ENSURE_HAS(1);
 val res;
 DO_SCM_ADD(STORE_ALL, RESTORE_ALL, res=, STACK_UNSAFE_REF(0), ARGIM1);
 STACK_UNSAFE_SET(0, res);")
@@ -120,13 +120,13 @@ LET_STACK_REF(a, i);
 ")
     ;; A += pop
     (33 addA 0 #t "
-STACK_ENSURE(1);
+STACK_ENSURE_HAS(1);
 DO_SCM_ADD(STORE_EXCEPT_A, RESTORE_EXCEPT_A, A=, A, STACK_UNSAFE_REF(0));
 STACK_UNSAFE_REMOVE(1);")
 
     ;; M += INT(pop) -- unsafe!
     (34 addM 0 #t "
-STACK_ENSURE(1);
+STACK_ENSURE_HAS(1);
 M = (signed_dword_t)M + (signed_dword_t)INT(STACK_UNSAFE_REF(0)); // unsafe
 STACK_UNSAFE_REMOVE(1);
 ")
@@ -190,7 +190,7 @@ LET_POP(v);
 LET_POP(origpc);
 PUSH(v);
 */
-STACK_ENSURE(2);
+STACK_ENSURE_HAS(2);
 {
     val origpc = STACK_UNSAFE_REF(1);
     STACK_UNSAFE_SET(1, STACK_UNSAFE_REF(0));
@@ -288,7 +288,7 @@ if (1) { // actually faster??
     STACK_UNSAFE_SET_LAST(SCM_DEC(x));
     RESTORE_ALL;
 } else {
-    STACK_ENSURE(2);
+    STACK_ENSURE_HAS(2);
     STORE_ALL;
     val tmp = SCM_DEC(STACK_UNSAFE_REF(1));
     STACK_UNSAFE_SET(1, STACK_UNSAFE_REF(0));
@@ -298,7 +298,7 @@ if (1) { // actually faster??
 ")
     ;; (The following really didn't change ~anything at all [when using gcc]: )
     (202 jsr_rel8__swap 1 #f "
-STACK_ENSURE(1);
+STACK_ENSURE_HAS(1);
 val x = STACK_UNSAFE_REF(0);
 STACK_UNSAFE_SET(0, PCNUM(PC+2)); //XX make safe
 STACK_ALLOC(1);

@@ -122,7 +122,7 @@ val B = UNINITIALIZED;
     op_swapA: /* swapA, 0 */
         TRACE_OP("swapA");
         {
-            STACK_ENSURE(1);
+            STACK_ENSURE_HAS(1);
             val x = STACK_UNSAFE_REF(0);
             STACK_UNSAFE_SET(0, A);
             A = x;
@@ -146,7 +146,7 @@ val B = UNINITIALIZED;
     op_swapN: /* swapN, 0 */
         TRACE_OP("swapN");
         {
-            STACK_ENSURE(1);
+            STACK_ENSURE_HAS(1);
             val x = STACK_UNSAFE_REF(0);
             STACK_UNSAFE_SET(0, FIX(N)); // unsafe
             N = INT(x); // unsafe
@@ -156,7 +156,7 @@ val B = UNINITIALIZED;
     op_popN__pushA: /* popN__pushA, 0 */
         TRACE_OP("popN__pushA");
         {
-            STACK_ENSURE(1);
+            STACK_ENSURE_HAS(1);
             N = INT(STACK_UNSAFE_REF(0)); // unsafe
             STACK_UNSAFE_SET(0, A);
         }
@@ -261,7 +261,7 @@ val B = UNINITIALIZED;
     op_add: /* add, 0 */
         TRACE_OP("add");
         {
-            STACK_ENSURE(2);
+            STACK_ENSURE_HAS(2);
             val res;
             DO_SCM_ADD(STORE_ALL, RESTORE_ALL, res=, STACK_UNSAFE_REF(1), STACK_UNSAFE_REF(0))
             STACK_UNSAFE_SET(1, res);
@@ -272,7 +272,7 @@ val B = UNINITIALIZED;
     op_add_im: /* add_im, 2 */
         TRACE_OP("add_im");
         {
-            STACK_ENSURE(1);
+            STACK_ENSURE_HAS(1);
             val res;
             DO_SCM_ADD(STORE_ALL, RESTORE_ALL, res=, STACK_UNSAFE_REF(0), ARGIM1);
             STACK_UNSAFE_SET(0, res);
@@ -297,7 +297,7 @@ val B = UNINITIALIZED;
     op_addA: /* addA, 0 */
         TRACE_OP("addA");
         {
-            STACK_ENSURE(1);
+            STACK_ENSURE_HAS(1);
             DO_SCM_ADD(STORE_EXCEPT_A, RESTORE_EXCEPT_A, A=, A, STACK_UNSAFE_REF(0));
             STACK_UNSAFE_REMOVE(1);
         }
@@ -306,7 +306,7 @@ val B = UNINITIALIZED;
     op_addM: /* addM, 0 */
         TRACE_OP("addM");
         {
-            STACK_ENSURE(1);
+            STACK_ENSURE_HAS(1);
             M = (signed_dword_t)M + (signed_dword_t)INT(STACK_UNSAFE_REF(0)); // unsafe
             STACK_UNSAFE_REMOVE(1);
             
@@ -410,7 +410,7 @@ val B = UNINITIALIZED;
             LET_POP(origpc);
             PUSH(v);
             */
-            STACK_ENSURE(2);
+            STACK_ENSURE_HAS(2);
             {
                 val origpc = STACK_UNSAFE_REF(1);
                 STACK_UNSAFE_SET(1, STACK_UNSAFE_REF(0));
@@ -549,7 +549,7 @@ val B = UNINITIALIZED;
                 STACK_UNSAFE_SET_LAST(SCM_DEC(x));
                 RESTORE_ALL;
             } else {
-                STACK_ENSURE(2);
+                STACK_ENSURE_HAS(2);
                 STORE_ALL;
                 val tmp = SCM_DEC(STACK_UNSAFE_REF(1));
                 STACK_UNSAFE_SET(1, STACK_UNSAFE_REF(0));
@@ -563,7 +563,7 @@ val B = UNINITIALIZED;
     op_jsr_rel8__swap: /* jsr_rel8__swap, 1 */
         TRACE_OP("jsr_rel8__swap");
         {
-            STACK_ENSURE(1);
+            STACK_ENSURE_HAS(1);
             val x = STACK_UNSAFE_REF(0);
             STACK_UNSAFE_SET(0, PCNUM(PC+2)); //XX make safe
             STACK_ALLOC(1);
@@ -671,12 +671,12 @@ val B = UNINITIALIZED;
             fib_ret_2:
             // ADD
             {
-                STACK_ENSURE(2);
+                STACK_ENSURE_HAS(2);
                 STACK_UNSAFE_SET(1, SCM_ADD(STACK_UNSAFE_REF(1), STACK_UNSAFE_REF(0)));
                 STACK_UNSAFE_REMOVE(1);
             }
             // RET_POP
-            STACK_ENSURE(2);
+            STACK_ENSURE_HAS(2);
             {
             #define origpc tmp1
                 origpc = STACK_UNSAFE_REF(1);
@@ -726,7 +726,7 @@ val B = UNINITIALIZED;
             #define x A
                 if (SCM_NUMBER_CMP(x, FIX(2)) == LT) {
                     // LET_POP(origpc);
-                    // STACK_ENSURE(1);
+                    // STACK_ENSURE_HAS(1);
             #define origpc tmp1
                     origpc = STACK_UNSAFE_REF(0);
                     STACK_UNSAFE_REMOVE(1);
@@ -789,14 +789,14 @@ val B = UNINITIALIZED;
             fib_with_registers_ret_2:
             // ADD
             {
-                // STACK_ENSURE(1); // optim: leave off
+                // STACK_ENSURE_HAS(1); // optim: leave off
             STORE_EXCEPT_A;
                 A = SCM_ADD(A, STACK_UNSAFE_REF(0));
             RESTORE_EXCEPT_A;
                 STACK_UNSAFE_REMOVE(1);
             }
             // RET_POP
-            //STACK_ENSURE(1); // optim: leave off
+            //STACK_ENSURE_HAS(1); // optim: leave off
             {
             #define origpc tmp1
                 origpc = STACK_UNSAFE_REF(0);

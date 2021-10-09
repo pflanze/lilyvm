@@ -274,9 +274,9 @@ void vm_process_run(struct vm_process *process, uint8_t *code) {
 #define STACK_DUP                              \
     if (! stack_dup(&process->stack)) FAIL1(failure, "STACK_DUP");
 // evil optimizations:
-#define STACK_ENSURE(n)                         \
+#define STACK_ENSURE_HAS(n)                         \
     if (! stack_ensure(&process->stack, n)) \
-        FAIL1(failure, "STACK_ENSURE");
+        FAIL1(failure, "STACK_ENSURE_HAS");
 #define STACK_ENSURE_FREE(n)                     \
     if (! stack_ensure_free(&process->stack, n)) \
         FAIL1(failure, "STACK_ENSURE_FREE");

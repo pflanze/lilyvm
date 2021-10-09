@@ -64,12 +64,12 @@ fib_ret_1:
 fib_ret_2:
 // ADD
 {
-    STACK_ENSURE(2);
+    STACK_ENSURE_HAS(2);
     STACK_UNSAFE_SET(1, SCM_ADD(STACK_UNSAFE_REF(1), STACK_UNSAFE_REF(0)));
     STACK_UNSAFE_REMOVE(1);
 }
 // RET_POP
-STACK_ENSURE(2);
+STACK_ENSURE_HAS(2);
 {
 #define origpc tmp1
     origpc = STACK_UNSAFE_REF(1);
@@ -118,7 +118,7 @@ fib_with_registers_entry:
 #define x A
     if (SCM_NUMBER_CMP(x, FIX(2)) == LT) {
         // LET_POP(origpc);
-        // STACK_ENSURE(1);
+        // STACK_ENSURE_HAS(1);
 #define origpc tmp1
         origpc = STACK_UNSAFE_REF(0);
         STACK_UNSAFE_REMOVE(1);
@@ -181,14 +181,14 @@ RESTORE_EXCEPT_A;
 fib_with_registers_ret_2:
 // ADD
 {
-    // STACK_ENSURE(1); // optim: leave off
+    // STACK_ENSURE_HAS(1); // optim: leave off
 STORE_EXCEPT_A;
     A = SCM_ADD(A, STACK_UNSAFE_REF(0));
 RESTORE_EXCEPT_A;
     STACK_UNSAFE_REMOVE(1);
 }
 // RET_POP
-//STACK_ENSURE(1); // optim: leave off
+//STACK_ENSURE_HAS(1); // optim: leave off
 {
 #define origpc tmp1
     origpc = STACK_UNSAFE_REF(0);
