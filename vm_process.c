@@ -9,7 +9,7 @@
 #include "vm_process.h"
 #include "vm_mem.h" /* for UNINITIALIZED, strictly speaking circular dep */
 
-struct vm_process *malloc_process(uint16_t stacklen,
+struct vm_process *malloc_process(stacksize_t stacklen,
                                   uint16_t numheapwords) {
     WARN_("malloc_process(%i, %i)", stacklen, numheapwords);
     // GC'd memory

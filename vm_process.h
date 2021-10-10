@@ -43,9 +43,10 @@ struct vm_stack_failure {
 };
 
 // Just a linear fixed stack for now.
+typedef uint16_t stacksize_t;
 struct vm_stack {
-    uint16_t sp; // number of elements currently on the stack
-    uint16_t len;
+    stacksize_t sp; // number of elements currently on the stack
+    stacksize_t len;
     struct vm_stack_failure failure;
     val vals[1];
 };
@@ -87,7 +88,7 @@ struct vm_process {
     struct vm_stack stack;
 };
 
-struct vm_process *malloc_process(uint16_t stacklen,
+struct vm_process *malloc_process(stacksize_t stacklen,
                                   uint16_t numheapwords);
 void vm_process_free(struct vm_process *p);
 

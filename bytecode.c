@@ -41,7 +41,7 @@ bool bytecode_write_file(const uint8_t *program,
 }
 
 bool bytecode_load_and_run(const char* path,
-                           uint16_t stacklen,
+                           stacksize_t stacklen,
                            uint16_t heaplen) {
     printf("Loading and running '%s'...\n", path);
     int fd = open(path, O_RDONLY);

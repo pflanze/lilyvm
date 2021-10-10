@@ -145,14 +145,14 @@ TEST(basics) {
     program_end = pc;
     vm_process_stack_clear(process);
     vm_process_run(process, program);
-    ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+    ASSERT_EQ_(stacksize_t, process->stack.sp, 1);
     ASSERT_EQ_(val, process->stack.vals[0], FIX(2));
 
     pc = program;
     /*0*/  OP_IM(PUSH_IM, FIX(16));
     vm_process_stack_clear(process);
     vm_process_run(process, program);
-    ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+    ASSERT_EQ_(stacksize_t, process->stack.sp, 1);
     ASSERT_EQ_(val, process->stack.vals[0], FIX(1597));
 
     if (0) {
@@ -160,7 +160,7 @@ TEST(basics) {
         /*0*/  OP_IM(PUSH_IM, FIX(25));
         vm_process_stack_clear(process);
         vm_process_run(process, program);
-        ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+        ASSERT_EQ_(stacksize_t, process->stack.sp, 1);
         WRITELN(process->stack.vals[0]);
         ASSERT_EQ(SCM_NUMBER_EQUAL(process->stack.vals[0],
                                    FIXMULINT_TO_SCM(121393)),
@@ -172,7 +172,7 @@ TEST(basics) {
         /*0*/  OP_IM(PUSH_IM, FIX(30));
         vm_process_stack_clear(process);
         vm_process_run(process, program);
-        ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+        ASSERT_EQ_(stacksize_t, process->stack.sp, 1);
         WRITELN(process->stack.vals[0]);
         ASSERT_EQ(SCM_NUMBER_EQUAL(process->stack.vals[0],
                                    FIXMULINT_TO_SCM(1346269)),
@@ -185,7 +185,7 @@ TEST(basics) {
     if (0) {
         vm_process_stack_clear(process);
         vm_process_run(process, program);
-        ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+        ASSERT_EQ_(stacksize_t, process->stack.sp, 1);
         WRITELN(process->stack.vals[0]);
         ASSERT_EQ(SCM_NUMBER_EQUAL(process->stack.vals[0],
                                    FIXMULINT_TO_SCM(14930352)),
@@ -213,7 +213,7 @@ TEST(basics) {
     program_end = pc;
     vm_process_stack_clear(process);
     vm_process_run(process, program);
-    ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+    ASSERT_EQ_(stacksize_t, process->stack.sp, 1);
     ASSERT_EQ_(val, process->stack.vals[0], FIX(2));
 
     pc = program;
@@ -223,7 +223,7 @@ TEST(basics) {
     if (0) {
         vm_process_stack_clear(process);
         vm_process_run(process, program);
-        ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+        ASSERT_EQ_(stacksize_t, process->stack.sp, 1);
         WRITELN(process->stack.vals[0]);
         ASSERT_EQ(SCM_NUMBER_EQUAL(process->stack.vals[0],
                                    FIXMULINT_TO_SCM(14930352)),
@@ -262,7 +262,7 @@ TEST(basics) {
     program_end = pc;
     vm_process_stack_clear(process);
     vm_process_run(process, program);
-    ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+    ASSERT_EQ_(stacksize_t, process->stack.sp, 1);
     ASSERT_EQ_(val, process->stack.vals[0], FIX(1597));
 
     pc = program;
@@ -272,7 +272,7 @@ TEST(basics) {
     if (0) {
         vm_process_stack_clear(process);
         vm_process_run(process, program);
-        ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+        ASSERT_EQ_(stacksize_t, process->stack.sp, 1);
         WRITELN(process->stack.vals[0]);
         ASSERT_EQ(SCM_NUMBER_EQUAL(process->stack.vals[0],
                                    FIXMULINT_TO_SCM(14930352)),
@@ -319,7 +319,7 @@ TEST(basics) {
     program_end = pc;
     vm_process_stack_clear(process);
     vm_process_run(process, program);
-    ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+    ASSERT_EQ_(stacksize_t, process->stack.sp, 1);
     ASSERT_EQ_(val, process->stack.vals[0], FIX(1597));
 
     pc = program;
@@ -329,7 +329,7 @@ TEST(basics) {
     if (0) {
         vm_process_stack_clear(process);
         vm_process_run(process, program);
-        ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+        ASSERT_EQ_(stacksize_t, process->stack.sp, 1);
         WRITELN(process->stack.vals[0]);
         ASSERT_EQ(SCM_NUMBER_EQUAL(process->stack.vals[0],
                                    FIXMULINT_TO_SCM(14930352)),
@@ -355,7 +355,7 @@ TEST(basics) {
     if (0) {
         vm_process_stack_clear(process);
         vm_process_run(process, program);
-        ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+        ASSERT_EQ_(stacksize_t, process->stack.sp, 1);
         WRITELN(process->stack.vals[0]);
         ASSERT_EQ(SCM_NUMBER_EQUAL(process->stack.vals[0],
                                    FIXMULINT_TO_SCM(14930352)),
@@ -377,7 +377,7 @@ TEST(basics) {
     if (0) {
         vm_process_stack_clear(process);
         vm_process_run(process, program);
-        ASSERT_EQ_(uint16_t, process->stack.sp, 1);
+        ASSERT_EQ_(stacksize_t, process->stack.sp, 1);
         WRITELN(process->stack.vals[0]);
         ASSERT_EQ(SCM_NUMBER_EQUAL(process->stack.vals[0],
                                    FIXMULINT_TO_SCM(14930352)),

@@ -549,8 +549,11 @@ NORETURN error_integer(struct vm_process* process, val v) {
 
 // XX only correct in 16-bit word_t case!
 #define __test_assert_eq_fmt_failure_val __test_assert_eq_fmt_failure_uint16_t
+#define __test_assert_eq_fmt_failure_stacksize_t __test_assert_eq_fmt_failure_uint16_t
 #define __test_fmt_val __test_fmt_uint16_t
+#define __test_fmt_stacksize_t __test_fmt_uint16_t
 #define __test_t_for_val __test_t_for_uint16_t
+#define __test_t_for_stacksize_t __test_t_for_uint16_t
 
 
 #endif /* MEM_H_ */

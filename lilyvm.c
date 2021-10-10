@@ -12,7 +12,7 @@
 #include "chj-64lib/util.h"
 #include "bytecode.h"
 
-const uint16_t default_stacklen = 256;
+const stacksize_t default_stacklen = 256;
 const uint16_t default_heaplen = 1024;
 
 NORETURN help(const char* maybe_fmt, const char* arg) {
@@ -74,7 +74,7 @@ int main(int argc, const char **argv)
 {
     const char **paths = (const char**)alloca(argc * sizeof(char*));
     if (argc < 2) help(NULL, NULL);
-    uint16_t stacklen = default_stacklen;
+    stacksize_t stacklen = default_stacklen;
     uint16_t heaplen = default_heaplen;
     bool stop_parsing = false;
     int j = 0;

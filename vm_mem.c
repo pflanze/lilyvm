@@ -197,7 +197,7 @@ void vm_mem_gc(struct vm_process* process) {
     }
     {
         // The execution stack
-        uint16_t i;
+        stacksize_t i;
         for (i = 0; i < process->stack.sp; i++) {
             GC_HANDLE_SLOT(process->stack.vals[i], newptr);
         }

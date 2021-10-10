@@ -17,7 +17,7 @@
 
 INLINE static
 bool stack_push(struct vm_stack *s, val val) {
-    uint16_t sp = s->sp;
+    stacksize_t sp = s->sp;
     if (sp < s->len) {
         s->vals[sp] = val;
         s->sp++;
@@ -29,7 +29,7 @@ bool stack_push(struct vm_stack *s, val val) {
 
 INLINE static
 val stack_pop(struct vm_stack *s) {
-    uint16_t sp = s->sp;
+    stacksize_t sp = s->sp;
     if (sp) {
         sp--;
         s->sp = sp;
@@ -41,7 +41,7 @@ val stack_pop(struct vm_stack *s) {
 
 INLINE static
 val stack_last(struct vm_stack *s) {
-    uint16_t sp = s->sp;
+    stacksize_t sp = s->sp;
     if (sp) {
         return s->vals[sp - 1];
     } else {
@@ -56,7 +56,7 @@ void stack_last_unsafe_set(struct vm_stack *s, val v) {
 
 INLINE static
 bool stack_drop1(struct vm_stack *s) {
-    uint16_t sp = s->sp;
+    stacksize_t sp = s->sp;
     if (sp) {
         sp--;
         s->sp = sp;
@@ -88,7 +88,7 @@ bool stack_set(struct vm_stack *s, uint8_t i, val v) {
 /* INLINE */ static
 bool stack_swap(struct vm_stack *s) {
     if (s->sp >= 2) {
-        uint16_t i = s->sp - 2;
+        stacksize_t i = s->sp - 2;
         val tmp = s->vals[i];
         s->vals[i] = s->vals[i+1];
         s->vals[i+1] = tmp;
@@ -100,7 +100,7 @@ bool stack_swap(struct vm_stack *s) {
 
 /* INLINE */ static
 bool stack_dup(struct vm_stack *s) {
-    uint16_t sp = s->sp;
+    stacksize_t sp = s->sp;
     if (sp) {
         if (sp < s->len) {
             s->vals[sp] = s->vals[sp-1];
@@ -115,14 +115,14 @@ bool stack_dup(struct vm_stack *s) {
 }
 
 INLINE static
-bool stack_ensure_has(struct vm_stack *s, uint16_t n) {
+bool stack_ensure_has(struct vm_stack *s, stacksize_t n) {
     // ensure stack has at least n elements.
     if (s->sp >= n) return true;
     FAIL2(s->failure, "stack_ensure_has", "missing elements on stack");
 }
 
 INLINE static
-bool stack_ensure_free(struct vm_stack *s, uint16_t n) {
+bool stack_ensure_free(struct vm_stack *s, stacksize_t n) {
     // ensure stack has space for at least n more elements.
     // XX slight risk for number overflow
     if (s->sp < s->len - n) return true;
@@ -130,10 +130,10 @@ bool stack_ensure_free(struct vm_stack *s, uint16_t n) {
 }
 
 INLINE static
-bool stack_alloc(struct vm_stack *s, uint16_t n) {
+bool stack_alloc(struct vm_stack *s, stacksize_t n) {
     // Allocate n slots on the stack. CAREFUL: does not initialize
     // them!
-    uint16_t sp = s->sp + n; // XX risk for overflow
+    stacksize_t sp = s->sp + n; // XX risk for overflow
     if (sp <= s->len) {
         s->sp = sp;
         return true;
@@ -146,9 +146,9 @@ void stack_clear(struct vm_stack *s) {
     s->sp = 0;
 }
 
-#define VALARRAY_WRITE(vals, len)               \
+#define VALARRAY_WRITE(vals, Tlen, len)         \
     {                                           \
-        uint16_t i;                             \
+        Tlen i;                                 \
         printf("(");                            \
         for (i=0; i < (len); i++) {             \
             if (i) printf(" ");                 \
@@ -159,16 +159,16 @@ void stack_clear(struct vm_stack *s) {
 
 void vm_process_stack_write(struct vm_process *process) {
 #define DEREF(x) x
-    VALARRAY_WRITE(process->stack.vals, process->stack.sp);
+    VALARRAY_WRITE(process->stack.vals, stacksize_t, process->stack.sp);
 #undef DEREF
     // print the register stacks, too
     printf(" ");
 #define DEREF(x) *(x)
-    VALARRAY_WRITE(process->val_roots, process->num_val_roots);
+    VALARRAY_WRITE(process->val_roots, uint8_t, process->num_val_roots);
 #undef DEREF
     printf(" ");
 #define DEREF(x) ALLOCATED_FROM_POINTER((*(x))-1)
-    VALARRAY_WRITE(process->ptr_roots, process->num_ptr_roots);
+    VALARRAY_WRITE(process->ptr_roots, uint8_t, process->num_ptr_roots);
 #undef DEREF
 }
 

@@ -6,6 +6,7 @@
 #define BYTECODE_H_
 
 #include <stdint.h>
+#include "vm_process.h"
 #include "opcode_constants.h"
 
 #define OP(op)                                  \
@@ -43,7 +44,7 @@ bool bytecode_write_file(const uint8_t *program,
                          size_t programlen,
                          const char *path);
 bool bytecode_load_and_run(const char* path,
-                           uint16_t stacklen,
+                           stacksize_t stacklen,
                            uint16_t heaplen);
 
 #endif /* BYTECODE_H_ */
