@@ -322,6 +322,7 @@ pc += (int8_t)ARGB1;")
 ")
     (254 nop 0 #t "")
     (255 halt 0 #t "
+STORE_ALL;
 goto halt;"
          ;; ^ can't 'break' out of the while (and computed goto
          ;; variant requires the same anyway)

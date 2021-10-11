@@ -604,6 +604,7 @@ val B = UNINITIALIZED;
     op_halt: /* halt, 0 */
         TRACE_OP("halt");
         {
+            STORE_ALL;
             goto halt;
         }
         pc += 1;
