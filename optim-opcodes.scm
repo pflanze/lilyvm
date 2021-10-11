@@ -71,7 +71,7 @@ fib_ret_2:
 // RET_POP
 STACK_ENSURE_HAS(2);
 {
-#define origpc tmp1
+#define origpc N
     origpc = STACK_UNSAFE_REF(1);
     STACK_UNSAFE_SET(1, STACK_UNSAFE_REF(0));
     STACK_UNSAFE_REMOVE(1);
@@ -119,7 +119,7 @@ fib_with_registers_entry:
     if (SCM_NUMBER_CMP(x, FIX(2)) == LT) {
         // LET_POP(origpc);
         // STACK_ENSURE_HAS(1);
-#define origpc tmp1
+#define origpc N
         origpc = STACK_UNSAFE_REF(0);
         STACK_UNSAFE_REMOVE(1);
         A = FIX(1);
@@ -160,7 +160,7 @@ fib_with_registers_ret_1:
    Now: do the same with register and local var.
 */
 {
-#define oldx tmp1
+#define oldx N
     oldx = STACK_UNSAFE_REF(0);
     STACK_UNSAFE_SET_LAST(A);
 #ifdef FIXNUM_UNSAFE
@@ -190,7 +190,7 @@ RESTORE_EXCEPT_A;
 // RET_POP
 //STACK_ENSURE_HAS(1); // optim: leave off
 {
-#define origpc tmp1
+#define origpc N
     origpc = STACK_UNSAFE_REF(0);
     STACK_UNSAFE_REMOVE(1);
     if (is_fixnum(origpc)) {

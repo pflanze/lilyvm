@@ -90,9 +90,6 @@
   (string-append "op_" (symbol->string name)))
 
 (define registerdecls "
-// not registered with GC, used just to avoid needing local vars
-word_t tmp1;
-
 // Registers for binary data (not registered with GC):
 dword_t M = 0;
 word_t N = 0;
