@@ -104,12 +104,17 @@ word_t Y = 0;
 val A = UNINITIALIZED;
 val B = UNINITIALIZED;
 
+// Stack pointer:
+stacksize_t SP = process->stack.sp;
+
 #define _STORE(X) do { process->X = X; } while (0)
 #define _RESTORE(X) do { X = process->X; } while (0)
-#define STORE_ALL do { _STORE(A); _STORE(B); } while (0);
-#define RESTORE_ALL do { _RESTORE(A); _RESTORE(B); } while (0);
-#define STORE_EXCEPT_A do { _STORE(B); } while (0);
-#define RESTORE_EXCEPT_A do { _RESTORE(B); } while (0);
+#define _STORESP do { process->stack.sp = SP; } while (0)
+#define _RESTORESP do { SP = process->stack.sp; } while (0)
+#define STORE_ALL do { _STORESP; _STORE(A); _STORE(B); } while (0);
+#define RESTORE_ALL do { _RESTORESP; _RESTORE(A); _RESTORE(B); } while (0);
+#define STORE_EXCEPT_A do { _STORESP; _STORE(B); } while (0);
+#define RESTORE_EXCEPT_A do { _RESTORESP; _RESTORE(B); } while (0);
 ")
 
 (define (print-opcodes_dispatch_h)

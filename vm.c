@@ -15,6 +15,7 @@
 
 #define ON_FAIL return 0
 
+/*
 INLINE static
 bool stack_push(struct vm_stack *s, val val) {
     stacksize_t sp = s->sp;
@@ -85,6 +86,8 @@ bool stack_set(struct vm_stack *s, uint8_t i, val v) {
     }
 }
 
+*/
+
 /* INLINE */ static
 bool stack_swap(struct vm_stack *s) {
     if (s->sp >= 2) {
@@ -114,6 +117,7 @@ bool stack_dup(struct vm_stack *s) {
     }
 }
 
+/*
 INLINE static
 bool stack_ensure_has(struct vm_stack *s, stacksize_t n) {
     // ensure stack has at least n elements.
@@ -140,6 +144,7 @@ bool stack_alloc(struct vm_stack *s, stacksize_t n) {
     }
     FAIL2(s->failure, "stack_ensure_free", "not enough space on stack");
 }
+*/
 
 INLINE static
 void stack_clear(struct vm_stack *s) {
@@ -253,43 +258,85 @@ void vm_process_run(struct vm_process *process, uint8_t *code) {
 #undef ON_FAIL
 #define ON_FAIL goto on_error
 
-#define PUSH(x) do {                                            \
-        if (! stack_push(&process->stack, x)) FAIL1(failure, "PUSH");     \
-    } while (0)
+#define PUSH(x)                                                         \
+    if (SP < process->stack.len) {                                      \
+        process->stack.vals[SP] = (x);                                  \
+        SP++;                                                           \
+    } else {                                                            \
+        FAIL1(failure, "PUSH");                                         \
+    }
 #define LET_POP(varname)                                                \
-    val varname = stack_pop(&process->stack);                                     \
-    if (!varname) FAIL1(failure, "LET_POP");
+    val varname;                                                        \
+    if (SP) {                                                           \
+        SP--;                                                           \
+        varname = process->stack.vals[SP];                              \
+    } else {                                                            \
+        FAIL1(failure, "LET_POP");                                      \
+    }
 #define LET_STACK_REF(varname,i)                                        \
-    val varname = stack_ref(&process->stack, i);                                  \
-    if (!varname) FAIL1(failure, "LET_STACK_REF");
+    val varname;                                                        \
+    {                                                                   \
+        stacksize_t _i = (i);                                           \
+        if (_i < SP) {                                                  \
+            varname = process->stack.vals[SP - 1 - _i];                 \
+        } else {                                                        \
+            FAIL1(failure, "LET_STACK_REF");                            \
+        }                                                               \
+    }
 #define LET_STACK_LAST(varname)                                         \
-    val varname = stack_last(&process->stack);                                    \
-    if (!varname) FAIL1(failure, "LET_STACK_LAST");
-#define STACK_SET(i,v)                          \
-    if (! stack_set(&process->stack, i, v)) FAIL1(failure, "LET_STACK_SET");
-#define STACK_DROP1                                             \
-    if (! stack_drop1(&process->stack)) FAIL1(failure, "STACK_DROP1");
-#define STACK_SWAP                              \
-    if (! stack_swap(&process->stack)) FAIL1(failure, "STACK_SWAP");
-#define STACK_DUP                              \
-    if (! stack_dup(&process->stack)) FAIL1(failure, "STACK_DUP");
-// evil optimizations:
+    val varname;                                                        \
+    if (SP) {                                                           \
+        varname = process->stack.vals[SP - 1];                          \
+    } else {                                                            \
+        FAIL1(failure, "LET_STACK_LAST");\
+    }
+#define STACK_SET(i,v)                                                  \
+    do {                                                                \
+        stacksize_t _i = (i);                                           \
+        if (_i < SP) {                                                  \
+            process->stack.vals[SP - 1 - _i] = (v);                     \
+        } else {                                                        \
+            FAIL1(failure, "LET_STACK_SET");                            \
+        }                                                               \
+    } while(0)
+#define STACK_DROP1                                                     \
+    if (SP) {                                                           \
+        SP--;                                                           \
+    } else {                                                            \
+        FAIL1(failure, "STACK_DROP1");                                  \
+    }
+#define STACK_SWAP                                                      \
+    _STORESP;                                                           \
+    if (! stack_swap(&process->stack)) FAIL1(failure, "STACK_SWAP");    \
+    _RESTORESP;
+#define STACK_DUP                                                       \
+    _STORESP;                                                           \
+    if (! stack_dup(&process->stack)) FAIL1(failure, "STACK_DUP");      \
+    _RESTORESP;
+// Dangerous optimizations:
+// XX todo optim: goto shared failure handlers, please!
 #define STACK_ENSURE_HAS(n)                         \
-    if (! stack_ensure_has(&process->stack, n)) \
+    if (! (SP >= n))                                \
         FAIL1(failure, "STACK_ENSURE_HAS");
-#define STACK_ENSURE_FREE(n)                     \
-    if (! stack_ensure_free(&process->stack, n)) \
-        FAIL1(failure, "STACK_ENSURE_FREE");
-#define STACK_ALLOC(n)                     \
-    if (! stack_alloc(&process->stack, n)) FAIL1(failure, "STACK_ALLOC");
+#define STACK_ENSURE_FREE(n)                            \
+    /* XX slight risk for number overflow */            \
+        if (! (SP < process->stack.len - 1))            \
+            FAIL1(failure, "STACK_ENSURE_FREE");
+#define STACK_ALLOC(n)                                                  \
+    /* Allocate n slots on the stack. CAREFUL: does not initialize them!! */ \
+        SP += n; /* XX risk for overflow */                             \
+        if (! (SP <= process->stack.len)) {                             \
+            SP -= n;                                                    \
+            FAIL1(failure, "STACK_ALLOC");                              \
+        }
 #define STACK_UNSAFE_REF(i)                     \
-    process->stack.vals[process->stack.sp - 1 - i]
+        process->stack.vals[SP - 1 - i]
 #define STACK_UNSAFE_SET(i, v)                  \
-    process->stack.vals[process->stack.sp - 1 - i] = v
+        process->stack.vals[SP - 1 - i] = v
 #define STACK_UNSAFE_REMOVE(n)                  \
-    process->stack.sp -= n
+        SP -= n
 #define STACK_UNSAFE_SET_LAST(v)                \
-    stack_last_unsafe_set(&process->stack, v)
+        process->stack.vals[SP - 1] = v;
 
 #define ARGB1 (pc[1])
 #define ARGB2 (pc[2])
