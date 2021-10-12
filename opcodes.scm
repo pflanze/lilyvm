@@ -90,14 +90,16 @@
   (string-append "op_" (symbol->string name)))
 
 (define registerdecls "
-// Registers for binary data (not registered with GC):
-word_t M = 0;
-word_t N = 0;
-
 // Registers for (not registered, but copied to process struct and
 // back when needed):
 val A = UNINITIALIZED;
 val B = UNINITIALIZED;
+val C = UNINITIALIZED;
+val D = UNINITIALIZED;
+
+// Registers for binary data (not registered with GC):
+word_t M = 0;
+word_t N = 0;
 
 // Stack pointer:
 stacksize_t SP = process->stack.sp;

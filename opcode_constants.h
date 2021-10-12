@@ -8,10 +8,16 @@
 #define OP_LOADN_IM                  2 /* 0x02; 2 */
 #define OP_LOADA_IM                  5 /* 0x05; 2 */
 #define OP_LOADB_IM                  6 /* 0x06; 2 */
+#define OP_LOADC_IM                  125 /* 0x7d; 2 */
+#define OP_LOADD_IM                  126 /* 0x7e; 2 */
 #define OP_PUSHA                     7 /* 0x07; 0 */
 #define OP_PUSHB                     8 /* 0x08; 0 */
+#define OP_PUSHC                     128 /* 0x80; 0 */
+#define OP_PUSHD                     129 /* 0x81; 0 */
 #define OP_POPA                      9 /* 0x09; 0 */
 #define OP_POPB                      10 /* 0x0a; 0 */
+#define OP_POPC                      110 /* 0x6e; 0 */
+#define OP_POPD                      111 /* 0x6f; 0 */
 #define OP_TAB                       11 /* 0x0b; 0 */
 #define OP_TBA                       12 /* 0x0c; 0 */
 #define OP_SWAPA                     13 /* 0x0d; 0 */

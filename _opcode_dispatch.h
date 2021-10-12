@@ -2,15 +2,17 @@
 
 
 {
-    static void* op2label[256] = { &&invalid_op, &&op_loadM_im, &&op_loadN_im, &&invalid_op, &&invalid_op, &&op_loadA_im, &&op_loadB_im, &&op_pushA, &&op_pushB, &&op_popA, &&op_popB, &&op_TAB, &&op_TBA, &&op_swapA, &&op_push_im, &&op_drop1, &&op_pick_b, &&op_swap, &&op_dup, &&op_pushM, &&op_inc, &&op_inc_, &&op_incA, &&op_pushN, &&op_swapN, &&op_dec, &&op_decA, &&op_decN, &&invalid_op, &&invalid_op, &&op_add, &&op_add_im, &&op_add__, &&op_addA, &&op_addM, &&op_mul__, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_bitwise_and, &&op_unsafe_bitwise_and, &&op_unsafe_bitwise_or, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_jmp_rel8, &&op_jmp_rel16, &&invalid_op, &&invalid_op, &&invalid_op, &&op_jsr_rel8, &&op_ret, &&op_ret_im, &&op_ret_pop, &&invalid_op, &&invalid_op, &&op_beq_im_rel16, &&op_bpos_keep_rel16, &&op_bneg0_keep_rel16, &&op_bneg_keep_rel16, &&op_bz_keep_rel16, &&op_bz_rel16, &&invalid_op, &&invalid_op, &&invalid_op, &&op_cmpbr_keep_lt_im_rel8, &&op_cmpbr_A_lt_im_rel8, &&op_cmpbr_N_lt_im_rel8, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_popN__pushA, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_dec__dup, &&op_swap__dec, &&op_jsr_rel8__swap, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_fib, &&op_fib_with_registers, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_trace_on, &&op_trace_off, &&op_nop, &&op_halt };
-// Registers for binary data (not registered with GC):
-word_t M = 0;
-word_t N = 0;
-
+    static void* op2label[256] = { &&invalid_op, &&op_loadM_im, &&op_loadN_im, &&invalid_op, &&invalid_op, &&op_loadA_im, &&op_loadB_im, &&op_pushA, &&op_pushB, &&op_popA, &&op_popB, &&op_TAB, &&op_TBA, &&op_swapA, &&op_push_im, &&op_drop1, &&op_pick_b, &&op_swap, &&op_dup, &&op_pushM, &&op_inc, &&op_inc_, &&op_incA, &&op_pushN, &&op_swapN, &&op_dec, &&op_decA, &&op_decN, &&invalid_op, &&invalid_op, &&op_add, &&op_add_im, &&op_add__, &&op_addA, &&op_addM, &&op_mul__, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_bitwise_and, &&op_unsafe_bitwise_and, &&op_unsafe_bitwise_or, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_jmp_rel8, &&op_jmp_rel16, &&invalid_op, &&invalid_op, &&invalid_op, &&op_jsr_rel8, &&op_ret, &&op_ret_im, &&op_ret_pop, &&invalid_op, &&invalid_op, &&op_beq_im_rel16, &&op_bpos_keep_rel16, &&op_bneg0_keep_rel16, &&op_bneg_keep_rel16, &&op_bz_keep_rel16, &&op_bz_rel16, &&invalid_op, &&invalid_op, &&invalid_op, &&op_cmpbr_keep_lt_im_rel8, &&op_cmpbr_A_lt_im_rel8, &&op_cmpbr_N_lt_im_rel8, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_popC, &&op_popD, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_loadC_im, &&op_loadD_im, &&invalid_op, &&op_pushC, &&op_pushD, &&op_popN__pushA, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_dec__dup, &&op_swap__dec, &&op_jsr_rel8__swap, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_fib, &&op_fib_with_registers, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&invalid_op, &&op_trace_on, &&op_trace_off, &&op_nop, &&op_halt };
 // Registers for (not registered, but copied to process struct and
 // back when needed):
 val A = UNINITIALIZED;
 val B = UNINITIALIZED;
+val C = UNINITIALIZED;
+val D = UNINITIALIZED;
+
+// Registers for binary data (not registered with GC):
+word_t M = 0;
+word_t N = 0;
 
 // Stack pointer:
 stacksize_t SP = process->stack.sp;
@@ -61,6 +63,20 @@ stacksize_t SP = process->stack.sp;
         }
         pc += 3;
         DISPATCH;
+    op_loadC_im: /* loadC_im, 2 */
+        TRACE_OP("loadC_im");
+        {
+            C = ARGIM1;
+        }
+        pc += 3;
+        DISPATCH;
+    op_loadD_im: /* loadD_im, 2 */
+        TRACE_OP("loadD_im");
+        {
+            D = ARGIM1;
+        }
+        pc += 3;
+        DISPATCH;
     op_pushA: /* pushA, 0 */
         TRACE_OP("pushA");
         {
@@ -72,6 +88,20 @@ stacksize_t SP = process->stack.sp;
         TRACE_OP("pushB");
         {
             PUSH(B);
+        }
+        pc += 1;
+        DISPATCH;
+    op_pushC: /* pushC, 0 */
+        TRACE_OP("pushC");
+        {
+            PUSH(C);
+        }
+        pc += 1;
+        DISPATCH;
+    op_pushD: /* pushD, 0 */
+        TRACE_OP("pushD");
+        {
+            PUSH(D);
         }
         pc += 1;
         DISPATCH;
@@ -88,6 +118,22 @@ stacksize_t SP = process->stack.sp;
         {
             LET_POP(x);
             B = x;
+        }
+        pc += 1;
+        DISPATCH;
+    op_popC: /* popC, 0 */
+        TRACE_OP("popC");
+        {
+            LET_POP(x);
+            C = x;
+        }
+        pc += 1;
+        DISPATCH;
+    op_popD: /* popD, 0 */
+        TRACE_OP("popD");
+        {
+            LET_POP(x);
+            D = x;
         }
         pc += 1;
         DISPATCH;

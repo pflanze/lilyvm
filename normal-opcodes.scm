@@ -11,16 +11,30 @@ N = ARGIM1;")
 A = ARGIM1;")
     (6 loadB_im 2 #t "
 B = ARGIM1;")
+    (125 loadC_im 2 #t "
+C = ARGIM1;")
+    (126 loadD_im 2 #t "
+D = ARGIM1;")
     (7 pushA 0 #t "
 PUSH(A);")
     (8 pushB 0 #t "
 PUSH(B);")
+    (128 pushC 0 #t "
+PUSH(C);")
+    (129 pushD 0 #t "
+PUSH(D);")
     (9 popA 0 #t "
 LET_POP(x);
 A = x;")
     (10 popB 0 #t "
 LET_POP(x);
 B = x;")
+    (110 popC 0 #t "
+LET_POP(x);
+C = x;")
+    (111 popD 0 #t "
+LET_POP(x);
+D = x;")
     (11 TAB 0 #t "
 B = A;")
     (12 TBA 0 #t "
