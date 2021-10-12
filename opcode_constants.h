@@ -29,6 +29,10 @@
 #define OP_INC                       20 /* 0x14; 0 */
 #define OP_INC_                      21 /* 0x15; 1 */
 #define OP_INCA                      22 /* 0x16; 0 */
+#define OP_INCX                      122 /* 0x7a; 0 */
+#define OP_INCY                      123 /* 0x7b; 0 */
+#define OP_TAX                       124 /* 0x7c; 0 */
+#define OP_TAY                       29 /* 0x1d; 0 */
 #define OP_DEC                       25 /* 0x19; 0 */
 #define OP_DECA                      26 /* 0x1a; 0 */
 #define OP_DECN                      27 /* 0x1b; 0 */

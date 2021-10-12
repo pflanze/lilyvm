@@ -82,6 +82,18 @@ STORE_EXCEPT_A;
 A = SCM_INC(A);
 RESTORE_EXCEPT_A;
 ")
+    (122 incX 0 #t "
+X++; // XX detect overflows
+")
+    (123 incY 0 #t "
+Y++; // XX detect overflows
+")
+    (124 TAX 0 #t "
+X = INT(A); // XX fixnum check?
+")
+    (29 TAY 0 #t "
+Y = INT(A); // XX fixnum check?
+")
 
     (25 dec 0 #t "
 LET_STACK_LAST(x);
