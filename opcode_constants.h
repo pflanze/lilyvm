@@ -6,8 +6,6 @@
 //                          opcode  /* hex; numargbytes */
 #define OP_LOADM_IM                  1 /* 0x01; 2 */
 #define OP_LOADN_IM                  2 /* 0x02; 2 */
-#define OP_LOADX_IM                  3 /* 0x03; 2 */
-#define OP_LOADY_IM                  4 /* 0x04; 2 */
 #define OP_LOADA_IM                  5 /* 0x05; 2 */
 #define OP_LOADB_IM                  6 /* 0x06; 2 */
 #define OP_PUSHA                     7 /* 0x07; 0 */
@@ -29,10 +27,6 @@
 #define OP_INC                       20 /* 0x14; 0 */
 #define OP_INC_                      21 /* 0x15; 1 */
 #define OP_INCA                      22 /* 0x16; 0 */
-#define OP_INCX                      122 /* 0x7a; 0 */
-#define OP_INCY                      123 /* 0x7b; 0 */
-#define OP_TAX                       124 /* 0x7c; 0 */
-#define OP_TAY                       29 /* 0x1d; 0 */
 #define OP_DEC                       25 /* 0x19; 0 */
 #define OP_DECA                      26 /* 0x1a; 0 */
 #define OP_DECN                      27 /* 0x1b; 0 */

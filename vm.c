@@ -216,20 +216,16 @@ static void vm_trace(struct vm_process *process,
                      uintptr_t pcoffset,
                      const char *opcodename,
                      /* copies of non-GC'd registers: */
-                     dword_t M,
-                     word_t N,
-                     word_t X,
-                     word_t Y) {
+                     word_t M,
+                     word_t N) {
     // Note: bytecode_load_and_run is printing very similar output
     printf("           ");
     vm_process_stack_write(process);
     printf("\n           ");
     vm_process_registers_write(process, ", ");
     printf("\n");
-    vm_trace_dword("M", M);
+    vm_trace_word("M", M);
     vm_trace_word("N", N);
-    vm_trace_word("X", X);
-    vm_trace_word("Y", Y);
     printf("%3" PRIu16 " - %4" PRIuPTR " %s\n",
            process->stack.sp, pcoffset, opcodename);
 }
@@ -348,9 +344,8 @@ void vm_process_run(struct vm_process *process, uint8_t *code) {
 #ifdef VM_TRACE
 # define TRACE_OP(opcodename) do {                                      \
             if (process->trace_on) {                                    \
-                process->A = A;                                         \
-                process->B = B;                                         \
-                vm_trace(process, pc-code, opcodename, M, N, X, Y);     \
+                STORE_ALL;                                              \
+                vm_trace(process, pc-code, opcodename, M, N);           \
             }                                                           \
     } while (0)
 #else
