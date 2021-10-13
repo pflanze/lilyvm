@@ -388,6 +388,7 @@ pc += (int8_t)ARGB1;")
 ")
     (254 nop 0 #t "")
     (251 break 0 #t "
+printf(\"I'm going to call BREAK now\\n\");
 BREAK();")
     (255 halt 0 #t "
 STORE_ALL;
