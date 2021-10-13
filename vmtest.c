@@ -350,7 +350,7 @@ TEST(basics) {
     /*4*/  OP(NOP); // 1 -- had GC registering and unregistering ops here
     /*5*/  OP_IM(LOADB_IM, FAL); //3  -- not actually used now, though
     /*8*/  OP(NOP); // 1
-    /*9*/  OP_B(JSR_REL8, 6); //2
+    /*9*/  OP_B(FRAME_JSR_REL8_1, 6); //2
     /*11*/ OP(PUSHA);//1
     /*12*/ OP(NOP); // 1
     /*13*/ OP(TRACE_OFF);//1
@@ -358,19 +358,21 @@ TEST(basics) {
 
     // fib: n is in register N; return result in register A.
     // Allocates stack frames with 1 slot to store the intermediary N
-    // and then A values.
-    /*15*/ OP_IM_B(CMPBR_N_LT_IM_REL8, 2, 14); //4   end:
+    // and then A values at position 1 (position 0 is the return
+    // address).
+    /*15*/ OP_IM_B(CMPBR_N_LT_IM_REL8, 2, 20); //4   end:
     /*19*/ OP(DECN); //1
-    /*20*/ OP(PUSHN); //1
-    /*21*/ OP_B(JSR_REL8, -6); //2 fib
-    /*23*/ OP(POPN__PUSHA); //1 -- ok this is a combined op
-    /*24*/ OP(DECN); //1
-    /*25*/ OP_B(JSR_REL8, -10); //2 fib
-    /*27*/ OP(ADDA); //1
-    /*28*/ OP(RET);//1
+    /*20*/ OP_B(UNSAFE_STN_FIX_, 1); //2
+    /*22*/ OP_B(FRAME_JSR_REL8_1, -7); //2 fib
+    /*24*/ OP_B(UNSAFE_LDN_INT_, 1);//2
+    /*26*/ OP_B(UNSAFE_STA_, 1);//2
+    /*28*/ OP(DECN); //1
+    /*29*/ OP_B(FRAME_JSR_REL8_1, -14); //2 fib
+    /*31*/ OP_B(UNSAFE_ADDA_, 1); //2
+    /*33*/ OP_B(UNSAFE_FRAME_RET, 1);//2
     // end:
-    /*29*/ OP_IM(LOADA_IM, FIX(1));//3
-    /*32*/ OP(RET);
+    /*35*/ OP_IM(LOADA_IM, FIX(1));//3
+    /*36*/ OP_B(UNSAFE_FRAME_RET, 1);
     // ---
     program_end = pc;
     vm_process_stack_clear(process);

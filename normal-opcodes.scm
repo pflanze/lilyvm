@@ -2,6 +2,33 @@
   '(
     ;; opnum, name, numargbytes, needspcinc, C-code
 
+    (140 unsafe_ldA_ 1 #t "
+A = STACK_UNSAFE_REF(ARGB1);")
+    (141 unsafe_ldB_ 1 #t "
+B = STACK_UNSAFE_REF(ARGB1);")
+    (142 unsafe_ldC_ 1 #t "
+C = STACK_UNSAFE_REF(ARGB1);")
+    (143 unsafe_ldD_ 1 #t "
+D = STACK_UNSAFE_REF(ARGB1);")
+    ;; unsafe_ld_s_int_M  ? 
+    (144 unsafe_ldM_int_ 1 #t "
+M = INT(STACK_UNSAFE_REF(ARGB1));")
+    (145 unsafe_ldN_int_ 1 #t "
+N = INT(STACK_UNSAFE_REF(ARGB1));")
+
+    (150 unsafe_stA_ 1 #t "
+STACK_UNSAFE_SET(ARGB1, A);")
+    (151 unsafe_stB_ 1 #t "
+STACK_UNSAFE_SET(ARGB1, B);")
+    (152 unsafe_stC_ 1 #t "
+STACK_UNSAFE_SET(ARGB1, C);")
+    (153 unsafe_stD_ 1 #t "
+STACK_UNSAFE_SET(ARGB1, D);")
+    (154 unsafe_stM_fix_ 1 #t "
+STACK_UNSAFE_SET(ARGB1, FIX(M));")
+    (155 unsafe_stN_fix_ 1 #t "
+STACK_UNSAFE_SET(ARGB1, FIX(N));")
+    
     (1 loadM_im 2 #t "
 M = ARGIM1;")
     (2 loadN_im 2 #t "
@@ -133,6 +160,10 @@ LET_STACK_REF(a, i);
 STACK_ENSURE_HAS(1);
 DO_SCM_ADD(STORE_EXCEPT_A, RESTORE_EXCEPT_A, A=, A, STACK_UNSAFE_REF(0));
 STACK_UNSAFE_REMOVE(1);")
+    ;; unsafe stack access, but safe addition
+    (133 unsafe_addA_ 1 #t "
+DO_SCM_ADD(STORE_EXCEPT_A, RESTORE_EXCEPT_A, A=, A, STACK_UNSAFE_REF(ARGB1));
+")
 
     ;; M += INT(pop) -- unsafe!
     (34 addM 0 #t "
@@ -185,9 +216,34 @@ pc += (int16_t)ARGIM1;")
     (85 jsr_rel8 1 #f "
 PUSH(PCNUM(PC+2)); //XX make safe
 pc += (int8_t)ARGB1;")
+
+    ;; Allocate a frame with 1 free slot before jumping
+    (185 frame_jsr_rel8_1 1 #f "
+STACK_ENSURE_FREE(2);
+SP += 2;
+// must not interrupt here, new stack slots are uninitialized!
+STACK_UNSAFE_SET(0, PCNUM(PC+2)); //XX make safe
+STACK_UNSAFE_SET(1, UNINITIALIZED);
+pc += (int8_t)ARGB1;")
+    ;; with 2 slots
+    (187 frame_jsr_rel8_2 1 #f "
+STACK_ENSURE_FREE(3);
+SP += 3;
+// must not interrupt here, new stack slots are uninitialized!
+STACK_UNSAFE_SET(0, PCNUM(PC+2)); //XX make safe
+STACK_UNSAFE_SET(1, UNINITIALIZED);
+STACK_UNSAFE_SET(2, UNINITIALIZED);
+// ^ in future might do masking instead? but not sure,
+//   means have to change mask all the time.
+pc += (int8_t)ARGB1;")
+    
     (86 ret 0 #f "
 LET_POP(origpc);
 SET_PC(PCNUM_TO_WORD(origpc));
+")
+    (186 unsafe_frame_ret 1 #f "
+SET_PC(PCNUM_TO_WORD(STACK_UNSAFE_REF(0)));
+SP -= (1 + ARGB1); // XX instead assume 1 is contained in ARGB1 ?
 ")
     (87 ret_im 2 #f "
 LET_POP(origpc);

@@ -4,6 +4,18 @@
 #define _OPCODE_CONSTANTS_H_
 
 //                          opcode  /* hex; numargbytes */
+#define OP_UNSAFE_LDA_               140 /* 0x8c; 1 */
+#define OP_UNSAFE_LDB_               141 /* 0x8d; 1 */
+#define OP_UNSAFE_LDC_               142 /* 0x8e; 1 */
+#define OP_UNSAFE_LDD_               143 /* 0x8f; 1 */
+#define OP_UNSAFE_LDM_INT_           144 /* 0x90; 1 */
+#define OP_UNSAFE_LDN_INT_           145 /* 0x91; 1 */
+#define OP_UNSAFE_STA_               150 /* 0x96; 1 */
+#define OP_UNSAFE_STB_               151 /* 0x97; 1 */
+#define OP_UNSAFE_STC_               152 /* 0x98; 1 */
+#define OP_UNSAFE_STD_               153 /* 0x99; 1 */
+#define OP_UNSAFE_STM_FIX_           154 /* 0x9a; 1 */
+#define OP_UNSAFE_STN_FIX_           155 /* 0x9b; 1 */
 #define OP_LOADM_IM                  1 /* 0x01; 2 */
 #define OP_LOADN_IM                  2 /* 0x02; 2 */
 #define OP_LOADA_IM                  5 /* 0x05; 2 */
@@ -40,6 +52,7 @@
 #define OP_ADD_IM                    31 /* 0x1f; 2 */
 #define OP_ADD__                     32 /* 0x20; 2 */
 #define OP_ADDA                      33 /* 0x21; 0 */
+#define OP_UNSAFE_ADDA_              133 /* 0x85; 1 */
 #define OP_ADDM                      34 /* 0x22; 0 */
 #define OP_MUL__                     35 /* 0x23; 2 */
 #define OP_BITWISE_AND               40 /* 0x28; 0 */
@@ -48,7 +61,10 @@
 #define OP_JMP_REL8                  80 /* 0x50; 1 */
 #define OP_JMP_REL16                 81 /* 0x51; 2 */
 #define OP_JSR_REL8                  85 /* 0x55; 1 */
+#define OP_FRAME_JSR_REL8_1          185 /* 0xb9; 1 */
+#define OP_FRAME_JSR_REL8_2          187 /* 0xbb; 1 */
 #define OP_RET                       86 /* 0x56; 0 */
+#define OP_UNSAFE_FRAME_RET          186 /* 0xba; 1 */
 #define OP_RET_IM                    87 /* 0x57; 2 */
 #define OP_RET_POP                   88 /* 0x58; 0 */
 #define OP_BEQ_IM_REL16              91 /* 0x5b; 4 */
