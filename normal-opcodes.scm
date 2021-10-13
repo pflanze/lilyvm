@@ -387,6 +387,8 @@ pc += (int8_t)ARGB1;")
 #endif
 ")
     (254 nop 0 #t "")
+    (251 break 0 #t "
+BREAK();")
     (255 halt 0 #t "
 STORE_ALL;
 goto halt;"

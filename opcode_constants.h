@@ -82,6 +82,7 @@
 #define OP_TRACE_ON                  252 /* 0xfc; 0 */
 #define OP_TRACE_OFF                 253 /* 0xfd; 0 */
 #define OP_NOP                       254 /* 0xfe; 0 */
+#define OP_BREAK                     251 /* 0xfb; 0 */
 #define OP_HALT                      255 /* 0xff; 0 */
 #define OP_FIB                       220 /* 0xdc; 0 */
 #define OP_FIB_WITH_REGISTERS        221 /* 0xdd; 0 */
