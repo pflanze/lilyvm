@@ -360,7 +360,7 @@ TEST(basics) {
     // Allocates stack frames with 1 slot to store the intermediary N
     // and then A values at position 1 (position 0 is the return
     // address).
-    /*15*/ OP_IM_B(CMPBR_N_LT_IM_REL8, 2, 20); //4   end:
+    /*15*/ OP_IM_B(CMPBR_N_LT_IM_REL8, 2, 21); //4   end:
     /*19*/ OP(DECN); //1
     /*20*/ OP_B(UNSAFE_STN_FIX_, 1); //2
     /*22*/ OP_B(FRAME_JSR_REL8_1, -7); //2 fib
@@ -368,11 +368,12 @@ TEST(basics) {
     /*26*/ OP_B(UNSAFE_STA_, 1);//2
     /*28*/ OP(DECN); //1
     /*29*/ OP_B(FRAME_JSR_REL8_1, -14); //2 fib
-    /*31*/ OP_B(UNSAFE_ADDA_, 1); //2
-    /*33*/ OP_B(UNSAFE_FRAME_RET, 1);//2
+    /*31*/ OP(BREAK);//1
+    /*32*/ OP_B(UNSAFE_ADDA_, 1); //2
+    /*34*/ OP_B(UNSAFE_FRAME_RET, 1);//2
     // end:
-    /*35*/ OP_IM(LOADA_IM, FIX(1));//3
-    /*36*/ OP_B(UNSAFE_FRAME_RET, 1);
+    /*36*/ OP_IM(LOADA_IM, FIX(1));//3
+    /*37*/ OP_B(UNSAFE_FRAME_RET, 1);
     // ---
     program_end = pc;
     vm_process_stack_clear(process);
