@@ -92,10 +92,10 @@
 (define registerdecls "
 // Registers for (not registered, but copied to process struct and
 // back when needed):
-val A = UNINITIALIZED;
-val B = UNINITIALIZED;
-val C = UNINITIALIZED;
-val D = UNINITIALIZED;
+val A = process->A;
+val B = process->B;
+val C = process->C;
+val D = process->D;
 
 // Registers for binary data (not registered with GC):
 word_t M = 0;
@@ -108,10 +108,10 @@ stacksize_t SP = process->stack.sp;
 #define _RESTORE(X) do { X = process->X; } while (0)
 #define _STORESP do { process->stack.sp = SP; } while (0)
 #define _RESTORESP do { SP = process->stack.sp; } while (0)
-#define STORE_ALL do { _STORESP; _STORE(A); _STORE(B); } while (0);
-#define RESTORE_ALL do { _RESTORESP; _RESTORE(A); _RESTORE(B); } while (0);
-#define STORE_EXCEPT_A do { _STORESP; _STORE(B); } while (0);
-#define RESTORE_EXCEPT_A do { _RESTORESP; _RESTORE(B); } while (0);
+#define STORE_ALL do { _STORESP; _STORE(A); _STORE(B); _STORE(C); _STORE(D); } while (0);
+#define RESTORE_ALL do { _RESTORESP; _RESTORE(A); _RESTORE(B); _RESTORE(C); _RESTORE(D); } while (0);
+#define STORE_EXCEPT_A do { _STORESP; _STORE(B); _STORE(C); _STORE(D); } while (0);
+#define RESTORE_EXCEPT_A do { _RESTORESP; _RESTORE(B); _RESTORE(C); _RESTORE(D); } while (0);
 ")
 
 (define (print-opcodes_dispatch_h)

@@ -62,6 +62,9 @@ struct vm_process {
     // Registers
     val A;
     val B;
+    val C;
+    val D;
+    //XX will also have to save M, N as well as PC when doing context switching.
     // GC heap:
     // start of concatenated allocation areas:
     /* const */ word_t* alloc_area_base;

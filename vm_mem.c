@@ -178,6 +178,8 @@ void vm_mem_gc(struct vm_process* process) {
         // The registers
         GC_HANDLE_SLOT(process->A, newptr);
         GC_HANDLE_SLOT(process->B, newptr);
+        GC_HANDLE_SLOT(process->C, newptr);
+        GC_HANDLE_SLOT(process->D, newptr);
     }
     {
         // The root stacks

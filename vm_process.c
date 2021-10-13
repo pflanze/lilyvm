@@ -42,6 +42,8 @@ struct vm_process *malloc_process(stacksize_t stacklen,
 
         p->A = UNINITIALIZED;
         p->B = UNINITIALIZED;
+        p->C = UNINITIALIZED;
+        p->D = UNINITIALIZED;
         p->alloc_area_base = (word_t*)ph;
         p->alloc_size = sz0;
         p->alloc_area = (word_t*)ph;

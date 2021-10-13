@@ -183,6 +183,10 @@ void vm_process_registers_write(struct vm_process *process,
     SCM_WRITE(process->A);
     printf("%sB=", separator);
     SCM_WRITE(process->B);
+    printf("%sC=", separator);
+    SCM_WRITE(process->C);
+    printf("%sD=", separator);
+    SCM_WRITE(process->D);
 }
 
 void vm_process_stack_clear(struct vm_process *process) {
