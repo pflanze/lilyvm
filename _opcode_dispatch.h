@@ -17,6 +17,12 @@ word_t N = 0;
 // Stack pointer:
 stacksize_t SP = process->stack.sp;
 
+#define SP_SET(x) do { SP = x; } while (0)
+#define SP_INC do { SP++; } while (0)
+#define SP_DEC do { SP--; } while (0)
+#define SP_ADD(x) do { SP += x; } while (0)
+#define SP_SUB(x) do { SP -= x; } while (0)
+
 #define _STORE(X) do { process->X = X; } while (0)
 #define _RESTORE(X) do { X = process->X; } while (0)
 #define _STORESP do { process->stack.sp = SP; } while (0)
@@ -513,7 +519,7 @@ stacksize_t SP = process->stack.sp;
         TRACE_OP("frame_jsr_rel8_1");
         {
             STACK_ENSURE_FREE(2);
-            SP += 2;
+            SP_ADD(2);
             // must not interrupt here, new stack slots are uninitialized!
             STACK_UNSAFE_SET(0, PCNUM(PC+2)); //XX make safe
             STACK_UNSAFE_SET(1, UNINITIALIZED);
@@ -524,7 +530,7 @@ stacksize_t SP = process->stack.sp;
         TRACE_OP("frame_jsr_rel8_2");
         {
             STACK_ENSURE_FREE(3);
-            SP += 3;
+            SP_ADD(3);
             // must not interrupt here, new stack slots are uninitialized!
             STACK_UNSAFE_SET(0, PCNUM(PC+2)); //XX make safe
             STACK_UNSAFE_SET(1, UNINITIALIZED);
@@ -546,7 +552,7 @@ stacksize_t SP = process->stack.sp;
         TRACE_OP("unsafe_frame_ret");
         {
             SET_PC(PCNUM_TO_WORD(STACK_UNSAFE_REF(0)));
-            SP -= (1 + ARGB1); // XX instead assume 1 is contained in ARGB1 ?
+            SP_SUB(1 + ARGB1); // XX instead assume 1 is contained in ARGB1 ?
             
         }
         DISPATCH;

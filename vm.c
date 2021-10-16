@@ -261,14 +261,14 @@ void vm_process_run(struct vm_process *process, uint8_t *code) {
 #define PUSH(x)                                                         \
     if (SP < process->stack.len) {                                      \
         process->stack.vals[SP] = (x);                                  \
-        SP++;                                                           \
+        SP_INC;                                                         \
     } else {                                                            \
         FAIL1(failure, "PUSH");                                         \
     }
 #define LET_POP(varname)                                                \
     val varname;                                                        \
     if (SP) {                                                           \
-        SP--;                                                           \
+        SP_DEC;                                                         \
         varname = process->stack.vals[SP];                              \
     } else {                                                            \
         FAIL1(failure, "LET_POP");                                      \
@@ -301,7 +301,7 @@ void vm_process_run(struct vm_process *process, uint8_t *code) {
     } while(0)
 #define STACK_DROP1                                                     \
     if (SP) {                                                           \
-        SP--;                                                           \
+        SP_DEC;                                                         \
     } else {                                                            \
         FAIL1(failure, "STACK_DROP1");                                  \
     }
@@ -324,9 +324,9 @@ void vm_process_run(struct vm_process *process, uint8_t *code) {
             FAIL1(failure, "STACK_ENSURE_FREE");
 #define STACK_ALLOC(n)                                                  \
     /* Allocate n slots on the stack. CAREFUL: does not initialize them!! */ \
-        SP += n; /* XX risk for overflow */                             \
+        SP_ADD(n); /* XX risk for overflow */                           \
         if (! (SP <= process->stack.len)) {                             \
-            SP -= n;                                                    \
+            SP_SUB(n);                                                  \
             FAIL1(failure, "STACK_ALLOC");                              \
         }
 #define STACK_UNSAFE_REF(i)                     \
@@ -334,7 +334,7 @@ void vm_process_run(struct vm_process *process, uint8_t *code) {
 #define STACK_UNSAFE_SET(i, v)                  \
         process->stack.vals[SP - 1 - i] = v
 #define STACK_UNSAFE_REMOVE(n)                  \
-        SP -= n
+        SP_SUB(n)
 #define STACK_UNSAFE_SET_LAST(v)                \
         process->stack.vals[SP - 1] = v;
 

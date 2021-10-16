@@ -104,6 +104,12 @@ word_t N = 0;
 // Stack pointer:
 stacksize_t SP = process->stack.sp;
 
+#define SP_SET(x) do { SP = x; } while (0)
+#define SP_INC do { SP++; } while (0)
+#define SP_DEC do { SP--; } while (0)
+#define SP_ADD(x) do { SP += x; } while (0)
+#define SP_SUB(x) do { SP -= x; } while (0)
+
 #define _STORE(X) do { process->X = X; } while (0)
 #define _RESTORE(X) do { X = process->X; } while (0)
 #define _STORESP do { process->stack.sp = SP; } while (0)

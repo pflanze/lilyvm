@@ -220,7 +220,7 @@ pc += (int8_t)ARGB1;")
     ;; Allocate a frame with 1 free slot before jumping
     (185 frame_jsr_rel8_1 1 #f "
 STACK_ENSURE_FREE(2);
-SP += 2;
+SP_ADD(2);
 // must not interrupt here, new stack slots are uninitialized!
 STACK_UNSAFE_SET(0, PCNUM(PC+2)); //XX make safe
 STACK_UNSAFE_SET(1, UNINITIALIZED);
@@ -228,7 +228,7 @@ pc += (int8_t)ARGB1;")
     ;; with 2 slots
     (187 frame_jsr_rel8_2 1 #f "
 STACK_ENSURE_FREE(3);
-SP += 3;
+SP_ADD(3);
 // must not interrupt here, new stack slots are uninitialized!
 STACK_UNSAFE_SET(0, PCNUM(PC+2)); //XX make safe
 STACK_UNSAFE_SET(1, UNINITIALIZED);
@@ -243,7 +243,7 @@ SET_PC(PCNUM_TO_WORD(origpc));
 ")
     (186 unsafe_frame_ret 1 #f "
 SET_PC(PCNUM_TO_WORD(STACK_UNSAFE_REF(0)));
-SP -= (1 + ARGB1); // XX instead assume 1 is contained in ARGB1 ?
+SP_SUB(1 + ARGB1); // XX instead assume 1 is contained in ARGB1 ?
 ")
     (87 ret_im 2 #f "
 LET_POP(origpc);
