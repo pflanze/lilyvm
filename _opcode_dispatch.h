@@ -560,8 +560,9 @@ stacksize_t SP = process->stack.sp;
     op_unsafe_frame_ret: /* unsafe_frame_ret, 1 */
         TRACE_OP("unsafe_frame_ret");
         {
+            uint8_t arg1 = ARGB1;
             SET_PC(PCNUM_TO_WORD(STACK_UNSAFE_REF(0)));
-            SP_SUB(1 + ARGB1); // XX instead assume 1 is contained in ARGB1 ?
+            SP_SUB(1 + arg1); // XX instead assume 1 is contained in ARGB1 ?
             
         }
         DISPATCH;
