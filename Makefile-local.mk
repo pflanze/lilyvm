@@ -61,6 +61,10 @@ ifdef VM_TRACE
   DEFS+=-DVM_TRACE
 endif
 
+ifdef DEBUG_SP
+  DEFS+=-DDEBUG_SP
+endif
+
 # https://laptrinhx.com/recommended-compiler-and-linker-flags-for-gcc-2717284731/
 
 ifdef SECURITY

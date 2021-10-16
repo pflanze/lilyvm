@@ -104,11 +104,20 @@ word_t N = 0;
 // Stack pointer:
 stacksize_t SP = process->stack.sp;
 
-#define SP_SET(x) do { SP = x; } while (0)
-#define SP_INC do { SP++; } while (0)
-#define SP_DEC do { SP--; } while (0)
-#define SP_ADD(x) do { SP += x; } while (0)
-#define SP_SUB(x) do { SP -= x; } while (0)
+#ifdef DEBUG_SP
+# define SPDEBUG0(msg) printf(msg \", now \" FPRI_stacksize \" at %s line %i\\n\", SP, __FILE__, __LINE__)
+# define SPDEBUG1(msg, x) printf(msg FPRI_stacksize \", now \" FPRI_stacksize \" at %s line %i\\n\", x, SP, __FILE__, __LINE__)
+#else
+# define SPDEBUG0(msg)
+# define SPDEBUG1(msg, x)
+#endif
+
+#define SP_SET(x) do { SP = x; SPDEBUG1(\"SP = \", x); } while (0)
+#define SP_INC do { SP++; SPDEBUG0(\"SP++\"); } while (0)
+#define SP_DEC do { SP--; SPDEBUG0(\"SP--\"); } while (0)
+#define SP_ADD(x) do { SP += x; SPDEBUG1(\"SP += \", x); } while (0)
+#define SP_SUB(x) do { SP -= x; SPDEBUG1(\"SP -= \", x); } while (0)
+
 
 #define _STORE(X) do { process->X = X; } while (0)
 #define _RESTORE(X) do { X = process->X; } while (0)

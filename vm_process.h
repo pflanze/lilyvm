@@ -43,7 +43,12 @@ struct vm_stack_failure {
 };
 
 // Just a linear fixed stack for now.
+
 typedef uint16_t stacksize_t;
+
+#define PRI_stacksize PRIu16
+#define FPRI_stacksize "%" PRI_stacksize
+
 struct vm_stack {
     stacksize_t sp; // number of elements currently on the stack
     stacksize_t len;
