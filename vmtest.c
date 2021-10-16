@@ -369,10 +369,10 @@ TEST(basics) {
     /*28*/ OP(DECN); //1
     /*29*/ OP_B(FRAME_JSR_REL8_1, -14); //2 fib
     /*31*/ OP_B(UNSAFE_ADDA_, 1); //2
-    /*33*/ OP_B(UNSAFE_FRAME_RET, 1);//2
+    /*33*/ OP_B(UNSAFE_FRAME_RET, 2);//2
     // end:
     /*35*/ OP_IM(LOADA_IM, FIX(1));//3
-    /*36*/ OP_B(UNSAFE_FRAME_RET, 1);
+    /*36*/ OP_B(UNSAFE_FRAME_RET, 2);
     // ---
     program_end = pc;
     vm_process_stack_clear(process);
