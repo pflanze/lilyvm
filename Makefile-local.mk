@@ -161,17 +161,10 @@ target-local/%.e: target-local/%.E
 target-local/%.c: target-local/%.e
 	perl -wne 's{^# }{//line }; print or die' < $< > $@
 
-ifdef CLANG
-# Does clang have issues with macros as symbols when going via .s? So,
-# go direct.
-target-local/%.o: target-local/%.c
-	$(CC) -c $(CFLAGS) -DFIL=`../chj-ctest/bin/path-to-FIL $<` -o $@ $<
-else
 target-local/%.s: target-local/%.c
 	$(CC) -S $(CFLAGS) -DFIL=`../chj-ctest/bin/path-to-FIL $<` -o $@ $<
 target-local/%.o: target-local/%.s
 	$(AS) $(AFLAGS) -o $@ $<
-endif
 
 # HACK (compile libs to target-local/, too)
 ifdef CLANG
