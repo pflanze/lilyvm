@@ -13,7 +13,7 @@ else
   endif
 endif
 
-ASSEMBLER=gcc
+ASSEMBLER=$(COMPILER)
 
 ifdef LTO
   LTOFLAGS=-flto
