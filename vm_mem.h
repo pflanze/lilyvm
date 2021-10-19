@@ -13,14 +13,14 @@
   bits):
 
      hi        lo
-  kksx'xxxx xxxx'xxxi
+  sxxx'xxxx'xxxx'xkki
   i: 1 = immediate, 0 = allocated (value is directly a pointer)
   kk = immediate kind
-  fixnum:  00sx'xxxx xxxx'xxx1  s,x = sign, rest of value
-  pcnum:   01xx'xxxx xxxx'xxx1  x = value, offset from base of program space
+  fixnum:  sx'xxxx xxxx'xxx111  s,x = sign, rest of value
+  pcnum:   xx'xxxx xxxx'xxx011  x = value, offset from base of program space
                                      (^ XX: currently is only an offset on posix)
-  char:    10xx'xxxx xxxx'xxx1  x = value
-  special: 11xx'xxxx xxxx'xxx1  x = value
+  char:    xxxx'xxxx xxxx'x101  x = value
+  special: xxxx'xxxx xxxx'x001  x = value
 
   Structure of objects allocated in the movable storage (small ones
   in first generation?) (note that they always have an even length in
@@ -64,8 +64,10 @@ struct dword_words {
 #define WORD_BYTE0(w) ((word_t)(w) & 255)
 #define WORD_BYTE1(w) ((word_t)(w) >> 8)
 
-#define WORD_MAX 0xFFFF
-#define WORD_SIGN_MASK 0x8000
+#define WORD_MAX ((1<<WORD_BITS)-1)
+// 0xFFFF
+#define WORD_SIGN_MASK (1<<(WORD_BITS-1))
+// 0x8000
 #define WORD_IS_NEGATIVE(x) (((x) & WORD_SIGN_MASK) ? 1 : 0)
 
 #define PTR_TYPE(p) ((unsigned char*)(p))[0]
@@ -243,61 +245,65 @@ INLINE static void _noop() {}
 
 #define IMMEDIATE_BIT_MASK 1
 
-#define IMMEDIATE_KIND_MASK (3<<(WORD_BITS-2))
-// [11000000 00000000]
+#define IMMEDIATE_KIND_MASK (3<<1)
+// [00000000 00000110]
 
-#define IMMEDIATE_KIND_FIXNUM  (0<<(WORD_BITS-2))
-#define IMMEDIATE_KIND_PCNUM   (1<<(WORD_BITS-2)) /* for jsr/ret */
-#define IMMEDIATE_KIND_CHAR    (2<<(WORD_BITS-2))
-#define IMMEDIATE_KIND_SPECIAL (3<<(WORD_BITS-2))
+#define IMMEDIATE_KIND_FIXNUM  (3<<1)
+// ^ all bits set to allow for bitwise-and of multiple numbers before
+//   testing
+#define IMMEDIATE_KIND_PCNUM   (1<<1) /* for jsr/ret */
+#define IMMEDIATE_KIND_CHAR    (2<<1)
+#define IMMEDIATE_KIND_SPECIAL (0<<1)
 
-// #define IMMEDIATE_MASK (IMMEDIATE_KIND_MASK | 1)
-// [11000000 00000001]
+#define IMMEDIATE_MASK (IMMEDIATE_KIND_MASK | 1)
+// [00000000 00000111]
 
 // special values
-#define FAL           (IMMEDIATE_KIND_SPECIAL | 1 | (0<<1))
-// [11000000 00000001] = FAL 
-#define TRU           (IMMEDIATE_KIND_SPECIAL | 1 | (1<<1))
-// [11000000 00000011] = TRU 
-#define NIL           (IMMEDIATE_KIND_SPECIAL | 1 | (2<<1))
-#define VOID          (IMMEDIATE_KIND_SPECIAL | 1 | (3<<1))
-#define UNDEF         (IMMEDIATE_KIND_SPECIAL | 1 | (4<<1))
-#define UNINITIALIZED (IMMEDIATE_KIND_SPECIAL | 1 | (5<<1))
+#define SPECIAL(n) (IMMEDIATE_KIND_SPECIAL | IMMEDIATE_BIT_MASK | ((n) << 3))
+
+#define FAL           SPECIAL(0)
+#define TRU           SPECIAL(1)
+#define NIL           SPECIAL(2)
+#define VOID          SPECIAL(3)
+#define UNDEF         SPECIAL(4)
+#define UNINITIALIZED SPECIAL(5)
 
 
 // cmp 'type'/value group? good or horribly bad idea ? use for now,
-// replace with symbols later?
-#define LT    (IMMEDIATE_KIND_SPECIAL | 1 | (8<<1))
-#define EQ    (IMMEDIATE_KIND_SPECIAL | 1 | (9<<1))
-#define GT    (IMMEDIATE_KIND_SPECIAL | 1 | (10<<1))
+// replace with symbols later? CL *just* uses symbols (although
+// special ones underneath), right?
+#define LT    SPECIAL(8)
+#define EQ    SPECIAL(9)
+#define GT    SPECIAL(10)
 
-// just the sign bit
-#define FIXNUM_SIGN_MASK (1<<(WORD_BITS-3))
-// [00100000 00000000] = FIXNUM_SIGN_MASK 
 
-#define fixnum_is_negative(x) (((x) & FIXNUM_SIGN_MASK) ? 1 : 0)
-#define FIXNUM_FROM_INT_MASK (FIXNUM_SIGN_MASK-1)
+// Fixnums
+
+#define fixnum_is_negative(x) WORD_IS_NEGATIVE(x)
+#define FIXNUM_FROM_INT_MASK ((1<<(WORD_BITS-3))-1)
 // [00011111 11111111] = FIXNUM_FROM_INT_MASK 
 
+// Just shift left, the sign bit will be right (as long as n is in
+// fixnum range). XX This relies on numbers being implemented as two's
+// complement, right?
+// Need the & at the end to avoid compiler warnings and to make tests
+// with ASSERT_EQ work.
 #define FIX(n)                                                          \
-    ((((word_t)(n) & FIXNUM_FROM_INT_MASK) << 1) | 1)
+    ((((word_t)(n) << 3) | IMMEDIATE_KIND_FIXNUM | IMMEDIATE_BIT_MASK)  \
+     & WORD_MAX)
 #define PCNUM(n)                                                        \
-    ((((word_t)(n) & FIXNUM_FROM_INT_MASK) << 1) | 1 | IMMEDIATE_KIND_PCNUM)
+    ((((word_t)(n) << 3) | IMMEDIATE_KIND_PCNUM | IMMEDIATE_BIT_MASK)   \
+     & WORD_MAX)
 
-// the bits to OR with if negative
-#define FIXNUM_TO_INT_NEGATIVE_BITS (((val)~0)<<(WORD_BITS-3))
-// [11100000 00000000] = FIXNUM_TO_INT_NEGATIVE_BITS 
 #define INT(v)                                                          \
-    (int16_t)(((val)(v) >> 1)                                           \
-              | ((((val)(v)) & FIXNUM_SIGN_MASK) << 2)                  \
-              | (fixnum_is_negative(v) ? FIXNUM_TO_INT_NEGATIVE_BITS : 0))
+    ((signed_word_t)(v) >> 3)
 
 #define PCNUM_TO_WORD(v)                                                \
-    (word_t)(((val)(v) >> 1) & FIXNUM_FROM_INT_MASK)
+    (word_t)(((val)(v) >> 3) & FIXNUM_FROM_INT_MASK)
 
 
-#define CHAR(x) (((val)(x) << 1) | 1 | IMMEDIATE_KIND_CHAR)
-#define ORD(x) (((val)(x) & ~IMMEDIATE_KIND_MASK) >> 1)
+#define CHAR(x) (((word_t)(x) << 3) | IMMEDIATE_KIND_CHAR | IMMEDIATE_BIT_MASK)
+#define ORD(x)  ((word_t)(x) >> 3)
 
 #define BOOL(x) ((x) ? TRU : FAL)
 
@@ -312,16 +318,13 @@ INLINE static void _noop() {}
 #define is_pcnum(x)  (((x) & (IMMEDIATE_KIND_MASK | IMMEDIATE_BIT_MASK)) == (IMMEDIATE_KIND_PCNUM | IMMEDIATE_BIT_MASK))
 #define is_char(x)    (((x) & (IMMEDIATE_KIND_MASK | IMMEDIATE_BIT_MASK)) == (IMMEDIATE_KIND_CHAR | IMMEDIATE_BIT_MASK))
 #define is_special(x) (((x) & (IMMEDIATE_KIND_MASK | IMMEDIATE_BIT_MASK)) == (IMMEDIATE_KIND_SPECIAL | IMMEDIATE_BIT_MASK))
-#define is_immediate(x) ((x) & 1)
+#define is_immediate(x) ((x) & IMMEDIATE_BIT_MASK) /* relies on IMMEDIATE_BIT_MASK being 1 */
 #define is_allocated(x) (!is_immediate(x))
 
 
-#define WORD_FIXADDINT_MASK ((1 << (WORD_BITS-3))-1)
-#define WORD_FIXNUM_MASK (WORD_FIXADDINT_MASK << 1)
-
 // the max and min numbers that can be represented as fixnum (but
 // those values are not fixnum val:s yet!)
-#define FIXNUM_MAXINT (WORD_FIXADDINT_MASK>>1)
+#define FIXNUM_MAXINT (((1 << (WORD_BITS-3))-1)>>1)
 #define FIXNUM_MININT (-(FIXNUM_MAXINT+1))
 
 
