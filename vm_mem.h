@@ -317,6 +317,9 @@ INLINE static void _noop() {}
 #define is_fixnum(x)                                                    \
     (((x) & (IMMEDIATE_KIND_MASK | IMMEDIATE_BIT_MASK))                 \
      == (IMMEDIATE_KIND_FIXNUM | IMMEDIATE_BIT_MASK))
+#define are_fixnums_2(x, y)                                             \
+    (((IMMEDIATE_KIND_MASK | IMMEDIATE_BIT_MASK) & (x) & (y))           \
+     == (IMMEDIATE_KIND_FIXNUM | IMMEDIATE_BIT_MASK))
 #define is_pcnum(x)                                                     \
     (((x) & (IMMEDIATE_KIND_MASK | IMMEDIATE_BIT_MASK))                 \
      == (IMMEDIATE_KIND_PCNUM | IMMEDIATE_BIT_MASK))
@@ -399,53 +402,55 @@ bool is_bignum(struct vm_process *process, val v) {
                          return, x_expr, y_expr)                        \
     val _bnd_x = x_expr;                                                \
     val _bnd_y = y_expr;                                                \
-    if (is_fixnum(_bnd_x)) {                                            \
-        if (is_fixnum(_bnd_y)) {                                        \
-            do_fixnum_op(save_regs, restore_regs, return, _bnd_x, _bnd_y); \
-        } else if (IS_BIGNUM(_bnd_y)) {                                 \
-            word_t _bnd_xw = INT(_bnd_x);                               \
-            save_regs;                                                  \
-            val _bnd_res = bignum_op(process,                           \
-                                     &_bnd_xw,                          \
-                                     1,                                 \
-                                     false,                             \
-                                     ALLOCATED_BODY(_bnd_y),            \
-                                     ALLOCATED_NUMWORDS(_bnd_y),        \
-                                     true);                             \
-            restore_regs;                                               \
-            return _bnd_res;                                            \
-        } else {                                                        \
-            ERROR_INTEGER(_bnd_y);                                      \
-        }                                                               \
-    } else if (IS_BIGNUM(_bnd_x)) {                                     \
-        if (is_fixnum(_bnd_y)) {                                        \
-            word_t _bnd_yw = INT(_bnd_y);                               \
-            save_regs;                                                  \
-            val _bnd_res = bignum_op(process,                           \
-                                     ALLOCATED_BODY(_bnd_x),            \
-                                     ALLOCATED_NUMWORDS(_bnd_x),        \
-                                     true,                              \
-                                     &_bnd_yw,                          \
-                                     1,                                 \
-                                     false);                            \
-            restore_regs;                                               \
-            return _bnd_res;                                            \
-        } else if (IS_BIGNUM(_bnd_y)) {                                 \
-            save_regs;                                                  \
-            val _bnd_res = bignum_op(process,                           \
-                                     ALLOCATED_BODY(_bnd_x),            \
-                                     ALLOCATED_NUMWORDS(_bnd_x),        \
-                                     true,                              \
-                                     ALLOCATED_BODY(_bnd_y),            \
-                                     ALLOCATED_NUMWORDS(_bnd_y),        \
-                                     true);                             \
-            restore_regs;                                               \
-            return _bnd_res;                                            \
-        } else {                                                        \
-            ERROR_INTEGER(_bnd_y);                                      \
-        }                                                               \
+    if (are_fixnums_2(_bnd_x, _bnd_y)) {                                \
+        do_fixnum_op(save_regs, restore_regs, return, _bnd_x, _bnd_y);  \
     } else {                                                            \
-        ERROR_INTEGER(_bnd_x);                                          \
+        if (is_fixnum(_bnd_x)) {                                        \
+            if (IS_BIGNUM(_bnd_y)) {                                    \
+                word_t _bnd_xw = INT(_bnd_x);                           \
+                save_regs;                                              \
+                val _bnd_res = bignum_op(process,                       \
+                                         &_bnd_xw,                      \
+                                         1,                             \
+                                         false,                         \
+                                         ALLOCATED_BODY(_bnd_y),        \
+                                         ALLOCATED_NUMWORDS(_bnd_y),    \
+                                         true);                         \
+                restore_regs;                                           \
+                return _bnd_res;                                        \
+            } else {                                                    \
+                ERROR_INTEGER(_bnd_y);                                  \
+            }                                                           \
+        } else if (IS_BIGNUM(_bnd_x)) {                                 \
+            if (is_fixnum(_bnd_y)) {                                    \
+                word_t _bnd_yw = INT(_bnd_y);                           \
+                save_regs;                                              \
+                val _bnd_res = bignum_op(process,                       \
+                                         ALLOCATED_BODY(_bnd_x),        \
+                                         ALLOCATED_NUMWORDS(_bnd_x),    \
+                                         true,                          \
+                                         &_bnd_yw,                      \
+                                         1,                             \
+                                         false);                        \
+                restore_regs;                                           \
+                return _bnd_res;                                        \
+            } else if (IS_BIGNUM(_bnd_y)) {                             \
+                save_regs;                                              \
+                val _bnd_res = bignum_op(process,                       \
+                                         ALLOCATED_BODY(_bnd_x),        \
+                                         ALLOCATED_NUMWORDS(_bnd_x),    \
+                                         true,                          \
+                                         ALLOCATED_BODY(_bnd_y),        \
+                                         ALLOCATED_NUMWORDS(_bnd_y),    \
+                                         true);                         \
+                restore_regs;                                           \
+                return _bnd_res;                                        \
+            } else {                                                    \
+                ERROR_INTEGER(_bnd_y);                                  \
+            }                                                           \
+        } else {                                                        \
+            ERROR_INTEGER(_bnd_x);                                      \
+        }                                                               \
     }
 
 
