@@ -18,7 +18,6 @@
   kk = immediate kind
   fixnum:  sx'xxxx xxxx'xxx111  s,x = sign, rest of value
   pcnum:   xx'xxxx xxxx'xxx011  x = value, offset from base of program space
-                                     (^ XX: currently is only an offset on posix)
   char:    xxxx'xxxx xxxx'x101  x = value
   special: xxxx'xxxx xxxx'x001  x = value
 
