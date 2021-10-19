@@ -49,11 +49,8 @@ TEST(immediates) {
     // even though the only place that uses `process` is WRITELN
     LET_NEW_VM_PROCESS(process, 200, /* stacklen */ 200 /* heaplen */);
     val a;
-    ASSERT_EQ(PCNUM(0), IMMEDIATE_KIND_PCNUM+1);
-    ASSERT_EQ(PCNUM(1), IMMEDIATE_KIND_PCNUM+1+2);
     a = PCNUM(243);
-    /* PRINTLN_BINARY(a); */
-    /* PRINTLN_BINARY(FIXNUM_SIGN_MASK); */
+    /* PRINTLN_BINARY(a); // [00000111 10011011] = a  */
     /* PRINTLN_BINARY(FIXNUM_FROM_INT_MASK); */
     ASSERT_EQ(is_pcnum(a), true);
     ASSERT_EQ(is_fixnum(a), false);
@@ -61,16 +58,11 @@ TEST(immediates) {
     a = PCNUM(2432);
     ASSERT_EQ_(val, PCNUM_TO_WORD(a), 2432);
 
-    /* PRINTLN_BINARY(fixnum_is_negative(BLA)); */
-    /* PRINTLN_BINARY(FIXNUM_SIGN_MASK); */
-    /* PRINTLN_BINARY(fixnum_is_negative(FIXNUM_SIGN_MASK)); */
-    /* PRINTLN_BINARY(FIX(-2)); */
-    /* PRINTLN_BINARY(WORD_FIXADDINT_MASK); */
+    PRINTLN_BINARY(FIX(-2));
 
     ASSERT_EQ(is_fixnum(FIX(1)), 1);
     ASSERT_EQ(is_fixnum(FIX(-2)), 1);
-    ASSERT_EQ(is_fixnum(1), 1);
-    ASSERT_EQ(is_fixnum(2), 0);
+    ASSERT_EQ(is_fixnum(1), 0);
     ASSERT_EQ(is_fixnum(CHAR(1)), 0);
     ASSERT_EQ(is_char(CHAR(1)), 1);
     ASSERT_EQ(is_char(FIX(1)), 0);

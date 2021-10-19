@@ -24,7 +24,7 @@ TEST(basics) {
     uint8_t *pc = program;
     LET_NEW_VM_PROCESS(process, 200, /* stacklen */ 28 /* heaplen */);
 
-    OP_B_B(PUSH_IM, 7, 0); // heh, add PUSH_IM_8 etc. for smaller code?
+    OP_IM(PUSH_IM, FIX(3));
     OP_IM(PUSH_IM, FIX(123));
     OP(INC);
     OP(HALT);
