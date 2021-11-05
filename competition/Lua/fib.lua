@@ -1,4 +1,4 @@
-function fib(n)
+local function fib(n)
     if (n < 2) then
         return 1
     else
