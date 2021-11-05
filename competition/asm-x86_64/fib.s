@@ -45,13 +45,8 @@ fib:                                    # @fib
 	.cfi_startproc
 # %bb.0:
 	pushq	%rbp
-	.cfi_def_cfa_offset 16
 	pushq	%rbx
-	.cfi_def_cfa_offset 24
 	pushq	%rax
-	.cfi_def_cfa_offset 32
-	.cfi_offset %rbx, -24
-	.cfi_offset %rbp, -16
 	movl	$1, %ebp
 	cmpl	$2, %edi
 	jl	.LBB1_4
@@ -72,11 +67,8 @@ fib:                                    # @fib
 .LBB1_4:
 	movl	%ebp, %eax
 	addq	$8, %rsp
-	.cfi_def_cfa_offset 24
 	popq	%rbx
-	.cfi_def_cfa_offset 16
 	popq	%rbp
-	.cfi_def_cfa_offset 8
 	retq
 .Lfunc_end1:
 	.size	fib, .Lfunc_end1-fib
@@ -103,6 +95,5 @@ fib:                                    # @fib
 	.asciz	"fib(%li) = %i\n"
 	.size	.L.str.2, 15
 
-	.ident	"Debian clang version 11.0.1-2"
 	.section	".note.GNU-stack","",@progbits
 	.addrsig
