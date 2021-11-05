@@ -41,38 +41,25 @@ main:                                   # @main
                                         # -- End function
 	.p2align	4, 0x90                         # -- Begin function fib
 	.type	fib,@function
-fib:                                    # @fib
-	.cfi_startproc
-# %bb.0:
-	pushq	%rbp
-	pushq	%rbx
-	pushq	%rax
-	movl	$1, %ebp
+fib:
+        # di = argument N
+        # ax = return
 	cmpl	$2, %edi
-	jl	.LBB1_4
-# %bb.1:
-	movl	%edi, %ebx
-	addl	$2, %ebx
-	xorl	%ebp, %ebp
-	.p2align	4, 0x90
-.LBB1_2:                                # =>This Inner Loop Header: Depth=1
-	leal	-3(%rbx), %edi
-	callq	fib
-	addl	%eax, %ebp
-	addl	$-2, %ebx
-	cmpl	$3, %ebx
-	jg	.LBB1_2
-# %bb.3:
-	addl	$1, %ebp
-.LBB1_4:
-	movl	%ebp, %eax
-	addq	$8, %rsp
-	popq	%rbx
-	popq	%rbp
+	jl	end
+	addl	$-1, %edi       # DECN
+        pushq	%rdi            # PUSHN
+        callq   fib
+        popq    %rdi            # POPN__PUSHA: restore N
+        pushq	%rax            #              save A instead
+        addl	$-1, %edi       # DECN
+        callq   fib
+        # ADDA (A += pop)
+        popq    %rdi            # old A
+        addl    %edi, %eax
+        retq
+end:    
+	movl	$1, %eax
 	retq
-.Lfunc_end1:
-	.size	fib, .Lfunc_end1-fib
-	.cfi_endproc
                                         # -- End function
 	.type	.L.str,@object                  # @.str
 	.section	.rodata.str1.1,"aMS",@progbits,1
