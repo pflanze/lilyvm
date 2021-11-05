@@ -46,12 +46,13 @@ fib:
         # ax = return
 	cmpl	$2, %edi
 	jl	end
+        movl    %edi, %esi
 	addl	$-1, %edi       # DECN
-        pushq	%rdi            # PUSHN
+	addl	$-2, %esi       # instead of second DECN
+        pushq	%rsi            # PUSHN -- second one
         callq   fib
         popq    %rdi            # POPN__PUSHA: restore N
         pushq	%rax            #              save A instead
-        addl	$-1, %edi       # DECN
         callq   fib
         # ADDA (A += pop)
         popq    %rdi            # old A
