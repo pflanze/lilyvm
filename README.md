@@ -129,11 +129,11 @@ below).
 
 To run with debugging and ASAN enabled:
 
-    make -f Makefile-local.mk clean run
+    make clean run
 
 To benchmark:
 
-    RELEASE=1 make -f Makefile-local.mk clean target-local/{vmtest,lilyvm}
+    RELEASE=1 make clean target-local/{vmtest,lilyvm}
     target-local/vmtest
 
 This generates some bytecode files (via calls to `bytecode_write_file`
