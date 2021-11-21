@@ -101,6 +101,10 @@ val D = process->D;
 word_t M = 0;
 word_t N = 0;
 
+// Register for indicating the number of values being returned or
+// passed to a function:
+word_t NV = 0;
+
 // Stack pointer:
 stacksize_t SP = process->stack.sp;
 

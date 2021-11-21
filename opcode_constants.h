@@ -10,6 +10,7 @@
 #define OP_UNSAFE_LDD_               143 /* 0x8f; 1 */
 #define OP_UNSAFE_LDM_INT_           144 /* 0x90; 1 */
 #define OP_UNSAFE_LDN_INT_           145 /* 0x91; 1 */
+#define OP_LDNV_IM                   190 /* 0xbe; 1 */
 #define OP_UNSAFE_STA_               150 /* 0x96; 1 */
 #define OP_UNSAFE_STB_               151 /* 0x97; 1 */
 #define OP_UNSAFE_STC_               152 /* 0x98; 1 */

@@ -15,6 +15,8 @@ D = STACK_UNSAFE_REF(ARGB1);")
 M = INT(STACK_UNSAFE_REF(ARGB1));")
     (145 unsafe_ldN_int_ 1 #t "
 N = INT(STACK_UNSAFE_REF(ARGB1));")
+    (190 ldNV_im 1 #t "
+NV = ARGIM1;")
 
     (150 unsafe_stA_ 1 #t "
 STACK_UNSAFE_SET(ARGB1, A);")
