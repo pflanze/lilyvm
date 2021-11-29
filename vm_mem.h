@@ -399,56 +399,60 @@ bool is_bignum(struct vm_process *process, val v) {
 #define _NUMBER_DISPATCH(save_regs, restore_regs,                       \
                          do_fixnum_op, bignum_op,                       \
                          return, x_expr, y_expr)                        \
-    val _bnd_x = x_expr;                                                \
-    val _bnd_y = y_expr;                                                \
-    if (are_fixnums_2(_bnd_x, _bnd_y)) {                                \
-        do_fixnum_op(save_regs, restore_regs, return, _bnd_x, _bnd_y);  \
+    val _numdisp_x = x_expr;                                            \
+    val _numdisp_y = y_expr;                                            \
+    if (are_fixnums_2(_numdisp_x, _numdisp_y)) {                        \
+        do_fixnum_op(save_regs, restore_regs,                           \
+                     return, _numdisp_x, _numdisp_y);                   \
     } else {                                                            \
-        if (is_fixnum(_bnd_x)) {                                        \
-            if (IS_BIGNUM(_bnd_y)) {                                    \
-                word_t _bnd_xw = INT(_bnd_x);                           \
+        if (is_fixnum(_numdisp_x)) {                                    \
+            if (IS_BIGNUM(_numdisp_y)) {                                \
+                word_t _numdisp_xw = INT(_numdisp_x);                   \
                 save_regs;                                              \
-                val _bnd_res = bignum_op(process,                       \
-                                         &_bnd_xw,                      \
-                                         1,                             \
-                                         false,                         \
-                                         ALLOCATED_BODY(_bnd_y),        \
-                                         ALLOCATED_NUMWORDS(_bnd_y),    \
-                                         true);                         \
+                val _numdisp_res = bignum_op(                           \
+                    process,                                            \
+                    &_numdisp_xw,                                       \
+                    1,                                                  \
+                    false,                                              \
+                    ALLOCATED_BODY(_numdisp_y),                         \
+                    ALLOCATED_NUMWORDS(_numdisp_y),                     \
+                    true);                                              \
                 restore_regs;                                           \
-                return _bnd_res;                                        \
+                return _numdisp_res;                                    \
             } else {                                                    \
-                ERROR_INTEGER(_bnd_y);                                  \
+                ERROR_INTEGER(_numdisp_y);                              \
             }                                                           \
-        } else if (IS_BIGNUM(_bnd_x)) {                                 \
-            if (is_fixnum(_bnd_y)) {                                    \
-                word_t _bnd_yw = INT(_bnd_y);                           \
+        } else if (IS_BIGNUM(_numdisp_x)) {                             \
+            if (is_fixnum(_numdisp_y)) {                                \
+                word_t _numdisp_yw = INT(_numdisp_y);                   \
                 save_regs;                                              \
-                val _bnd_res = bignum_op(process,                       \
-                                         ALLOCATED_BODY(_bnd_x),        \
-                                         ALLOCATED_NUMWORDS(_bnd_x),    \
-                                         true,                          \
-                                         &_bnd_yw,                      \
-                                         1,                             \
-                                         false);                        \
+                val _numdisp_res = bignum_op(                           \
+                    process,                                            \
+                    ALLOCATED_BODY(_numdisp_x),                         \
+                    ALLOCATED_NUMWORDS(_numdisp_x),                     \
+                    true,                                               \
+                    &_numdisp_yw,                                       \
+                    1,                                                  \
+                    false);                                             \
                 restore_regs;                                           \
-                return _bnd_res;                                        \
-            } else if (IS_BIGNUM(_bnd_y)) {                             \
+                return _numdisp_res;                                    \
+            } else if (IS_BIGNUM(_numdisp_y)) {                         \
                 save_regs;                                              \
-                val _bnd_res = bignum_op(process,                       \
-                                         ALLOCATED_BODY(_bnd_x),        \
-                                         ALLOCATED_NUMWORDS(_bnd_x),    \
-                                         true,                          \
-                                         ALLOCATED_BODY(_bnd_y),        \
-                                         ALLOCATED_NUMWORDS(_bnd_y),    \
-                                         true);                         \
+                val _numdisp_res = bignum_op(                           \
+                    process,                                            \
+                    ALLOCATED_BODY(_numdisp_x),                         \
+                    ALLOCATED_NUMWORDS(_numdisp_x),                     \
+                    true,                                               \
+                    ALLOCATED_BODY(_numdisp_y),                         \
+                    ALLOCATED_NUMWORDS(_numdisp_y),                     \
+                    true);                                              \
                 restore_regs;                                           \
-                return _bnd_res;                                        \
+                return _numdisp_res;                                    \
             } else {                                                    \
-                ERROR_INTEGER(_bnd_y);                                  \
+                ERROR_INTEGER(_numdisp_y);                              \
             }                                                           \
         } else {                                                        \
-            ERROR_INTEGER(_bnd_x);                                      \
+            ERROR_INTEGER(_numdisp_x);                                  \
         }                                                               \
     }
 
