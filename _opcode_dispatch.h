@@ -761,7 +761,6 @@ stacksize_t SP = process->stack.sp;
     op_break: /* break, 0 */
         TRACE_OP("break");
         {
-            printf("I'm going to call BREAK now\n");
             BREAK();
         }
         pc += 1;
