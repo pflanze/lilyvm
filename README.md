@@ -73,15 +73,15 @@ with clang and clang++.
 The 6502 adaptions are outdated and it won't currently compile for
 that architecture.
 
-The interpreter is currently running naive fibonacci about 5x faster
+The interpreter is currently running naive fibonacci about 7x faster
 than CPython (`fib_registers_35.bytecode`, i.e. when assuming that the
 fibonacci function can't be redefined while running, using register
 ops, the vm is compiled with clang++, and running on an Intel i5-2520M
-in 64-bit mode). Real programs will be slower than that in the end due
-to added features (and possibly use of a larger word width), realtime
-GC, and the compiler not generating bytecode as optimal as the
-hand-coded examples (unless using controlled unsafety can make up for
-the slowdown).
+in 64-bit mode; `fib_binaryregisters_35.bytecode` is about 10x
+faster). Real programs will be slower than that in the end due to
+added features (and possibly use of a larger word width), realtime GC,
+and the compiler not generating bytecode as optimal as the hand-coded
+examples.
 
 ## Notes
 
