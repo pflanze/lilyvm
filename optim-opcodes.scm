@@ -140,9 +140,7 @@ fib_with_registers_entry:
 #ifdef FIXNUM_UNSAFE
     A = POSITIVEFIXNUM_UNSAFE_DEC(A);
 #else
-STORE_EXCEPT_A;
-    A = SCM_DEC(A);
-RESTORE_EXCEPT_A;
+    DO_SCM_DEC(STORE_EXCEPT_A, RESTORE_EXCEPT_A, A=, A);
 #endif
     PUSH(A);
 }
@@ -166,13 +164,11 @@ fib_with_registers_ret_1:
 #ifdef FIXNUM_UNSAFE
     A = POSITIVEFIXNUM_UNSAFE_DEC(oldx);
 #else
-STORE_EXCEPT_A;
-    A = SCM_DEC(oldx);
-RESTORE_EXCEPT_A;
+    DO_SCM_DEC(STORE_EXCEPT_A, RESTORE_EXCEPT_A, A=, oldx);
 #endif
 #undef oldx
 }
-// (JSR_REL8, -9)
+// jsr fib
 {
     PUSH(FIX((uintptr_t)&&fib_with_registers_ret_2
              - (uintptr_t)&&fib_with_registers_entry));
@@ -182,9 +178,7 @@ fib_with_registers_ret_2:
 // ADD
 {
     // STACK_ENSURE_HAS(1); // optim: leave off
-STORE_EXCEPT_A;
-    A = SCM_ADD(A, STACK_UNSAFE_REF(0));
-RESTORE_EXCEPT_A;
+    DO_SCM_ADD(STORE_EXCEPT_A, RESTORE_EXCEPT_A, A=, A, STACK_UNSAFE_REF(0));
     STACK_UNSAFE_REMOVE(1);
 }
 // RET_POP
