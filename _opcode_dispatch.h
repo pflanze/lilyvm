@@ -923,7 +923,7 @@ stacksize_t SP = process->stack.sp;
                     origpc = STACK_UNSAFE_REF(0);
                     STACK_UNSAFE_REMOVE(1);
                     A = FIX(1);
-                    // optim: it now never returns to a PC!--ehr, makes it SLOWER
+                    // optim: it now never returns to a PC!--no change
                     if (1 || is_fixnum(origpc)) {
                         goto *(const void *)((uintptr_t)&&fib_with_registers_entry
                                              + INT(origpc));
